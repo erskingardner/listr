@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Unica+One&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        @apply h-screen w-screen antialiased text-stone-950 dark:text-stone-100 bg-white dark:bg-stone-950;
+    }
+}
+
+.primaryButton {
+    @apply px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-md ml-auto h-fit;
+}
+
+.profilePanelLink {
+    @apply px-2 py-1 block font-medium bg-stone-300 hover:bg-stone-200 dark:bg-stone-800 hover:dark:bg-stone-700 rounded-md text-center text-stone-950 dark:text-stone-100;
+}
