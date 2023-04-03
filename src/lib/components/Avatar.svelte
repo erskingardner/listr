@@ -16,15 +16,14 @@
         });
     }
 
-    $: observedProfile = userProfile;
-    $: console.log(observedProfile);
+    $: userProfile;
 </script>
 
-{#if !!observedProfile}
+{#if !!userProfile}
     <div class="avatar">
         <img
-            src={observedProfile.image}
-            alt="Avatar for {observedProfile.displayName}"
+            src={userProfile.image}
+            alt="Avatar for {userProfile.displayName}"
             class="
                 w-12 h-12 rounded-full border-4
                 border-stone-200 hover:border-stone-300

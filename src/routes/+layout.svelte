@@ -3,6 +3,7 @@
     import Header from '$lib/components/Header.svelte';
     import { onMount } from 'svelte';
     import { currentUser, currentUserProfile } from '$lib/stores/currentUser';
+    import ndk from '$lib/stores/ndk';
     import { settings } from '$lib/stores/settings';
     import { browser } from '$app/environment';
 
@@ -13,6 +14,8 @@
         if (storedUser) currentUser.set(JSON.parse(storedUser));
         if (storedUserProfile) currentUserProfile.set(JSON.parse(storedUserProfile));
         if (storedSettings) settings.set(JSON.parse(storedSettings));
+
+        await $ndk.connect();
     });
 
     $: {
