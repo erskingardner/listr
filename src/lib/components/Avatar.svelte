@@ -11,15 +11,15 @@
         throw new Error('Either pubKey or profileMetadata parameter are required.');
     }
 
-    // let user: NDKUser;
+    let user: NDKUser;
     let userProfile: NDKUserProfile | undefined;
     // If we don't have profileMetadata but we do have a pubkey
-    // if (!profileMetadata && !!pubKey) {
-    //     user = $ndk.getUser({ npub: pubKey });
-    //     user.fetchProfile();
-    // }
+    if (!profileMetadata && !!pubKey) {
+        user = $ndk.getUser({ npub: pubKey });
+        user.fetchProfile();
+    }
 
-    // $: userProfile = profileMetadata || user.profile;
+    $: userProfile = profileMetadata || user.profile;
 </script>
 
 {#if userProfile}
