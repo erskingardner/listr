@@ -10,16 +10,16 @@
     export async function login() {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
-        const user = await signer.configure(window);
-
-        if (!!user.npub) {
-            currentUserPubkey.set(user.npub);
-            localStorage.setItem('listrCurrentUserPubkey', user.npub);
-            user.fetchProfile().then(async () => {
-                currentUserProfile.set(user.profile);
-                localStorage.setItem('listrCurrentUserProfile', JSON.stringify(user.profile));
-            });
-        }
+        signer.user().then(async (user) => {
+            if (!!user.npub) {
+                currentUserPubkey.set(user.npub);
+                localStorage.setItem('listrCurrentUserPubkey', user.npub);
+                user.fetchProfile().then(async () => {
+                    currentUserProfile.set(user.profile);
+                    localStorage.setItem('listrCurrentUserProfile', JSON.stringify(user.profile));
+                });
+            }
+        });
     }
 
     export function logout(e: Event) {
@@ -50,7 +50,12 @@
 
         <PopoverPanel
             style="position: absolute; z-index: 10;"
-            class="w-48 right-0 flex flex-col bg-stone-100 dark:bg-stone-900 p-4 rounded-lg shadow-md border border-stone-200 dark:border-stone-800"
+            class="
+                w-48 right-0 flex flex-col
+                bg-stone-100 dark:bg-stone-900
+                p-4 rounded-lg shadow-md
+                border border-stone-200 dark:border-stone-800
+            "
         >
             <div class="panel-contents flex flex-col gap-2">
                 <PopoverButton as="a" href="/profile" class="profilePanelLink">
