@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { authedPubkey, authedProfileMetadata, theme } from '$lib/store';
+    import { currentUserPubkey } from '$lib/stores/currentUser';
+    import { settings } from '$lib/stores/settings';
 </script>
 
-<p>Current theme: {$theme}</p>
-<p>Current user: {$authedPubkey}</p>
+<p>Current theme: {$settings.theme}</p>
+<p>Current user: {$currentUserPubkey}</p>

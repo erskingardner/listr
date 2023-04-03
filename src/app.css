@@ -8,6 +8,10 @@
     html {
         @apply h-screen w-screen antialiased text-stone-950 dark:text-stone-100 bg-white dark:bg-stone-950;
     }
+
+    a {
+        @apply underline;
+    }
 }
 
 .primaryButton {
@@ -15,5 +19,5 @@
 }
 
 .profilePanelLink {
-    @apply px-2 py-1 block font-medium bg-stone-300 hover:bg-stone-200 dark:bg-stone-800 hover:dark:bg-stone-700 rounded-md text-center text-stone-950 dark:text-stone-100;
+    @apply no-underline px-2 py-1 block font-medium bg-stone-300 hover:bg-stone-200 dark:bg-stone-800 hover:dark:bg-stone-700 rounded-md text-stone-950 dark:text-stone-100;
 }
