@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { NDKUserProfile } from '@nostr-dev-kit/ndk';
+import type { NDKUser, NDKUserProfile } from '@nostr-dev-kit/ndk';
 
-export const currentUserPubkey = writable('');
+export const currentUser = writable<NDKUser | undefined>(undefined);
 export const currentUserProfile = writable<NDKUserProfile | undefined>(undefined);

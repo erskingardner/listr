@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { currentUserPubkey, currentUserProfile } from '$lib/stores/currentUser';
+    import { currentUser, currentUserProfile } from '$lib/stores/currentUser';
     import { settings } from '$lib/stores/settings';
     import ndk from '$lib/stores/ndk';
     import { goto } from '$app/navigation';
@@ -10,12 +10,17 @@
     export async function login() {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
+        ndk.set($ndk);
+        await $ndk.connect();
         signer.user().then(async (user) => {
             if (!!user.npub) {
-                currentUserPubkey.set(user.npub);
-                localStorage.setItem('listrCurrentUserPubkey', user.npub);
+                user.ndk = $ndk;
+                currentUser.set(user);
+                localStorage.setItem('listrCurrentUser', JSON.stringify(user));
                 user.fetchProfile().then(async () => {
+                    currentUser.set(user);
                     currentUserProfile.set(user.profile);
+                    localStorage.setItem('listrCurrentUser', JSON.stringify(user));
                     localStorage.setItem('listrCurrentUserProfile', JSON.stringify(user.profile));
                 });
             }
@@ -24,9 +29,9 @@
 
     export function logout(e: Event) {
         e.preventDefault();
-        currentUserPubkey.set('');
+        currentUser.set(undefined);
         currentUserProfile.set(undefined);
-        localStorage.removeItem('listrCurrentUserPubkey');
+        localStorage.removeItem('listrCurrentUser');
         localStorage.removeItem('listrCurrentUserProfile');
         goto('/');
     }
@@ -36,15 +41,17 @@
         $settings.theme === 'dark'
             ? settings.set({ theme: 'light', ...settings })
             : settings.set({ theme: 'dark', ...settings });
-        localStorage.setItem('listrTheme', $settings.theme);
+        localStorage.setItem('listrSettings', JSON.stringify($settings));
     }
 </script>
 
-{#if !!$currentUserPubkey}
+{#if !!$currentUser}
     <Popover style="position: relative;" class="ml-auto h-12">
         <PopoverButton>
             {#if $currentUserProfile}
-                <Avatar profileMetadata={$currentUserProfile} />
+                <Avatar profile={$currentUserProfile} />
+            {:else}
+                <Avatar npub={$currentUser.npub} />
             {/if}
         </PopoverButton>
 

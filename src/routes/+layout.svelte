@@ -2,16 +2,16 @@
     import '../app.css';
     import Header from '$lib/components/Header.svelte';
     import { onMount } from 'svelte';
-    import { currentUserPubkey, currentUserProfile } from '$lib/stores/currentUser';
+    import { currentUser, currentUserProfile } from '$lib/stores/currentUser';
     import { settings } from '$lib/stores/settings';
     import { browser } from '$app/environment';
 
     onMount(async () => {
-        const pubkey = localStorage.getItem('listrCurrentUserPubkey');
-        const storedProfileMetadata = localStorage.getItem('listrCurrentUserProfile');
+        const storedUser = localStorage.getItem('listrCurrentUser');
+        const storedUserProfile = localStorage.getItem('listrCurrentUserProfile');
         const storedSettings = localStorage.getItem('listrSettings');
-        if (pubkey) currentUserPubkey.set(pubkey);
-        if (storedProfileMetadata) currentUserProfile.set(JSON.parse(storedProfileMetadata));
+        if (storedUser) currentUser.set(JSON.parse(storedUser));
+        if (storedUserProfile) currentUserProfile.set(JSON.parse(storedUserProfile));
         if (storedSettings) settings.set(JSON.parse(storedSettings));
     });
 
