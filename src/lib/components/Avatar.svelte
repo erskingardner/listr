@@ -1,28 +1,21 @@
 <script lang="ts">
     import ndk from '$lib/stores/ndk';
     import type { NDKUserProfile } from '@nostr-dev-kit/ndk';
+    import UserInterface from '$lib/interfaces/users';
 
-    export let npub: string | undefined = undefined;
-    export let profile: NDKUserProfile | undefined = undefined;
+    export let userProfile: NDKUserProfile | undefined;
     export let klass: string = '';
+    const defaultImageSeed = userProfile?.displayName
+        ? userProfile?.displayName.slice(0, 2)
+        : 'asldfkja';
 
-    let userProfile: NDKUserProfile | undefined;
-    if (!!profile) {
-        userProfile = profile;
-    } else if (!profile && !!npub) {
-        const user = $ndk.getUser({ npub: npub });
-        user.fetchProfile().then(async () => {
-            userProfile = user.profile;
-        });
-    }
-
-    $: userProfile;
+    let defaultImage = `https://robohash.org/${defaultImageSeed}`;
 </script>
 
-{#if !!userProfile}
+{#if userProfile}
     <div class="avatar">
         <img
-            src={userProfile.image}
+            src={userProfile?.image || defaultImage}
             alt="Avatar for {userProfile.displayName}"
             class="
                 w-12 h-12 rounded-full border-4

@@ -9,5 +9,5 @@
 </script>
 
 {#if user}
-    <UserProfileHero {user} />
+    <UserProfileHero userHexId={user.hexpubkey()} />
 {/if}

@@ -7,13 +7,32 @@
     import { settings } from '$lib/stores/settings';
     import { browser } from '$app/environment';
 
+    let savestore = false;
+
+    $: if (savestore && $currentUser) {
+        window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($currentUser));
+    }
+
+    $: if (savestore && $currentUserProfile) {
+        window.sessionStorage.setItem(
+            'listrCurrentUserProfile',
+            JSON.stringify($currentUserProfile)
+        );
+    }
+
+    $: if (savestore && $settings) {
+        window.sessionStorage.setItem('listrSettings', JSON.stringify($settings));
+    }
+
     onMount(async () => {
-        const storedUser = localStorage.getItem('listrCurrentUser');
-        const storedUserProfile = localStorage.getItem('listrCurrentUserProfile');
-        const storedSettings = localStorage.getItem('listrSettings');
+        const storedUser = window.sessionStorage.getItem('listrCurrentUser');
+        const storedUserProfile = window.sessionStorage.getItem('listrCurrentUserProfile');
+        const storedSettings = window.sessionStorage.getItem('listrSettings');
         if (storedUser) currentUser.set(JSON.parse(storedUser));
         if (storedUserProfile) currentUserProfile.set(JSON.parse(storedUserProfile));
         if (storedSettings) settings.set(JSON.parse(storedSettings));
+
+        savestore = true;
 
         await $ndk.connect();
     });

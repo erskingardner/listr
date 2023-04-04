@@ -16,12 +16,15 @@
             if (!!user.npub) {
                 user.ndk = $ndk;
                 currentUser.set(user);
-                localStorage.setItem('listrCurrentUser', JSON.stringify(user));
+                window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(user));
                 user.fetchProfile().then(async () => {
                     currentUser.set(user);
                     currentUserProfile.set(user.profile);
-                    localStorage.setItem('listrCurrentUser', JSON.stringify(user));
-                    localStorage.setItem('listrCurrentUserProfile', JSON.stringify(user.profile));
+                    window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(user));
+                    window.sessionStorage.setItem(
+                        'listrCurrentUserProfile',
+                        JSON.stringify(user.profile)
+                    );
                 });
             }
         });
@@ -31,8 +34,8 @@
         e.preventDefault();
         currentUser.set(undefined);
         currentUserProfile.set(undefined);
-        localStorage.removeItem('listrCurrentUser');
-        localStorage.removeItem('listrCurrentUserProfile');
+        window.sessionStorage.removeItem('listrCurrentUser');
+        window.sessionStorage.removeItem('listrCurrentUserProfile');
         goto('/');
     }
 
@@ -41,18 +44,14 @@
         $settings.theme === 'dark'
             ? settings.set({ theme: 'light', ...settings })
             : settings.set({ theme: 'dark', ...settings });
-        localStorage.setItem('listrSettings', JSON.stringify($settings));
+        window.sessionStorage.setItem('listrSettings', JSON.stringify($settings));
     }
 </script>
 
-{#if !!$currentUser}
+{#if $currentUserProfile}
     <Popover style="position: relative;" class="ml-auto h-12">
         <PopoverButton>
-            {#if $currentUserProfile}
-                <Avatar profile={$currentUserProfile} />
-            {:else}
-                <Avatar npub={$currentUser.npub} />
-            {/if}
+            <Avatar userProfile={$currentUserProfile} />
         </PopoverButton>
 
         <PopoverPanel

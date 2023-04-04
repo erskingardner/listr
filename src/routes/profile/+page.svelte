@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { currentUser } from '$lib/stores/currentUser';
+    import { currentUserProfile } from '$lib/stores/currentUser';
     import UserProfileHero from '$lib/components/UserProfileHero.svelte';
 </script>
 
-{#if $currentUser}
-    <UserProfileHero user={$currentUser} />
+{#if $currentUserProfile}
+    <UserProfileHero userProfile={$currentUserProfile} />
 {/if}
