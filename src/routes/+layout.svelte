@@ -1,10 +1,11 @@
 <script lang="ts">
     import '../app.css';
     import Header from '$lib/components/Header.svelte';
+    import Footer from '$lib/components/Footer.svelte';
     import { onMount } from 'svelte';
     import { currentUser, currentUserProfile } from '$lib/stores/currentUser';
-    import ndk from '$lib/stores/ndk';
     import { settings } from '$lib/stores/settings';
+    import ndk from '$lib/stores/ndk';
     import { browser } from '$app/environment';
 
     let savestore = false;
@@ -51,4 +52,5 @@
 <main class="p-8 max-w-5xl mx-auto">
     <Header />
     <slot />
+    <Footer />
 </main>

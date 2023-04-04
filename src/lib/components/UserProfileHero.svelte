@@ -25,7 +25,6 @@
 
     $: {
         if (!_userProfile && userHexId) {
-            console.log('BAL');
             observeUserProfile = UserInterface.get({ hexpubkey: userHexId });
             _userProfile = $observeUserProfile! as NDKUserProfile;
         }
@@ -39,7 +38,7 @@
         style={`background-image: url(${bannerImage})`}
     />
     <div
-        class="absolute py-6 inset-0 w-full h-full bg-gradient-to-b from-transparent to-stone-950 z-1"
+        class="absolute py-6 inset-0 w-full h-full bg-gradient-to-b from-transparent to-stone-50 dark:to-stone-950 z-1"
     />
 </div>
 <div class="absolute top-36 profileMetadata flex flex-col gap-4 mt-16 ml-10 max-w-lg">

@@ -65,7 +65,7 @@
         >
             <div class="panel-contents flex flex-col gap-2">
                 <PopoverButton as="a" href="/profile" class="profilePanelLink">
-                    Profile
+                    My profile
                 </PopoverButton>
                 <PopoverButton as="a" href="#" on:click={changeTheme} class="profilePanelLink">
                     Change theme

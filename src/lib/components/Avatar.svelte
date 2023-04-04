@@ -7,7 +7,7 @@
     export let klass: string = '';
     const defaultImageSeed = userProfile?.displayName
         ? userProfile?.displayName.slice(0, 2)
-        : 'asldfkja';
+        : 'nostr4life';
 
     let defaultImage = `https://robohash.org/${defaultImageSeed}`;
 </script>
