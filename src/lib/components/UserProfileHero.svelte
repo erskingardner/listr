@@ -1,38 +1,20 @@
 <script lang="ts">
-    import Avatar from '$lib/components/Avatar.svelte';
     import VerifiedCheckIcon from '$lib/elements/icons/VerifiedCheck.svelte';
-    import type { NDKUserProfile } from '@nostr-dev-kit/ndk';
     import UserInterface from '$lib/interfaces/users';
+    import { Avatar } from 'flowbite-svelte';
 
-    export let userProfile: NDKUserProfile | undefined = undefined;
-    export let userHexId: string | undefined = undefined;
+    export let userHexId: string;
 
-    // Throw error if we're missing both params
-    if (!userProfile && !userHexId) {
-        throw new Error('Missing required params');
-    }
-
-    let _userProfile: NDKUserProfile;
-    let observeUserProfile;
-
-    if (userProfile) {
-        _userProfile = userProfile;
-    }
+    let user = UserInterface.get({ hexpubkey: userHexId });
 
     let bannerImage: string | undefined = undefined;
     const defaultBannerImage =
         'https://nostr.build/i/nostr.build_e76387d298587c61e40913929eafe746ce6a780938750d21913a7b488228a146.webp';
 
-    $: {
-        if (!_userProfile && userHexId) {
-            observeUserProfile = UserInterface.get({ hexpubkey: userHexId });
-            _userProfile = $observeUserProfile! as NDKUserProfile;
-        }
-        bannerImage = _userProfile?.banner || defaultBannerImage;
-    }
+    $: bannerImage = $user?.banner || defaultBannerImage;
 </script>
 
-<div class="profileWrapper relative w-full h-64">
+<div class="profileWrapper relative w-full mb-14">
     <div
         class="absolute inset-0 w-full h-full bg-center bg-cover z-0 rounded-lg"
         style={`background-image: url(${bannerImage})`}
@@ -40,16 +22,19 @@
     <div
         class="absolute py-6 inset-0 w-full h-full bg-gradient-to-b from-transparent to-stone-50 dark:to-stone-950 z-1"
     />
-</div>
-<div class="absolute top-36 profileMetadata flex flex-col gap-4 mt-16 ml-10 max-w-lg">
-    <Avatar userProfile={_userProfile} klass="w-40 h-40" />
-    <h1 class="text-3xl font-bold">{_userProfile?.displayName}</h1>
-    {#if _userProfile?.nip05}
-        <p class="flex flex-row gap-1 text-xl font-medium">
-            {_userProfile?.nip05}
-            <VerifiedCheckIcon />
-        </p>
-    {/if}
+    {#if $user}
+        <div class="relative profileMetadata flex flex-col gap-4 pt-10 ml-10 max-w-lg">
+            <Avatar src={$user.image} class="w-40 h-40 border-stone-100" border />
+            <!-- <Avatar userProfile={_userProfile} klass="w-40 h-40" /> -->
+            <h1 class="text-3xl font-bold">{$user.displayName || $user.name}</h1>
+            {#if $user.nip05}
+                <p class="flex flex-row gap-1 text-xl font-medium">
+                    {$user.nip05}
+                    <VerifiedCheckIcon />
+                </p>
+            {/if}
 
-    <p class="text-xl font-medium">{_userProfile?.about}</p>
+            <p class="text-xl font-medium">{$user.about}</p>
+        </div>
+    {/if}
 </div>

@@ -1,24 +1,30 @@
 import { get as getStore } from 'svelte/store';
 import ndkStore from '$lib/stores/ndk';
-import type { NDKUserProfile, GetUserParams } from '@nostr-dev-kit/ndk';
+import type { GetUserParams } from '@nostr-dev-kit/ndk';
 import { liveQuery, type Observable } from 'dexie';
 import { browser } from '$app/environment';
 import { db } from '$lib/interfaces/db';
+import { unixTimeNow } from '$lib/utils/helpers';
 
 const UserInterface = {
-    get: (opts: GetUserParams): Observable<NDKUserProfile> => {
+    get: (opts: GetUserParams): Observable<App.User> => {
         const ndk = getStore(ndkStore);
-        const user = ndk.getUser(opts);
-        console.log('User INTER: ', user);
-        let userProfile = { ...(user.profile || {}), id: user.hexpubkey() };
-        user.fetchProfile().then(async () => {
-            userProfile = { ...userProfile, ...(user.profile || {}) };
-            await db.users.put(userProfile);
+        const ndkUser = ndk.getUser(opts);
+
+        let userForDb = { ...(ndkUser.profile || {}), id: ndkUser.hexpubkey() };
+        ndkUser.fetchProfile().then(async () => {
+            userForDb = { ...userForDb, ...(ndkUser.profile || {}) };
+            await db.users.put({
+                ...userForDb,
+                lastFetched: unixTimeNow(),
+                npub: ndkUser.npub,
+                hexpubkey: ndkUser.hexpubkey()
+            });
         });
 
         return liveQuery(() =>
-            browser ? db.users.where({ id: user.hexpubkey() }).first() || userProfile : userProfile
-        ) as Observable<NDKUserProfile>;
+            browser ? db.users.where({ id: ndkUser.hexpubkey() }).first() || userForDb : userForDb
+        ) as Observable<App.User>;
     }
 };
 

@@ -1,31 +1,26 @@
 <script lang="ts">
-    import { currentUser, currentUserProfile } from '$lib/stores/currentUser';
-    import { settings } from '$lib/stores/settings';
+    import { currentUser } from '$lib/stores/currentUser';
     import ndk from '$lib/stores/ndk';
     import { goto } from '$app/navigation';
     import { Popover, PopoverButton, PopoverPanel } from '@rgossiaux/svelte-headlessui';
-    import Avatar from '$lib/components/Avatar.svelte';
     import { NDKNip07Signer } from '@nostr-dev-kit/ndk';
+    import { Avatar } from 'flowbite-svelte';
+    import UserInterface from '$lib/interfaces/users';
+    import type { Observable } from 'dexie';
 
+    let user: Observable<App.User>;
     export async function login() {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
         ndk.set($ndk);
         await $ndk.connect();
-        signer.user().then(async (user) => {
-            if (!!user.npub) {
-                user.ndk = $ndk;
-                currentUser.set(user);
-                window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(user));
-                user.fetchProfile().then(async () => {
-                    currentUser.set(user);
-                    currentUserProfile.set(user.profile);
-                    window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(user));
-                    window.sessionStorage.setItem(
-                        'listrCurrentUserProfile',
-                        JSON.stringify(user.profile)
-                    );
-                });
+        signer.user().then(async (ndkUser) => {
+            if (!!ndkUser.npub) {
+                ndkUser.ndk = $ndk;
+                const userAttr = { hexpubkey: ndkUser.hexpubkey() };
+                currentUser.set(userAttr);
+                window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(userAttr));
+                user = UserInterface.get(userAttr);
             }
         });
     }
@@ -33,25 +28,22 @@
     export function logout(e: Event) {
         e.preventDefault();
         currentUser.set(undefined);
-        currentUserProfile.set(undefined);
         window.sessionStorage.removeItem('listrCurrentUser');
-        window.sessionStorage.removeItem('listrCurrentUserProfile');
         goto('/');
     }
 
-    export function changeTheme(e: Event) {
-        e.preventDefault();
-        $settings.theme === 'dark'
-            ? settings.set({ theme: 'light', ...settings })
-            : settings.set({ theme: 'dark', ...settings });
-        window.sessionStorage.setItem('listrSettings', JSON.stringify($settings));
+    $: {
+        if ($user) {
+            currentUser.set($user);
+            window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($user));
+        }
     }
 </script>
 
-{#if $currentUserProfile}
+{#if $currentUser}
     <Popover style="position: relative;" class="ml-auto h-12">
         <PopoverButton>
-            <Avatar userProfile={$currentUserProfile} />
+            <Avatar src={$currentUser.image} />
         </PopoverButton>
 
         <PopoverPanel
@@ -66,9 +58,6 @@
             <div class="panel-contents flex flex-col gap-2">
                 <PopoverButton as="a" href="/profile" class="profilePanelLink">
                     My profile
-                </PopoverButton>
-                <PopoverButton as="a" href="#" on:click={changeTheme} class="profilePanelLink">
-                    Change theme
                 </PopoverButton>
                 <PopoverButton on:click={logout} class="primaryButton w-full text-left">
                     Log out

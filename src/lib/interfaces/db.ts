@@ -1,15 +1,14 @@
-import type { NDKEvent, NDKUserProfile } from '@nostr-dev-kit/ndk';
 import Dexie, { type Table } from 'dexie';
 
 export class Database extends Dexie {
-    users!: Table<NDKUserProfile>;
-    lists!: Table<NDKEvent>;
+    users!: Table<App.User>;
+    lists!: Table<App.List>;
 
     constructor() {
         super('Listr');
-        this.version(7).stores({
-            users: '++id, name, displayName, image, banner, bio, nip05, lud16, about, zapService',
-            lists: '++id, content, kind, subject, created_at, pubkey, *tags'
+        this.version(1).stores({
+            users: '++id, name, displayName, image, banner, bio, nip05, lud16, about, zapService, lastFetched',
+            lists: '++id, name, kind, createdAt, authorHexPubkey, publicItems*, privateItems*, npub, hexpubkey, lastFetched'
         });
     }
 }
