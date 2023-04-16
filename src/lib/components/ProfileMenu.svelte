@@ -66,5 +66,5 @@
         </PopoverPanel>
     </Popover>
 {:else}
-    <button on:click={login} class="primaryButton"> Log in </button>
+    <button on:click={login} class="primaryButton whitespace-nowrap">Log in</button>
 {/if}
