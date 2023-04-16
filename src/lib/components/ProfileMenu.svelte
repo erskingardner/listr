@@ -41,8 +41,8 @@
 </script>
 
 {#if $currentUser}
-    <Popover style="position: relative;" class="ml-auto h-12">
-        <PopoverButton>
+    <Popover style="position: relative;" class="h-10 w-10">
+        <PopoverButton class="h-10 w-10">
             <Avatar src={$currentUser.image} />
         </PopoverButton>
 
@@ -56,7 +56,7 @@
             "
         >
             <div class="panel-contents flex flex-col gap-2">
-                <PopoverButton as="a" href="/profile" class="profilePanelLink">
+                <PopoverButton as="a" href={`/${$currentUser.npub}`} class="profilePanelLink">
                     My profile
                 </PopoverButton>
                 <PopoverButton on:click={logout} class="primaryButton w-full text-left">

@@ -4,15 +4,7 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   Dedupe lists that are fetched so that we only store 1 per kind in the db.
-    -   Get a list of events from relays
-    -   Get a list of events we have in the db
-    -   Compare and keep only one of each kind:name
-    -   Put that latest event in the db
--   Show users and events from lists in UI when fetched.
--   Create landing page at `/` to explain the benefit of the app
--   LAUNCH POINT
--   Create Search so you can search by user npub.
+-   LAUNCH POINT 🚀
 -   Create interface to create new lists and publish them
 -   Create interface to edit you lists and publish them
 
@@ -20,6 +12,18 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   Double check basic mobile compat
+-   Rotating list of people for homepage
+-   Light mode design improvements
+-   Create a people card for homepage people examples with avatar
+-   Create Search so you can search by user npub.
+-   Dedupe lists that are fetched so that we only store 1 per kind in the db.
+    -   Get a list of events from relays
+    -   Get a list of events we have in the db
+    -   Compare and keep only one of each kind:name
+    -   Put that latest event in the db
+-   Show users and events from lists in UI when fetched.
+-   Create landing page at `/` to explain the benefit of the app
 -   Create Interface to fetch repaceable lists (kind: 10000, 10001, 30000, 30001)
 -   Fix `[npub]/lists` route so that it shows profile data on refresh – I think this will be fixed by the database stuff.
 -   Implement simple browser database with Dexie

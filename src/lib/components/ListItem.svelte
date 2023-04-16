@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { Avatar } from 'flowbite-svelte';
+    import { Avatar, Tooltip } from 'flowbite-svelte';
     import Note from '$lib/components/Note.svelte';
     import UserInterface from '$lib/interfaces/users';
-    import { Tooltip } from 'flowbite-svelte';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import LinkIcon from '$lib/elements/icons/Link.svelte';
     import { nip19 } from 'nostr-tools';
@@ -29,7 +28,7 @@
 </script>
 
 <div
-    class="flex flex-row items-center justify-between py-2 px-3 border border-stone-100/20 rounded-md"
+    class="flex flex-row items-center justify-between py-2 px-3 border border-stone-800/20 dark:border-stone-100/20 rounded-md"
 >
     {#if itemType === 'Person'}
         {#if $person}
@@ -37,7 +36,7 @@
                 <Avatar src={$person.image} />
                 <span class="">{$person.displayName || $person.name}</span>
             </div>
-            <div class="flex flex-row gap-4 items-center">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
                 <InfoIcon />
                 <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
                     {nip19.npubEncode(itemId)}
@@ -53,7 +52,7 @@
         {/if}
     {:else}
         <Note noteId={itemId} klass="w-4/5" />
-        <div class="flex flex-row gap-4 items-center">
+        <div class="flex flex-col md:flex-row gap-4 items-center">
             <InfoIcon />
             <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
                 Note ID: {itemId}
