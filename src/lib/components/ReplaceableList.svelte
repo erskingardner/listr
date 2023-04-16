@@ -9,7 +9,6 @@
     export let userHexId: string;
 
     let lists = liveQuery(() => db.lists.where('authorHexPubkey').equals(userHexId).toArray());
-    $: console.log($lists);
 </script>
 
 <div class="listsWrapper flex flex-col gap-6">

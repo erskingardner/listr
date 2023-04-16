@@ -23,7 +23,6 @@
     ];
 
     const shuffled = npubs.sort(() => 0.5 - Math.random());
-    console.log(shuffled);
 </script>
 
 <div class="prose-stone prose-lg dark:prose-invert mx-auto mb-10">
