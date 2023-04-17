@@ -9,16 +9,12 @@
 
     let user: Observable<App.User>;
 
-    async function fetchUser() {
-        user = await UserInterface.get({ hexpubkey: userHexId });
-    }
-
     let bannerImage: string | undefined = undefined;
     const defaultBannerImage =
         'https://nostr.build/i/nostr.build_e76387d298587c61e40913929eafe746ce6a780938750d21913a7b488228a146.webp';
 
     onMount(async () => {
-        fetchUser();
+        user = await UserInterface.get({ hexpubkey: userHexId });
     });
 
     $: bannerImage = $user?.banner || defaultBannerImage;

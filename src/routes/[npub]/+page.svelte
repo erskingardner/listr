@@ -2,7 +2,6 @@
     import type { PageData } from './$types';
     import UserProfileHero from '$lib/components/UserProfileHero.svelte';
     import ReplaceableList from '$lib/components/ReplaceableList.svelte';
-    import { beforeUpdate } from 'svelte';
 
     export let data: PageData;
 </script>

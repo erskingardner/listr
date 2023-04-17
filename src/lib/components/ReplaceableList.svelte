@@ -11,11 +11,10 @@
 
     export let userHexId: string;
     let lists: Observable<App.List[]>;
+
     onMount(async () => {
         lists = await ReplaceableListInterface.getForUser({ hexpubkey: userHexId });
     });
-
-    // let lists = liveQuery(() => db.lists.where('authorHexPubkey').equals(userHexId).toArray());
 </script>
 
 <div class="listsWrapper flex flex-col gap-6">

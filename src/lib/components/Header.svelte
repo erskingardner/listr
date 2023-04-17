@@ -14,6 +14,9 @@
             'search'
         ) as HTMLInputElement;
         if (query.match(/npub\w{58}/)) {
+            if (searchInput) {
+                searchInput.value = '';
+            }
             goto(`/${query}`, { invalidateAll: true });
         } else {
             if (searchInput) {
