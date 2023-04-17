@@ -8,9 +8,8 @@
 
 {#key data}
     <UserProfileHero userHexId={data.userHexPub} />
-{/key}
-<h1 class="text-4xl font-semibold mb-4">Lists</h1>
 
-{#key data}
+    <h1 class="text-4xl font-semibold mb-4">Lists</h1>
+
     <ReplaceableList userHexId={data.userHexPub} />
 {/key}

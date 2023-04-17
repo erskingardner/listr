@@ -10,14 +10,15 @@
 
     function searchSubmit(e: any) {
         const query: string = e.target.search.value;
-        const searchInput: HTMLInputElement | null = document.getElementById(
-            'search'
-        ) as HTMLInputElement;
+        // There are two because of the mobile version of the search
+        const searchInputs = document.querySelectorAll('input[type="text"].searchInput');
+        const searchInputsArr: HTMLInputElement[] = Array.from(searchInputs) as HTMLInputElement[];
+        const searchInput = searchInputsArr.filter((elem) => !!elem.value)[0];
         if (query.match(/npub\w{58}/)) {
+            goto(`/${query}`, { invalidateAll: true });
             if (searchInput) {
                 searchInput.value = '';
             }
-            goto(`/${query}`, { invalidateAll: true });
         } else {
             if (searchInput) {
                 searchInput.value = '';
@@ -64,7 +65,7 @@
                 type="text"
                 name="search"
                 id="search"
-                class="rounded-md bg-transparent w-full text-sm"
+                class="searchInput rounded-md bg-transparent w-full text-sm"
                 placeholder="npub..."
             />
             <button type="submit" class="p-2 -ml-12">
@@ -89,7 +90,7 @@
                 type="text"
                 name="search"
                 id="search"
-                class="rounded-md bg-transparent w-full text-sm"
+                class="searchInput rounded-md bg-transparent w-full text-sm"
                 placeholder="npub..."
             />
             <button type="submit" class="p-2 -ml-12">
