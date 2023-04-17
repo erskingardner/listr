@@ -1,10 +1,16 @@
 <script lang="ts">
     import UserInterface from '$lib/interfaces/users';
     import { Avatar } from 'flowbite-svelte';
+    import { onMount } from 'svelte';
+    import type { Observable } from 'dexie';
+    import ndk from '$lib/stores/ndk';
 
     export let npub: string;
+    let person: Observable<App.User>;
 
-    let person = UserInterface.get({ npub: npub });
+    onMount(async () => {
+        person = await UserInterface.get({ npub: npub });
+    });
 </script>
 
 {#if $person}

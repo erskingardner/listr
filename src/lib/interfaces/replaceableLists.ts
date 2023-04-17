@@ -8,7 +8,7 @@ import { db } from '$lib/interfaces/db';
 import { unixTimeNow } from '$lib/utils/helpers';
 
 const ReplaceableListInterface = {
-    getForUser: (opts: GetUserParams): Observable<App.List[]> => {
+    getForUser: async (opts: GetUserParams): Promise<Observable<App.List[]>> => {
         const ndk = getStore(ndkStore);
         const user = ndk.getUser(opts);
         const filter: NDKFilter = {
@@ -67,7 +67,8 @@ const ReplaceableListInterface = {
 
         return liveQuery(() =>
             browser
-                ? db.lists.where({ userHexPubkey: user.hexpubkey() }).toArray() || replaceableLists
+                ? db.lists.where({ authorHexPubkey: user.hexpubkey() }).toArray() ||
+                  replaceableLists
                 : replaceableLists
         ) as Observable<App.List[]>;
     }

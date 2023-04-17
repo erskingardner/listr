@@ -9,23 +9,22 @@
     import type { Observable } from 'dexie';
 
     let user: Observable<App.User>;
-    export async function login() {
+
+    async function login() {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
         ndk.set($ndk);
-        await $ndk.connect();
         signer.user().then(async (ndkUser) => {
             if (!!ndkUser.npub) {
-                ndkUser.ndk = $ndk;
                 const userAttr = { hexpubkey: ndkUser.hexpubkey() };
                 currentUser.set(userAttr);
                 window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(userAttr));
-                user = UserInterface.get(userAttr);
+                user = await UserInterface.get(userAttr);
             }
         });
     }
 
-    export function logout(e: Event) {
+    function logout(e: Event) {
         e.preventDefault();
         currentUser.set(undefined);
         window.sessionStorage.removeItem('listrCurrentUser');

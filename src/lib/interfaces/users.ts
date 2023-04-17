@@ -7,20 +7,24 @@ import { db } from '$lib/interfaces/db';
 import { unixTimeNow } from '$lib/utils/helpers';
 
 const UserInterface = {
-    get: (opts: GetUserParams): Observable<App.User> => {
+    get: async (opts: GetUserParams): Promise<Observable<App.User>> => {
         const ndk = getStore(ndkStore);
         const ndkUser = ndk.getUser(opts);
-
-        let userForDb = { ...(ndkUser.profile || {}), id: ndkUser.hexpubkey() };
-        ndkUser.fetchProfile().then(async () => {
-            userForDb = { ...userForDb, ...(ndkUser.profile || {}) };
-            await db.users.put({
-                ...userForDb,
-                lastFetched: unixTimeNow(),
-                npub: ndkUser.npub,
-                hexpubkey: ndkUser.hexpubkey()
+        let userForDb = {
+            ...(ndkUser.profile || {}),
+            id: ndkUser.hexpubkey(),
+            lastFetched: unixTimeNow(),
+            npub: ndkUser.npub,
+            hexpubkey: ndkUser.hexpubkey()
+        };
+        try {
+            ndkUser.fetchProfile().then(async () => {
+                userForDb = { ...userForDb, ...(ndkUser.profile || {}) };
+                await db.users.put({ ...userForDb });
             });
-        });
+        } catch (error) {
+            console.log(error);
+        }
 
         return liveQuery(() =>
             browser ? db.users.where({ id: ndkUser.hexpubkey() }).first() || userForDb : userForDb

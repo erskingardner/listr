@@ -19,7 +19,6 @@
         const storedUser = window.sessionStorage.getItem('listrCurrentUser');
         if (storedUser) currentUser.set(JSON.parse(storedUser));
         savestore = true;
-        await $ndk.connect();
     });
 </script>
 

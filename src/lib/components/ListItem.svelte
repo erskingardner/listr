@@ -6,25 +6,29 @@
     import LinkIcon from '$lib/elements/icons/Link.svelte';
     import { nip19 } from 'nostr-tools';
     import type { Observable } from 'dexie';
+    import { onMount } from 'svelte';
 
     export let item: string[];
-
     let itemType: string;
     let itemId: string = item[1];
-
     let encodedNoteId: string = '';
-    if (item[0] === 'e') {
-        itemType = 'Event';
-        try {
-            encodedNoteId = nip19.noteEncode(itemId);
-        } catch (error) {}
-    }
-
     let person: Observable<App.User>;
-    if (item[0] === 'p') {
-        itemType = 'Person';
-        person = UserInterface.get({ hexpubkey: itemId });
-    }
+
+    onMount(async () => {
+        if (item[0] === 'e') {
+            itemType = 'Event';
+            try {
+                encodedNoteId = nip19.noteEncode(itemId);
+            } catch (error) {
+                console.log('Error encoding note ID: ', error);
+            }
+        }
+
+        if (item[0] === 'p') {
+            itemType = 'Person';
+            person = await UserInterface.get({ hexpubkey: itemId });
+        }
+    });
 </script>
 
 <div

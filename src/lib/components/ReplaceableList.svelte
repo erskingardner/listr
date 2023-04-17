@@ -5,14 +5,21 @@
     import HashIcon from '$lib/elements/icons/Hash.svelte';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import { Tooltip } from 'flowbite-svelte';
+    import { onMount } from 'svelte';
+    import type { Observable } from 'dexie';
+    import ReplaceableListInterface from '$lib/interfaces/replaceableLists';
 
     export let userHexId: string;
+    let lists: Observable<App.List[]>;
+    onMount(async () => {
+        lists = await ReplaceableListInterface.getForUser({ hexpubkey: userHexId });
+    });
 
-    let lists = liveQuery(() => db.lists.where('authorHexPubkey').equals(userHexId).toArray());
+    // let lists = liveQuery(() => db.lists.where('authorHexPubkey').equals(userHexId).toArray());
 </script>
 
 <div class="listsWrapper flex flex-col gap-6">
-    {#if $lists}
+    {#if $lists && $lists.length > 0}
         {#each $lists as list}
             <div class="listWrapper border border-stone-100/20 rounded-lg p-4">
                 <div class="flex flex-row gap-4 mb-6 items-center">
@@ -32,5 +39,7 @@
                 </div>
             </div>
         {/each}
+    {:else}
+        <h2 class="text-xl">User doesn't have any lists</h2>
     {/if}
 </div>

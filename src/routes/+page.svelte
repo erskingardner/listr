@@ -10,7 +10,7 @@
         'npub16c0nh3dnadzqpm76uctf5hqhe2lny344zsmpm6feee9p5rdxaa9q586nvr', // Miljan
         'npub1h50pnxqw9jg7dhr906fvy4mze2yzawf895jhnc3p7qmljdugm6gsrurqev', // Vanessa
         'npub1csamkk8zu67zl9z4wkp90a462v53q775aqn5q6xzjdkxnkvcpd7srtz4x9', // Roya
-        'npub1fy4lqfduww22jh5rm4jfj4nfhncdjz2ndccw7mxh8jrv2035lugqdkag4y', // Alice
+        // 'npub1fy4lqfduww22jh5rm4jfj4nfhncdjz2ndccw7mxh8jrv2035lugqdkag4y', // Alice
         // 'npub1dergggklka99wwrs92yz8wdjs952h2ux2ha2ed598ngwu9w7a6fsh9xzpc', // Gigi
         'npub19vvkfwy9mcluhvehw7r56p4stsj5lmx4v9g3vgkwsm3arpgef8aqsrt562', // Angela
         'npub1utx00neqgqln72j22kej3ux7803c2k986henvvha4thuwfkper4s7r50e8', // UTXO

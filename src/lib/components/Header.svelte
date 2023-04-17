@@ -3,7 +3,7 @@
     import ProfileMenu from '$lib/components/ProfileMenu.svelte';
     import SearchIcon from '$lib/elements/icons/Search.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
-    import { goto } from '$app/navigation';
+    import { goto, invalidateAll } from '$app/navigation';
     import { fade } from 'svelte/transition';
 
     let searchToastVisible: boolean = false;
@@ -14,7 +14,7 @@
             'search'
         ) as HTMLInputElement;
         if (query.match(/npub\w{58}/)) {
-            goto(`/${query}`);
+            goto(`/${query}`, { invalidateAll: true });
         } else {
             if (searchInput) {
                 searchInput.value = '';
