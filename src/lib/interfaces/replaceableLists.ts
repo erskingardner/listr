@@ -39,7 +39,7 @@ const ReplaceableListInterface = {
                 });
 
                 const listItem: App.List = {
-                    id: event.id,
+                    listId: event.id,
                     kind: event.kind as number,
                     createdAt: event.created_at as number,
                     name: listName,
@@ -53,7 +53,8 @@ const ReplaceableListInterface = {
                             .where({
                                 authorHexPubkey: user.hexpubkey(),
                                 name: listName,
-                                kind: event.kind
+                                kind: event.kind,
+                                listId: event.id
                             })
                             .first()
                             .then(async (dbEvent) => {

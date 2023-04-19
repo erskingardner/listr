@@ -25,7 +25,7 @@
     updateUserAndLists();
 
     $: {
-        if (data.userHexPub !== $user?.hexpubkey) {
+        if ($user && data.userHexPub !== $user?.hexpubkey) {
             updateUserAndLists();
             console.log('update called');
         }
@@ -73,7 +73,7 @@
                     <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
                         Kind: {list.kind}
                     </Tooltip>
-                    <span class="mr-0 ml-auto">{list.id}</span>
+                    <span class="mr-0 ml-auto">{list.listId}</span>
                 </div>
                 <div class="flex flex-col gap-2">
                     {#each list.publicItems as listItem}
