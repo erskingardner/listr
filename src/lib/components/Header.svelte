@@ -3,7 +3,7 @@
     import ProfileMenu from '$lib/components/ProfileMenu.svelte';
     import SearchIcon from '$lib/elements/icons/Search.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
-    import { goto, invalidateAll } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { fade } from 'svelte/transition';
 
     let searchToastVisible: boolean = false;
@@ -15,10 +15,10 @@
         const searchInputsArr: HTMLInputElement[] = Array.from(searchInputs) as HTMLInputElement[];
         const searchInput = searchInputsArr.filter((elem) => !!elem.value)[0];
         if (query.match(/npub\w{58}/)) {
-            goto(`/${query}`, { invalidateAll: true });
             if (searchInput) {
                 searchInput.value = '';
             }
+            goto(`/${query}`, { invalidateAll: true });
         } else {
             if (searchInput) {
                 searchInput.value = '';
@@ -59,7 +59,7 @@
         </a>
         <ProfileMenu />
     </div>
-    <div class="grow flex flex-row justify-center w-full">
+    <!-- <div class="grow flex flex-row justify-center w-full">
         <form class="flex gap-2 w-full md:w-3/4" on:submit|preventDefault={searchSubmit}>
             <input
                 type="text"
@@ -72,7 +72,7 @@
                 <SearchIcon />
             </button>
         </form>
-    </div>
+    </div> -->
 </div>
 
 <!-- Desktop menu -->
@@ -84,7 +84,7 @@
         <ListBulletIcon iconClass="w-8 h-8" />
         <div class="logoText text-3xl md:text-4xl font-bold font-cursive">Listr</div>
     </a>
-    <div class="grow flex flex-row justify-center w-full">
+    <!-- <div class="grow flex flex-row justify-center w-full">
         <form class="flex gap-2 w-full md:w-3/4" on:submit|preventDefault={searchSubmit}>
             <input
                 type="text"
@@ -97,6 +97,6 @@
                 <SearchIcon />
             </button>
         </form>
-    </div>
+    </div> -->
     <ProfileMenu />
 </div>

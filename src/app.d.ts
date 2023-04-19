@@ -6,6 +6,7 @@ declare global {
 
         interface List {
             createdAt: number;
+            id: string;
             kind: number;
             name: string;
             authorHexPubkey: string;

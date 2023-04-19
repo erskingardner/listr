@@ -1,30 +1,36 @@
 <script lang="ts">
-    import UserInterface from '$lib/interfaces/users';
     import { Avatar } from 'flowbite-svelte';
-    import { onMount } from 'svelte';
-    import type { Observable } from 'dexie';
     import ndk from '$lib/stores/ndk';
 
     export let npub: string;
-    let person: Observable<App.User>;
 
-    onMount(async () => {
-        person = await UserInterface.get({ npub: npub });
-    });
+    const person = $ndk.getUser({ npub: npub });
 </script>
 
-{#if $person}
+{#await person.fetchProfile()}
+    <div
+        class="border border-stone-800/20 dark:border-stone-100/20
+        p-2 rounded-md items-center no-underline
+        animate-pulse"
+    >
+        <div class="text-center">Loading...</div>
+    </div>
+{:then value}
     <a
         href={`/${npub}`}
         class="border border-stone-800/20 dark:border-stone-100/20 p-2 rounded-md
-        flex flex-row gap-4 items-center no-underline"
+flex flex-row gap-4 items-center no-underline"
     >
         <div class="hidden md:block">
-            <Avatar src={$person.image} size="lg" class="!m-0" />
+            <Avatar src={person.profile?.image} size="lg" class="!m-0" />
         </div>
         <div class="block md:hidden">
-            <Avatar src={$person.image} size="md" class="!m-0" />
+            <Avatar src={person.profile?.image} size="md" class="!m-0" />
         </div>
-        <span class="text-lg md:text-2xl no-underline">{$person.displayName || $person.name}</span>
+        <span class="text-lg md:text-2xl no-underline"
+            >{person.profile?.displayName || person.profile?.name}</span
+        >
     </a>
-{/if}
+{:catch error}
+    Broken 🙈
+{/await}

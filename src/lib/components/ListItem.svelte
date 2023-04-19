@@ -26,7 +26,7 @@
 
         if (item[0] === 'p') {
             itemType = 'Person';
-            person = await UserInterface.get({ hexpubkey: itemId });
+            person = UserInterface.get({ hexpubkey: itemId });
         }
     });
 </script>

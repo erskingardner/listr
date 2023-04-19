@@ -34,7 +34,8 @@
     },
     "type": "module",
     "dependencies": {
-        "@nostr-dev-kit/ndk": "^0.0.37",
+        "@noble/secp256k1": "^1.7.1",
+        "@nostr-dev-kit/ndk": "^0.1.6",
         "@popperjs/core": "^2.11.7",
         "@scure/base": "^1.1.1",
         "@sveltejs/adapter-vercel": "^2.4.1",

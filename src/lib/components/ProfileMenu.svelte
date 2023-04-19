@@ -16,10 +16,11 @@
         ndk.set($ndk);
         signer.user().then(async (ndkUser) => {
             if (!!ndkUser.npub) {
+                console.log('login with npub');
                 const userAttr = { hexpubkey: ndkUser.hexpubkey() };
                 currentUser.set(userAttr);
                 window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(userAttr));
-                user = await UserInterface.get(userAttr);
+                user = UserInterface.get(userAttr);
             }
         });
     }

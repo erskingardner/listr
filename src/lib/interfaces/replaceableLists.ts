@@ -8,7 +8,7 @@ import { db } from '$lib/interfaces/db';
 import { unixTimeNow } from '$lib/utils/helpers';
 
 const ReplaceableListInterface = {
-    getForUser: async (opts: GetUserParams): Promise<Observable<App.List[]>> => {
+    getForUser: (opts: GetUserParams): Observable<App.List[]> => {
         const ndk = getStore(ndkStore);
         const user = ndk.getUser(opts);
         const filter: NDKFilter = {
@@ -39,6 +39,7 @@ const ReplaceableListInterface = {
                 });
 
                 const listItem: App.List = {
+                    id: event.id,
                     kind: event.kind as number,
                     createdAt: event.created_at as number,
                     name: listName,
@@ -46,22 +47,30 @@ const ReplaceableListInterface = {
                     publicItems: listValues,
                     lastFetched: unixTimeNow()
                 };
-
-                db.lists
-                    .where({
-                        authorHexPubkey: user.hexpubkey(),
-                        name: listName,
-                        kind: event.kind
-                    })
-                    .first()
-                    .then(async (dbEvent) => {
-                        if (!dbEvent || (dbEvent && listItem.createdAt > dbEvent.createdAt)) {
-                            db.lists.put(listItem);
-                            replaceableLists.push(listItem);
-                        } else {
-                            // Do nothing because we already have the latest
-                        }
-                    });
+                try {
+                    if (browser) {
+                        db.lists
+                            .where({
+                                authorHexPubkey: user.hexpubkey(),
+                                name: listName,
+                                kind: event.kind
+                            })
+                            .first()
+                            .then(async (dbEvent) => {
+                                if (
+                                    !dbEvent ||
+                                    (dbEvent && listItem.createdAt > dbEvent.createdAt)
+                                ) {
+                                    db.lists.put(listItem);
+                                    replaceableLists.push(listItem);
+                                } else {
+                                    // Do nothing because we already have the latest
+                                }
+                            });
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
             });
         });
 

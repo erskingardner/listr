@@ -9,6 +9,7 @@ export const load = (async ({ params }) => {
     const hexpub = user.hexpubkey();
 
     return {
-        userHexPub: hexpub
+        userHexPub: hexpub,
+        npub: npub
     };
 }) satisfies PageLoad;
