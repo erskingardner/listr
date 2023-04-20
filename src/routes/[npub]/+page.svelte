@@ -73,7 +73,7 @@
                     <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
                         Kind: {list.kind}
                     </Tooltip>
-                    <span class="mr-0 ml-auto">{list.listId}</span>
+                    <span class="mr-0 ml-auto hidden md:block">{list.listId}</span>
                 </div>
                 <div class="flex flex-col gap-2">
                     {#each list.publicItems as listItem}
