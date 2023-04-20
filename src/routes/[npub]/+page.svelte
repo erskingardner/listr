@@ -9,6 +9,7 @@
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import ReplaceableListInterface from '$lib/interfaces/replaceableLists';
     import UserInterface from '$lib/interfaces/users';
+    import SharePopover from '$lib/components/SharePopover.svelte';
 
     export let data: PageData;
     const defaultBannerImage =
@@ -73,7 +74,7 @@
                     <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
                         Kind: {list.kind}
                     </Tooltip>
-                    <span class="mr-0 ml-auto hidden md:block">{list.listId}</span>
+                    <SharePopover {list} klass="mr-0 ml-auto" />
                 </div>
                 <div class="flex flex-col gap-2">
                     {#each list.publicItems as listItem}

@@ -56,7 +56,7 @@
             "
         >
             <div class="panel-contents flex flex-col gap-2">
-                <PopoverButton as="a" href={`/${$currentUser.npub}`} class="profilePanelLink">
+                <PopoverButton as="a" href={`/${$currentUser.npub}`} class="popoverPanelLink">
                     My profile
                 </PopoverButton>
                 <PopoverButton on:click={logout} class="primaryButton w-full text-left">
