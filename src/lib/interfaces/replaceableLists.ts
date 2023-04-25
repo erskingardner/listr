@@ -70,38 +70,44 @@ const ReplaceableListInterface = {
         };
         const replaceableLists: App.List[] = [];
 
-        ndk.fetchEvents(filter).then(async (eventSet) => {
-            eventSet.forEach(async (event) => {
-                const listName = listNameForEvent(event);
-                if (listName.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
-                const listItem: App.List = buildListFromEvent(event);
-                const keysToDelete: string[] = [];
-                const listCollection = db.lists.where({
-                    authorHexPubkey: hexPubkey,
-                    name: listName,
-                    kind: event.kind
-                });
-                try {
-                    if ((await listCollection.toArray()).length) {
-                        listCollection.each(async (dbEvent, cursor) => {
-                            if (listItem.createdAt > dbEvent.createdAt) {
-                                keysToDelete.push(cursor.primaryKey);
-                                db.lists.put(listItem);
-                                replaceableLists.push(listItem);
-                            } else {
-                                // Do nothing because we already have the latest
-                            }
+        ndk.fetchEvents(filter)
+            .then(async (eventSet) => {
+                eventSet.forEach(async (event) => {
+                    const listName = listNameForEvent(event);
+                    if (listName.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
+                    const listItem: App.List = buildListFromEvent(event);
+                    const keysToDelete: string[] = [];
+                    db.transaction('rw', db.lists, async () => {
+                        const listCollection = db.lists.where({
+                            authorHexPubkey: hexPubkey,
+                            name: listName,
+                            kind: event.kind
                         });
-                        db.lists.bulkDelete(keysToDelete);
-                    } else {
-                        db.lists.put(listItem);
-                        replaceableLists.push(listItem);
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
+                        try {
+                            if ((await listCollection.toArray()).length) {
+                                listCollection.each(async (dbEvent, cursor) => {
+                                    if (listItem.createdAt > dbEvent.createdAt) {
+                                        keysToDelete.push(cursor.primaryKey);
+                                        await db.lists.put(listItem);
+                                        replaceableLists.push(listItem);
+                                    } else {
+                                        // Do nothing because we already have the latest
+                                    }
+                                });
+                                await db.lists.bulkDelete(keysToDelete);
+                            } else {
+                                await db.lists.put(listItem);
+                                replaceableLists.push(listItem);
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    });
+                });
+            })
+            .catch((e) => {
+                console.error(e);
             });
-        });
 
         return liveQuery(() =>
             browser
@@ -128,10 +134,14 @@ const ReplaceableListInterface = {
         let listItem: App.List | undefined = undefined;
 
         if (filter) {
-            ndk.fetchEvent(filter).then((fetchedEvent) => {
-                event = fetchedEvent;
-                listItem = buildListFromEvent(event);
-            });
+            ndk.fetchEvent(filter)
+                .then((fetchedEvent) => {
+                    event = fetchedEvent;
+                    listItem = buildListFromEvent(event);
+                })
+                .catch((e) => {
+                    console.error(e);
+                });
         }
 
         return liveQuery(() =>

@@ -5,7 +5,6 @@
     import ndk from '$lib/stores/ndk';
     import type { NDKEvent } from '@nostr-dev-kit/ndk';
     import { nip19 } from 'nostr-tools';
-    import { onMount } from 'svelte';
 
     export let list: App.List | undefined = undefined;
     export let event: NDKEvent | undefined = undefined;
@@ -80,7 +79,7 @@
     >
         <div class="panel-contents flex flex-col gap-2">
             <PopoverButton on:click={copyNaddr} class="popoverPanelLink text-left">
-                Copy {naddrName || 'naddr'}
+                Copy {naddrName}
             </PopoverButton>
             <PopoverButton on:click={copyId} class="popoverPanelLink text-left"
                 >Copy ID</PopoverButton

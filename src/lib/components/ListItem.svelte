@@ -1,13 +1,14 @@
 <script lang="ts">
     import { Avatar, Tooltip } from 'flowbite-svelte';
-    import Note from '$lib/components/Note.svelte';
     import UserInterface from '$lib/interfaces/users';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import { nip19 } from 'nostr-tools';
     import type { Observable } from 'dexie';
-    import { onMount } from 'svelte';
     import LinkOutIcon from '$lib/elements/icons/LinkOut.svelte';
     import SharePopover from './SharePopover.svelte';
+    import ndk from '$lib/stores/ndk';
+    import type { NDKEvent } from '@nostr-dev-kit/ndk';
+    import { onMount } from 'svelte';
 
     export let item: string[];
     export let saved: boolean;
@@ -16,22 +17,29 @@
     let itemId: string = item[1];
     let encodedNoteId: string = '';
     let person: Observable<App.User>;
+    let note: NDKEvent;
 
-    onMount(async () => {
-        if (item[0] === 'e') {
-            itemType = 'Event';
-            try {
-                encodedNoteId = nip19.noteEncode(itemId);
-            } catch (error) {
-                console.log('Error encoding note ID: ', error);
-            }
+    if (item[0] === 'e') {
+        itemType = 'Event';
+        try {
+            encodedNoteId = nip19.noteEncode(itemId);
+        } catch (error) {
+            console.log('Error encoding note ID: ', error);
         }
+        $ndk.fetchEvent({ ids: [itemId] })
+            .then(async (event) => {
+                note = event;
+                console.log(event);
+            })
+            .catch((e) => {
+                console.error(e);
+            });
+    }
 
-        if (item[0] === 'p') {
-            itemType = 'Person';
-            person = UserInterface.get({ hexpubkey: itemId });
-        }
-    });
+    if (item[0] === 'p') {
+        itemType = 'Person';
+        person = UserInterface.get({ hexpubkey: itemId });
+    }
 </script>
 
 <div
@@ -65,7 +73,9 @@
             </div>
         {/if}
     {:else}
-        <Note noteId={itemId} klass="w-4/5" />
+        <div class="w-4/5 break-words">
+            {note?.content || itemId}
+        </div>
         <div class="flex flex-col md:flex-row gap-4 items-center">
             <InfoIcon />
             <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
