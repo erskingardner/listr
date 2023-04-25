@@ -136,6 +136,16 @@
     $: console.log('PUBLIC ITEMS', publicListItems);
 </script>
 
+<svelte:head>
+    <title>Listr: "{$list?.name}" from {$user?.displayName || $user?.name}</title>
+    <meta
+        name="description"
+        content={`Listr list page showing the ${$list?.name} list from ${
+            $user?.displayName || $user?.name
+        }`}
+    />
+</svelte:head>
+
 <div class="listsWrapper flex flex-col gap-6">
     {#if $list}
         <div class="listWrapper border border-stone-100/20 rounded-lg p-4">

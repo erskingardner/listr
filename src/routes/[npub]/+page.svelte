@@ -36,6 +36,14 @@
     }
 </script>
 
+<svelte:head>
+    <title>Listr: {$user?.displayName || $user?.name}</title>
+    <meta
+        name="description"
+        content={`Listr user page showing all lists for ${$user?.displayName || $user?.name}`}
+    />
+</svelte:head>
+
 <!-- Profile Header -->
 <div class="profileWrapper relative w-full mb-14">
     {#if $user}

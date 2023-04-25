@@ -24,6 +24,15 @@
     const shuffled = npubs.sort(() => 0.5 - Math.random());
 </script>
 
+<svelte:head>
+    <title>Listr</title>
+    <meta
+        name="description"
+        content="A Nostr based app to help you view and manage your own
+        Nostr lists and find great content in other people's lists."
+    />
+</svelte:head>
+
 <div class="prose-stone prose-lg dark:prose-invert mx-auto mb-10">
     <p class="">
         Listr is a simple tool that allows you to browse your own lists and the lists of other
