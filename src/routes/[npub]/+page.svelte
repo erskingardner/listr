@@ -10,6 +10,9 @@
     import ReplaceableListInterface from '$lib/interfaces/replaceableLists';
     import UserInterface from '$lib/interfaces/users';
     import SharePopover from '$lib/components/SharePopover.svelte';
+    import { pointerForList } from '$lib/utils/helpers';
+    import { db } from '$lib/interfaces/db';
+    import { browser } from '$app/environment';
 
     export let data: PageData;
     const defaultBannerImage =
@@ -68,7 +71,9 @@
                 <div class="flex flex-row gap-4 mb-6 items-center">
                     <h2 class="flex flex-row gap-1 items-center text-2xl font-semibold">
                         <HashIcon />
-                        {list.name}
+                        <a href="/a/{pointerForList(list)}">
+                            {list.name}
+                        </a>
                     </h2>
                     <InfoIcon />
                     <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
@@ -78,12 +83,12 @@
                 </div>
                 <div class="flex flex-col gap-2">
                     {#each list.publicItems as listItem}
-                        <ListItem item={listItem} />
+                        <ListItem item={listItem} saved={true} />
                     {/each}
                 </div>
             </div>
         {/each}
     {:else}
-        <h2 class="text-xl">User doesn't have any lists</h2>
+        <h2 class="text-xl">Loading lists...</h2>
     {/if}
 </div>
