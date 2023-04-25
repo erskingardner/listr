@@ -3,7 +3,9 @@ import { get } from 'svelte/store';
 
 export async function load() {
     const ndk = get(ndkStore);
-    await ndk.connect();
+    ndk.connect().catch((e) => {
+        console.error(e);
+    });
 
     return {};
 }

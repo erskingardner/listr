@@ -7,8 +7,10 @@ declare global {
         interface List {
             createdAt: number;
             listId: string;
+            pointer: string;
             kind: number;
             name: string;
+            content: string;
             authorHexPubkey: string;
             publicItems: NDKTag[];
             // privateItems?: string[];

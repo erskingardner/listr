@@ -4,14 +4,27 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   LAUNCH POINT 🚀
--   Create interface to create new lists and publish them
--   Create interface to edit you lists and publish them
+-   Remove items from a list
+-   Create completely new lists
 
 ### 👨🏼‍💻 In Progress
 
+-   Figure out why the new list is being loaded with two of the same last item instead of showing the new item.
+
 ### ✅ Done
 
+-   Make sure to add the events immediately to the list when added
+    -   Move list event submission to naddr page (pushed up through dispatch)
+    -   addition of valid item should create row on list (shown as unpublished)
+    -   create a button at top of list to trigger submission/publish
+    -   submission should create new event, sign it, broadcast
+    -   on successful broadcast, add new object to localDB, refetch list on the page to update.
+-   Handle duplicate list types
+-   Rejig how we fetch and store lists to handle nip19 pointers better
+-   Add new items to a list
+    -   Disable submit button if errors
+    -   Validate type of list you're adding to and types of ids that are valid
+    -   Handle submit (creation of new list event, signature, broadcast)
 -   Double check basic mobile compat
 -   Rotating list of people for homepage
 -   Light mode design improvements
@@ -35,3 +48,6 @@ A simple app for managing and discovering Nostr lists.
 ### ⌛ Later
 
 -   Allow updating your own profile
+-   Validate event signatures
+-   Delete entire lists (we can't do this... do we have a way hiding lists you don't want to see?)
+-   Handling renaming of lists?! Is this even possible?

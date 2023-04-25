@@ -6,9 +6,9 @@ export class Database extends Dexie {
 
     constructor() {
         super('Listr');
-        this.version(6).stores({
+        this.version(7).stores({
             users: '++id, name, displayName, image, banner, bio, nip05, lud16, about, zapService, lastFetched',
-            lists: '++id, listId, name, kind, createdAt, authorHexPubkey, publicItems*, privateItems*, npub, hexpubkey, lastFetched, [authorHexPubkey+name+kind], [authorHexPubkey+name+kind+listId]'
+            lists: '++id, listId, pointer, name, kind, content, createdAt, authorHexPubkey, publicItems*, privateItems*, npub, hexpubkey, lastFetched, [authorHexPubkey+name+kind], [authorHexPubkey+name+kind+listId]'
         });
     }
 }
