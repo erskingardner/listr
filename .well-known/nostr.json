@@ -1,0 +1,18 @@
+{
+    "names": {
+        "listr": "fc16355b6d5dec84f053c9f35c4d53b8f55d18f25aa901365e5d5c3d1b3b5f38"
+    },
+    "relays": {
+        "fc16355b6d5dec84f053c9f35c4d53b8f55d18f25aa901365e5d5c3d1b3b5f38": [
+            "wss://nostr.fmt.wiz.biz",
+            "wss://relay.damus.io",
+            "wss://relay.nostr.info",
+            "wss://nostr.bitcoiner.social",
+            "wss://brb.io",
+            "wss://relay.snort.social",
+            "nostr-relay.wlvs.space",
+            "relayer.fiatjaf.com",
+            "wss://nostr-pub.wellorder.net"
+        ]
+    }
+}
