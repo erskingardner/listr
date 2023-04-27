@@ -86,7 +86,10 @@ const ReplaceableListInterface = {
                         try {
                             if ((await listCollection.toArray()).length) {
                                 listCollection.each(async (dbEvent, cursor) => {
-                                    if (listItem.createdAt > dbEvent.createdAt) {
+                                    if (
+                                        (listItem.createdAt as number) >
+                                        (dbEvent.createdAt as number)
+                                    ) {
                                         keysToDelete.push(cursor.primaryKey);
                                         await db.lists.put(listItem);
                                         replaceableLists.push(listItem);

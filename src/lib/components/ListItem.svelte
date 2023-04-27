@@ -29,7 +29,6 @@
         $ndk.fetchEvent({ ids: [itemId] })
             .then(async (event) => {
                 note = event;
-                console.log(event);
             })
             .catch((e) => {
                 console.error(e);
@@ -64,7 +63,7 @@
                 </Tooltip>
                 <SharePopover type={itemType} id={itemId} />
                 <a
-                    href="https://nostr.band/{nip19.npubEncode(itemId)}"
+                    href="https://primal.net/profile/{nip19.npubEncode(itemId)}"
                     class="hover:text-stone-700 hover:dark:text-stone-400"
                     target="_blank"
                 >
@@ -73,18 +72,14 @@
             </div>
         {/if}
     {:else}
-        <div class="w-4/5 break-words">
+        <div class="w-4/5 break-words text-sm md:text-base">
             {note?.content || itemId}
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center">
-            <InfoIcon />
-            <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
-                Note ID: {itemId}
-            </Tooltip>
             <SharePopover type={itemType} id={itemId} />
             {#if encodedNoteId}
                 <a
-                    href="https://nostr.band/{nip19.noteEncode(itemId)}"
+                    href="https://primal.net/thread/{nip19.noteEncode(itemId)}"
                     class="hover:text-stone-700 hover:dark:text-stone-400"
                     target="_blank"
                 >

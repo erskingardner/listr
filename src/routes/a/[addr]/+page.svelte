@@ -97,7 +97,7 @@
     function publishListEvent() {
         if ($list && unsavedListItems.length) {
             // Combine tags from old list and new unsaved changes
-            let tagsForList: NDKTag[] = [...unsavedListItems, ...$list.publicItems];
+            let tagsForList: NDKTag[] = [...unsavedListItems, ...($list.publicItems as NDKTag[])];
             // Only add a "d" tag if needed
             if ($list.kind === 30000 || $list.kind === 30001) {
                 tagsForList.push(['d', $list?.name as string]);
@@ -133,7 +133,6 @@
     }
 
     $: publicListItems = $list?.publicItems || [];
-    $: console.log('PUBLIC ITEMS', publicListItems);
 </script>
 
 <svelte:head>
@@ -148,10 +147,10 @@
 
 <div class="listsWrapper flex flex-col gap-6">
     {#if $list}
-        <div class="listWrapper border border-stone-100/20 rounded-lg p-4">
-            <div class="flex flex-row gap-4 mb-6 items-center justify-between">
-                <div class="flex flex-row gap-4 items-center">
-                    <h2 class="flex flex-row gap-1 items-center text-2xl font-semibold">
+        <div class="listWrapper">
+            <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center justify-between">
+                <div class="flex flex-row gap-2 md:gap-4 items-center">
+                    <h2 class="flex flex-row gap-1 items-center text-lg md:text-2xl font-semibold">
                         <HashIcon />
                         {$list.name}
                     </h2>

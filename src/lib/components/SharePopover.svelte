@@ -79,10 +79,10 @@
     >
         <div class="panel-contents flex flex-col gap-2">
             <PopoverButton on:click={copyNaddr} class="popoverPanelLink text-left">
-                Copy {naddrName}
+                Copy identifier
             </PopoverButton>
             <PopoverButton on:click={copyId} class="popoverPanelLink text-left"
-                >Copy ID</PopoverButton
+                >Copy event ID</PopoverButton
             >
         </div>
     </PopoverPanel>

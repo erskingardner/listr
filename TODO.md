@@ -5,7 +5,7 @@ A simple app for managing and discovering Nostr lists.
 ### 📥 Todo
 
 -   Remove items from a list
--   Create completely new lists
+-   Feed of all list events??
 
 ### 👨🏼‍💻 In Progress
 
@@ -13,6 +13,8 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   Create completely new lists
+-   Mobile UX for adding items
 -   Make sure to add the events immediately to the list when added
     -   Move list event submission to naddr page (pushed up through dispatch)
     -   addition of valid item should create row on list (shown as unpublished)
@@ -49,5 +51,5 @@ A simple app for managing and discovering Nostr lists.
 
 -   Allow updating your own profile
 -   Validate event signatures
--   Delete entire lists (we can't do this... do we have a way hiding lists you don't want to see?)
+-   Delete entire lists (https://github.com/nostr-protocol/nips/blob/master/09.md)
 -   Handling renaming of lists?! Is this even possible?

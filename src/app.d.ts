@@ -2,19 +2,17 @@ import type { NDKUserProfile } from '@nostr-dev-kit/ndk';
 
 declare global {
     namespace App {
-        // interface Settings {}
-
         interface List {
-            createdAt: number;
-            listId: string;
-            pointer: string;
+            createdAt?: number;
+            listId?: string;
+            pointer?: string;
             kind: number;
             name: string;
             content: string;
             authorHexPubkey: string;
             publicItems: NDKTag[];
             // privateItems?: string[];
-            lastFetched: number;
+            lastFetched?: number;
         }
 
         interface User extends NDKUserProfile {
@@ -22,10 +20,12 @@ declare global {
             npub?: string;
             hexpubkey?: string;
         }
-
-        // interface Errors {}
+        interface PageData {
+            flash?: { type: 'success' | 'error'; message: string };
+        }
         // interface Locals {}
-        // interface PageData {}
+        // interface Settings {}
+        // interface Errors {}
         // interface Platform {}
     }
 }

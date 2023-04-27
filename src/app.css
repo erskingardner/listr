@@ -13,5 +13,13 @@ a {
 }
 
 .popoverPanelLink {
-    @apply no-underline px-2 py-1 block font-medium bg-stone-300 hover:bg-stone-200 dark:bg-stone-800 hover:dark:bg-stone-700 rounded-md text-stone-950 dark:text-stone-100;
+    @apply flex flex-row gap-2 items-center no-underline px-2 py-1 font-medium bg-stone-300 hover:bg-stone-200 dark:bg-stone-800 hover:dark:bg-stone-700 rounded-md text-stone-950 dark:text-stone-100;
+}
+
+.listWrapper {
+    @apply border border-stone-800/20 dark:border-stone-100/20 rounded-lg p-4;
+}
+
+.flashMessage {
+    @apply flex flex-row gap-2 absolute top-6 left-1/2 -translate-x-1/2 max-w-xs px-2 py-1 border border-stone-800/20 dark:border-stone-100/20 rounded-md shadow-md;
 }

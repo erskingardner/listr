@@ -35,7 +35,7 @@
     "type": "module",
     "dependencies": {
         "@noble/secp256k1": "^1.7.1",
-        "@nostr-dev-kit/ndk": "^0.1.6",
+        "@nostr-dev-kit/ndk": "^0.2.2",
         "@popperjs/core": "^2.11.7",
         "@scure/base": "^1.1.1",
         "@sveltejs/adapter-vercel": "^2.4.1",
@@ -47,6 +47,7 @@
         "flowbite-svelte": "^0.34.9",
         "light-bolt11-decoder": "^3.0.0",
         "nostr-tools": "^1.8.0",
+        "sveltekit-flash-message": "^0.11.3",
         "websocket-polyfill": "^0.0.3"
     }
 }

@@ -72,12 +72,12 @@
 </script>
 
 <div class="flex flex-col gap-2 w-full relative">
-    <div class="flex flex-row gap-4 w-full">
+    <div class="flex flex-col md:flex-row gap-4 w-full">
         <input
             type="text"
             name="itemAddr"
             id="itemAddr"
-            class="border rounded-md bg-transparent w-1/2 grow"
+            class="border rounded-md bg-transparent w-full md:w-1/2 grow"
             placeholder="Add a public item to this list. NIP-19 identifier (npub, nprofile, note, nevent, or naddr)."
             bind:value={itemAddr}
             on:blur={validate}
@@ -85,13 +85,13 @@
         <button
             on:click={validateAndSubmit}
             disabled={!!errorMessage.length}
-            class="relative border rounded-md px-2 border-green-500
+            class="w-full md:w-auto flex flex-row justify-center items-center relative border rounded-md p-2 border-green-500
             hover:text-green-500 disabled:text-stone-600 disabled:border-stone-600"
         >
             <CheckIcon />
         </button>
         <button
-            class="p-2 w-fit mx-auto rounded-md border border-red-500 dark:border-red-800
+            class="w-full md:w-auto flex flex-row justify-center items-center p-2 mx-auto rounded-md border border-red-500 dark:border-red-800
             hover:text-red-500 dark:hover:text-red-800"
             on:click={closeForm}
         >

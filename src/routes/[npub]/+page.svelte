@@ -11,8 +11,6 @@
     import UserInterface from '$lib/interfaces/users';
     import SharePopover from '$lib/components/SharePopover.svelte';
     import { pointerForList } from '$lib/utils/helpers';
-    import { db } from '$lib/interfaces/db';
-    import { browser } from '$app/environment';
 
     export let data: PageData;
     const defaultBannerImage =
@@ -31,7 +29,6 @@
     $: {
         if ($user && data.userHexPub !== $user?.hexpubkey) {
             updateUserAndLists();
-            console.log('update called');
         }
     }
 </script>
@@ -75,9 +72,11 @@
 <div class="listsWrapper flex flex-col gap-6">
     {#if $lists && $lists.length > 0}
         {#each $lists as list}
-            <div class="listWrapper border border-stone-100/20 rounded-lg p-4">
-                <div class="flex flex-row gap-4 mb-6 items-center">
-                    <h2 class="flex flex-row gap-1 items-center text-2xl font-semibold">
+            <div class="listWrapper">
+                <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center">
+                    <h2
+                        class="flex flex-row gap-1 items-center text-lg md:text-2xl break-words font-semibold"
+                    >
                         <HashIcon />
                         <a href="/a/{pointerForList(list)}">
                             {list.name}

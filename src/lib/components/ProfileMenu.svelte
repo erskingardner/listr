@@ -7,6 +7,10 @@
     import { Avatar } from 'flowbite-svelte';
     import UserInterface from '$lib/interfaces/users';
     import type { Observable } from 'dexie';
+    import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
+    import LogoutIcon from '$lib/elements/icons/Logout.svelte';
+    import PersonIcon from '$lib/elements/icons/Person.svelte';
+    import { dateTomorrow } from '$lib/utils/helpers';
 
     let user: Observable<App.User>;
 
@@ -16,10 +20,11 @@
         ndk.set($ndk);
         signer.user().then(async (ndkUser) => {
             if (!!ndkUser.npub) {
-                console.log('login with npub');
                 const userAttr = { hexpubkey: ndkUser.hexpubkey() };
                 currentUser.set(userAttr);
                 window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(userAttr));
+                document.cookie = `userNpub=${ndkUser.npub};
+                expires=${dateTomorrow()}; SameSite=Lax; Secure`;
                 user = UserInterface.get(userAttr);
             }
         });
@@ -29,6 +34,7 @@
         e.preventDefault();
         currentUser.set(undefined);
         window.sessionStorage.removeItem('listrCurrentUser');
+        document.cookie = 'userNpub=';
         goto('/');
     }
 
@@ -56,10 +62,19 @@
             "
         >
             <div class="panel-contents flex flex-col gap-2">
+                <PopoverButton as="a" href={`/new`} class="popoverPanelLink">
+                    <CirclePlusIcon />
+                    New list
+                </PopoverButton>
                 <PopoverButton as="a" href={`/${$currentUser.npub}`} class="popoverPanelLink">
+                    <PersonIcon />
                     My profile
                 </PopoverButton>
-                <PopoverButton on:click={logout} class="primaryButton w-full text-left">
+                <PopoverButton
+                    on:click={logout}
+                    class="primaryButton flex flex-row gap-2 items-center w-full text-left"
+                >
+                    <LogoutIcon />
                     Log out
                 </PopoverButton>
             </div>
