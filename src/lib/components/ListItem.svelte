@@ -89,7 +89,7 @@
                         class="text-sm
                     {action === 'added' ? 'text-green-500 dark:text-green-300/50' : ''}
                     {action === 'deleted' ? 'text-orange-500 dark:text-orange-300/50' : ''}"
-                        >Unpublished {action === 'added' ? 'addition' : 'deletion'}</span
+                        >Unpublished {action === 'added' ? 'addition' : 'removal'}</span
                     >
                 {/if}
                 <InfoIcon />
