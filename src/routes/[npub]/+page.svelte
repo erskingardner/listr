@@ -53,7 +53,7 @@
     bg-gradient-to-b from-transparent to-stone-50 dark:to-stone-950"
         />
         <div class="relative profileMetadata flex flex-col gap-4 pt-10 ml-10 max-w-lg">
-            <Avatar src={$user.image} class="w-40 h-40 border-stone-100" border />
+            <Avatar src={$user.image} class="w-40 h-40 border-stone-100 object-cover" border />
             <h1 class="text-3xl font-bold">
                 {$user.displayName || $user.name}
             </h1>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="flex flex-col gap-2">
                     {#each list.publicItems as listItem}
-                        <ListItem item={listItem} saved={true} />
+                        <ListItem item={listItem} saved={true} {list} />
                     {/each}
                 </div>
             </div>

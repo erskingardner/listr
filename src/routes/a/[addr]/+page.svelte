@@ -34,7 +34,9 @@
 
     let addItemFormVisible = false;
     let unsavedListItems: NDKTag[] = [];
+    let toBeDeletedListItems: NDKTag[] = [];
     let publicListItems: NDKTag[] = [];
+    let displayItems: NDKTag[];
 
     async function loadUserAndList() {
         let userOpts;
@@ -89,8 +91,21 @@
                 break;
         }
         if (itemTag.length === 2) {
-            unsavedListItems.push(itemTag);
-            unsavedListItems = unsavedListItems;
+            if (event.detail.action === 'add') {
+                unsavedListItems.push(itemTag);
+                unsavedListItems = unsavedListItems;
+            } else if (event.detail.action === 'delete') {
+                toBeDeletedListItems.push(itemTag);
+                toBeDeletedListItems = toBeDeletedListItems;
+                const currentList = displayItems || publicListItems;
+                console.log('current', currentList);
+                // Convert array items to string... because, Javascript
+                const publicStrings = currentList.map((item) => JSON.stringify(item));
+                const indexOfItemToDelete = publicStrings.indexOf(JSON.stringify(itemTag));
+                currentList.splice(indexOfItemToDelete, 1);
+                displayItems = currentList;
+                console.log('display', displayItems);
+            }
         }
     }
 
@@ -160,10 +175,23 @@
                     </Tooltip>
                 </div>
                 <div class="flex flex-row gap-4 items-center">
-                    {#if unsavedListItems.length}
-                        <span class="text-orange-500 dark:text-orange-300/60">
-                            {unsavedListItems.length}
-                            {unsavedListItems.length === 1 ? 'change' : 'changes'} to be published
+                    {#if unsavedListItems.length || toBeDeletedListItems.length}
+                        <span class="flex flex-row gap-4">
+                            <div class="flex flex-col justify-center">
+                                <span class="text-green-500 dark:text-green-300/50">
+                                    {#if unsavedListItems.length}
+                                        {unsavedListItems.length}
+                                        {unsavedListItems.length === 1 ? 'item' : 'items'} to be added
+                                    {/if}
+                                </span>
+                                <span class="text-orange-500 dark:text-orange-300/50">
+                                    {#if toBeDeletedListItems.length}
+                                        {toBeDeletedListItems.length}
+                                        {toBeDeletedListItems.length === 1 ? 'item' : 'items'} to be
+                                        removed
+                                    {/if}
+                                </span>
+                            </div>
                             <button
                                 class="px-2 py-1 rounded-md bg-transparent border
                             border-orange-500 dark:border-orange-300/80
@@ -208,13 +236,36 @@
             </div>
             <div id="unsavedListItems" class="flex flex-col gap-2 mb-2">
                 {#each unsavedListItems as listItem}
-                    <ListItem item={listItem} saved={false} />
+                    <ListItem item={listItem} saved={false} list={$list} action="added" />
+                {/each}
+            </div>
+            <div id="toBeDeletedListItems" class="flex flex-col gap-2 mb-2">
+                {#each toBeDeletedListItems as listItem}
+                    <ListItem item={listItem} saved={false} list={$list} action="deleted" />
                 {/each}
             </div>
             <div class="flex flex-col gap-2">
-                {#each publicListItems as listItem}
-                    <ListItem item={listItem} saved={true} />
-                {/each}
+                {#if displayItems}
+                    {#key displayItems}
+                        {#each displayItems as listItem}
+                            <ListItem
+                                item={listItem}
+                                saved={true}
+                                list={$list}
+                                on:removeItemFromList={addUnsavedItem}
+                            />
+                        {/each}
+                    {/key}
+                {:else}
+                    {#each publicListItems as listItem}
+                        <ListItem
+                            item={listItem}
+                            saved={true}
+                            list={$list}
+                            on:removeItemFromList={addUnsavedItem}
+                        />
+                    {/each}
+                {/if}
             </div>
         </div>
     {:else}

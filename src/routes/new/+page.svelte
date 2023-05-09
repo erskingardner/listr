@@ -186,7 +186,7 @@
         </div>
         <div id="unsavedListItems" class="flex flex-col gap-2 mb-2">
             {#each unsavedListItems as listItem}
-                <ListItem item={listItem} saved={false} />
+                <ListItem item={listItem} saved={false} {list} />
             {/each}
         </div>
     {:else}

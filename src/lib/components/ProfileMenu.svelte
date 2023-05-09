@@ -49,7 +49,7 @@
 {#if $currentUser}
     <Popover style="position: relative;" class="h-10 w-10">
         <PopoverButton class="h-10 w-10">
-            <Avatar src={$currentUser.image} />
+            <Avatar src={$currentUser.image} class="object-cover" />
         </PopoverButton>
 
         <PopoverPanel
