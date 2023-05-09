@@ -22,10 +22,10 @@
 flex flex-row gap-4 items-center no-underline"
     >
         <div class="hidden md:block">
-            <Avatar src={person.profile?.image} size="lg" class="!m-0" />
+            <Avatar src={person.profile?.image} size="lg" class="!m-0 object-cover" />
         </div>
         <div class="block md:hidden">
-            <Avatar src={person.profile?.image} size="md" class="!m-0" />
+            <Avatar src={person.profile?.image} size="md" class="!m-0 object-cover" />
         </div>
         <span class="text-lg md:text-2xl no-underline"
             >{person.profile?.displayName || person.profile?.name}</span
