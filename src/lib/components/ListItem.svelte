@@ -80,7 +80,7 @@
     {#if itemType === 'Person'}
         {#if $person}
             <div class="flex flex-row gap-4 items-center">
-                <Avatar src={$person.image} />
+                <Avatar src={$person.image} class="object-cover" />
                 <span class="">{$person.displayName || $person.name}</span>
             </div>
             <div class="flex flex-col md:flex-row gap-4 items-center">
