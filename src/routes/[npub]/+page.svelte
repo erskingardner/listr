@@ -90,7 +90,7 @@
                 </div>
                 <div class="flex flex-col gap-2">
                     {#each list.publicItems as listItem}
-                        <ListItem item={listItem} saved={true} />
+                        <ListItem item={listItem} saved={true} {list} />
                     {/each}
                 </div>
             </div>

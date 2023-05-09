@@ -63,7 +63,7 @@
     function validateAndSubmit() {
         validate();
         if (errorMessage === '') {
-            dispatch('addItemToList', { addr: itemAddr });
+            dispatch('addItemToList', { addr: itemAddr, action: 'add' });
             tagsForEvent = [];
             itemAddr = '';
             errorMessage = '';
