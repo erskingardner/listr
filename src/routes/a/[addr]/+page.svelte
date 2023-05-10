@@ -33,7 +33,7 @@
     }
 
     let addItemFormVisible = false;
-    let unsavedListItems: NDKTag[] = [];
+    let toBeAddedListItems: NDKTag[] = [];
     let toBeDeletedListItems: NDKTag[] = [];
     let publicListItems: NDKTag[] = [];
     let displayItems: NDKTag[];
@@ -92,27 +92,26 @@
         }
         if (itemTag.length === 2) {
             if (event.detail.action === 'add') {
-                unsavedListItems.push(itemTag);
-                unsavedListItems = unsavedListItems;
+                toBeAddedListItems.push(itemTag);
+                toBeAddedListItems = toBeAddedListItems;
             } else if (event.detail.action === 'delete') {
                 toBeDeletedListItems.push(itemTag);
                 toBeDeletedListItems = toBeDeletedListItems;
                 const currentList = displayItems || publicListItems;
-                console.log('current', currentList);
                 // Convert array items to string... because, Javascript
                 const publicStrings = currentList.map((item) => JSON.stringify(item));
                 const indexOfItemToDelete = publicStrings.indexOf(JSON.stringify(itemTag));
                 currentList.splice(indexOfItemToDelete, 1);
                 displayItems = currentList;
-                console.log('display', displayItems);
             }
         }
     }
 
     function publishListEvent() {
-        if ($list && unsavedListItems.length) {
+        if ($list && (toBeAddedListItems.length || toBeDeletedListItems.length)) {
             // Combine tags from old list and new unsaved changes
-            let tagsForList: NDKTag[] = [...unsavedListItems, ...($list.publicItems as NDKTag[])];
+            const currentList = displayItems || publicListItems;
+            let tagsForList: NDKTag[] = [...toBeAddedListItems, ...(currentList as NDKTag[])];
             // Only add a "d" tag if needed
             if ($list.kind === 30000 || $list.kind === 30001) {
                 tagsForList.push(['d', $list?.name as string]);
@@ -130,7 +129,9 @@
             // Sign and publish new list event
             try {
                 listToPublish.publish().then(() => {
-                    unsavedListItems = [];
+                    toBeAddedListItems = [];
+                    toBeDeletedListItems = [];
+                    displayItems = tagsForList.filter((tag) => tag[0] !== 'd');
                     ReplaceableListInterface.delete({ listId: $list?.listId as string });
                     ReplaceableListInterface.create({ event: listToPublish }).then(() => {
                         loadUserAndList();
@@ -175,13 +176,13 @@
                     </Tooltip>
                 </div>
                 <div class="flex flex-row gap-4 items-center">
-                    {#if unsavedListItems.length || toBeDeletedListItems.length}
+                    {#if toBeAddedListItems.length || toBeDeletedListItems.length}
                         <span class="flex flex-row gap-4">
                             <div class="flex flex-col justify-center">
                                 <span class="text-green-500 dark:text-green-300/50">
-                                    {#if unsavedListItems.length}
-                                        {unsavedListItems.length}
-                                        {unsavedListItems.length === 1 ? 'item' : 'items'} to be added
+                                    {#if toBeAddedListItems.length}
+                                        {toBeAddedListItems.length}
+                                        {toBeAddedListItems.length === 1 ? 'item' : 'items'} to be added
                                     {/if}
                                 </span>
                                 <span class="text-orange-500 dark:text-orange-300/50">
@@ -234,8 +235,8 @@
                     </div>
                 {/if}
             </div>
-            <div id="unsavedListItems" class="flex flex-col gap-2 mb-2">
-                {#each unsavedListItems as listItem}
+            <div id="toBeAddedListItems" class="flex flex-col gap-2 mb-2">
+                {#each toBeAddedListItems as listItem}
                     <ListItem item={listItem} saved={false} list={$list} action="added" />
                 {/each}
             </div>
