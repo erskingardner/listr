@@ -4,15 +4,20 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   Remove items from a list
--   Feed of all list events??
+-   Social interactions on lists
+    -   likes
+    -   zaps
+    -   comments
+-   private list items
 
 ### 👨🏼‍💻 In Progress
 
--   Figure out why the new list is being loaded with two of the same last item instead of showing the new item.
-
 ### ✅ Done
 
+-   Add donation button
+-   Remove items from a list
+-   Fix avatar image aspect ratio
+-   Figure out why the new list is being loaded with two of the same last item instead of showing the new item.
 -   Create completely new lists
 -   Mobile UX for adding items
 -   Make sure to add the events immediately to the list when added

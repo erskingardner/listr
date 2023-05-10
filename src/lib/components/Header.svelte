@@ -5,6 +5,7 @@
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
     import { goto } from '$app/navigation';
     import { fade } from 'svelte/transition';
+    import DonateButton from '$lib/components/DonateButton.svelte';
 
     let searchToastVisible: boolean = false;
 
@@ -98,5 +99,8 @@
             </button>
         </form>
     </div> -->
-    <ProfileMenu />
+    <div class="flex flex-row gap-4 items-center">
+        <DonateButton />
+        <ProfileMenu />
+    </div>
 </div>
