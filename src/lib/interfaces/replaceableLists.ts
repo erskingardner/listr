@@ -121,7 +121,7 @@ const ReplaceableListInterface = {
     getCachedList: (opts: GetListOpts): Observable<App.List | undefined> => {
         return liveQuery(() => db.lists.where(opts).first());
     },
-    get: (opts: GetListOpts): Observable<App.List> => {
+    get: (opts: GetListOpts): Observable<App.List | undefined> => {
         const ndk = getStore(ndkStore);
         let filter: NDKFilter;
         let event: NDKEvent | undefined = undefined;
@@ -141,6 +141,9 @@ const ReplaceableListInterface = {
                 .then((fetchedEvent) => {
                     event = fetchedEvent;
                     listItem = buildListFromEvent(event);
+                    db.lists.put(listItem).catch((e) => {
+                        console.error(e);
+                    });
                 })
                 .catch((e) => {
                     console.error(e);

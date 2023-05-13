@@ -11,12 +11,13 @@
         'npub19vvkfwy9mcluhvehw7r56p4stsj5lmx4v9g3vgkwsm3arpgef8aqsrt562', // Angela
         'npub1utx00neqgqln72j22kej3ux7803c2k986henvvha4thuwfkper4s7r50e8', // UTXO
         'npub1xtscya34g58tk0z605fvr788k263gsu6cy9x0mhnm87echrgufzsevkk5s', // JB55
-        'npub158mxap4gsexqeutj5sws2pfkngyq3lh726gex8wa7flt28tzhytq4jy85z', // Amanda
-        'npub1rpes5hhk6mxun5ddt5kecxfm8y3xdr0h5jwal32mc6mxafr48hxsaj2et2', // Mads
+        // 'npub158mxap4gsexqeutj5sws2pfkngyq3lh726gex8wa7flt28tzhytq4jy85z', // Amanda
+        // 'npub1rpes5hhk6mxun5ddt5kecxfm8y3xdr0h5jwal32mc6mxafr48hxsaj2et2', // Mads
         'npub1jt0x3vsnqtazzda3ewa8ykdch2t8k566qhrd9vyy0k0ntleu744q8h6q3n', // SusieBdds
         'npub1hu3hdctm5nkzd8gslnyedfr5ddz3z547jqcl5j88g4fame2jd08qh6h8nh', // Carla
         // 'npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m', // Jack
-        'npub1dergggklka99wwrs92yz8wdjs952h2ux2ha2ed598ngwu9w7a6fsh9xzpc' // Gigi
+        'npub1dergggklka99wwrs92yz8wdjs952h2ux2ha2ed598ngwu9w7a6fsh9xzpc', // Gigi
+        'npub1ejxswthae3nkljavznmv66p9ahp4wmj4adux525htmsrff4qym9sz2t3tv' // Sherry
         // 'npub1a7n2h5y3gt90y00mwrknhx74fyzzjqw25ehkscje58x9tfyhqd5snyvfnu' // Elidy
         // 'npub1y67n93njx27lzmg9ua37ce7csvq4awvl6ynfqffzfssvdn7mq9vqlhq62h' // Marce
     ];

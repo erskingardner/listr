@@ -49,7 +49,7 @@
             userOpts = { hexpubkey: (event as NDKEvent).pubkey };
         }
         user = UserInterface.get(userOpts);
-        list = ReplaceableListInterface.getCachedList(optsForAddrType(data.type));
+        list = ReplaceableListInterface.get(optsForAddrType(data.type));
     }
 
     function optsForAddrType(type: string): GetListOpts {
