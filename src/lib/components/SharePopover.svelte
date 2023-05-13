@@ -45,6 +45,15 @@
         }
     }
 
+    async function copyListrUrl() {
+        await fetchData().catch((e) => {
+            console.error(e);
+        });
+        const url = `https://listr.lol/a/${naddr}`;
+        console.log(url);
+        copyToClipboard(url);
+    }
+
     async function copyNaddr() {
         await fetchData().catch((e) => {
             console.error(e);
@@ -78,6 +87,9 @@
         "
     >
         <div class="panel-contents flex flex-col gap-2">
+            <PopoverButton on:click={copyListrUrl} class="popoverPanelLink text-left">
+                Copy link
+            </PopoverButton>
             <PopoverButton on:click={copyNaddr} class="popoverPanelLink text-left">
                 Copy identifier
             </PopoverButton>
