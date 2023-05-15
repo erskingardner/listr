@@ -66,7 +66,9 @@
         return opts;
     }
 
-    loadUserAndList();
+    if (browser) {
+        loadUserAndList();
+    }
 
     function addUnsavedItem(event: any) {
         const decodedEvent = nip19.decode(event.detail.addr);
@@ -204,7 +206,7 @@
                             </button>
                         </span>
                     {/if}
-                    {#if $currentUser && $currentUser?.hexpubkey === $user.hexpubkey}
+                    {#if $currentUser && $user && $currentUser?.hexpubkey === $user.hexpubkey}
                         <button class="" on:click={toggleForm}>
                             <CirclePlusIcon />
                             <Tooltip
@@ -222,7 +224,7 @@
                 </div>
             </div>
             <div class="mb-2">
-                {#if $currentUser?.hexpubkey === $list.authorHexPubkey && addItemFormVisible}
+                {#if $currentUser && $currentUser?.hexpubkey === $list.authorHexPubkey && addItemFormVisible}
                     <div
                         transition:slide={{ duration: 400, easing: circInOut }}
                         class="flex flex-row gap-4 border border-stone-800/20 dark:border-stone-100/20 rounded-md p-4 justify-center"
