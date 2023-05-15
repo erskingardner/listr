@@ -49,7 +49,12 @@
         await fetchData().catch((e) => {
             console.error(e);
         });
-        const url = `https://listr.lol/a/${naddr}`;
+        let url: string;
+        if (naddrName === 'naddr') {
+            url = `https://listr.lol/a/${naddr}`;
+        } else if (naddrName === 'note') {
+            url = `https://primal.net/thread/${naddr}`;
+        }
         console.log(url);
         copyToClipboard(url);
     }

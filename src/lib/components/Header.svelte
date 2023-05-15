@@ -80,7 +80,7 @@
 <div class="header hidden md:flex flex-row mb-10 items-center justify-between">
     <a
         href="/"
-        class="no-underline logo flex flex-row items-center hover:text-stone-700 hover:dark:text-stone-300"
+        class="no-underline border-0 logo flex flex-row items-center hover:text-stone-700 hover:dark:text-stone-300"
     >
         <ListBulletIcon iconClass="w-8 h-8" />
         <div class="logoText text-3xl md:text-4xl font-bold font-cursive">Listr</div>

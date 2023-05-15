@@ -11,6 +11,7 @@
     import UserInterface from '$lib/interfaces/users';
     import SharePopover from '$lib/components/SharePopover.svelte';
     import { pointerForList } from '$lib/utils/helpers';
+    import { browser } from '$app/environment';
 
     export let data: PageData;
     const defaultBannerImage =
@@ -24,7 +25,9 @@
         lists = ReplaceableListInterface.getForUser({ hexpubkey: data.userHexPub });
     }
 
-    updateUserAndLists();
+    if (browser) {
+        updateUserAndLists();
+    }
 
     $: {
         if ($user && data.userHexPub !== $user?.hexpubkey) {
