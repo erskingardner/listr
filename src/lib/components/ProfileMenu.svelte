@@ -70,10 +70,7 @@
                     <PersonIcon />
                     My profile
                 </PopoverButton>
-                <PopoverButton
-                    on:click={logout}
-                    class="primaryButton flex flex-row gap-2 items-center w-full text-left"
-                >
+                <PopoverButton on:click={logout} class="popoverPanelLink">
                     <LogoutIcon />
                     Log out
                 </PopoverButton>

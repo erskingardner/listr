@@ -80,8 +80,8 @@
     {#if itemType === 'Person'}
         {#if $person}
             <div class="flex flex-row gap-4 items-center">
-                <Avatar src={$person.image} class="object-cover" />
-                <span class="">{$person.displayName || $person.name}</span>
+                <Avatar src={$person.image} class="object-cover border border-white/10" />
+                <a href={`/${$person.npub}`}>{$person.displayName || $person.name}</a>
             </div>
             <div class="flex flex-col md:flex-row gap-4 items-center">
                 {#if !saved}
@@ -99,7 +99,7 @@
                 <SharePopover type={itemType} id={itemId} />
                 <a
                     href="https://primal.net/profile/{nip19.npubEncode(itemId)}"
-                    class="hover:text-stone-700 hover:dark:text-stone-400"
+                    class="hover:text-stone-700 hover:dark:text-stone-400 border-0"
                     target="_blank"
                 >
                     <LinkOutIcon />
@@ -123,7 +123,7 @@
             {#if encodedNoteId}
                 <a
                     href="https://primal.net/thread/{nip19.noteEncode(itemId)}"
-                    class="hover:text-stone-700 hover:dark:text-stone-400"
+                    class="hover:text-stone-700 hover:dark:text-stone-400 border-0"
                     target="_blank"
                 >
                     <LinkOutIcon />

@@ -20,6 +20,7 @@
     import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
     import type { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
     import { browser } from '$app/environment';
+    import { Avatar } from 'flowbite-svelte';
 
     export let data: PageData;
 
@@ -178,6 +179,16 @@
                     </Tooltip>
                 </div>
                 <div class="flex flex-row gap-4 items-center">
+                    {#if $user}
+                        <div class="flex flex-row gap-2">
+                            <span>A list curated by</span>
+                            <Avatar
+                                src={$user.image}
+                                class="object-cover w-6 h-6 border border-white/10"
+                            />
+                            <a href={`/${$user.npub}`}>{$user.displayName || $user.name}</a>
+                        </div>
+                    {/if}
                     {#if toBeAddedListItems.length || toBeDeletedListItems.length}
                         <span class="flex flex-row gap-4">
                             <div class="flex flex-col justify-center">
