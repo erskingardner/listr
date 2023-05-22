@@ -186,7 +186,7 @@
                     <div class="flex flex-row gap-4 items-center">
                         {#if $user}
                             <div class="flex flex-row gap-2">
-                                <span>Curated by</span>
+                                <span class="hidden md:flex">Curated by</span>
                                 <Avatar
                                     src={$user.image}
                                     class="object-cover w-6 h-6 border border-white/10"

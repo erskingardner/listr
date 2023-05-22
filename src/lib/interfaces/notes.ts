@@ -4,10 +4,11 @@ import { liveQuery, type Observable } from 'dexie';
 import type { NDKEvent } from '@nostr-dev-kit/ndk';
 
 const NoteInterface = {
-    getNotesForUsers: (userIds: string[]): Observable<NDKEvent[]> => {
+    getNotesForUsers: (userIds: string[], since?: number): Observable<NDKEvent[]> => {
         const ndk = getStore(ndkStore);
+        const sinceTime = since ? since : 60 * 60 * 24; // 24 hours
         const notes = ndk
-            .fetchEvents({ kinds: [1], authors: userIds })
+            .fetchEvents({ kinds: [1], authors: userIds, since: sinceTime })
             .then((events: Set<NDKEvent>) => {
                 return Array.from(events).sort(
                     (a, b) => (b.created_at as number) - (a.created_at as number)

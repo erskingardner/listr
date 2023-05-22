@@ -21,7 +21,7 @@
 <div
     class="noteListWrapper border border-stone-800/20 dark:border-stone-100/20 p-4 mb-2 rounded-md"
 >
-    <div class="flex flex-row justify-between md:gap-16">
+    <div class="flex flex-row justify-between gap-6 md:gap-16">
         <div class="flex flex-col gap-4">
             {#await user.fetchProfile()}
                 <Avatar src={undefined} class="animate-pulse" />
@@ -29,24 +29,24 @@
                 <div class="flex flex-row gap-4 items-center">
                     <Avatar src={user.profile?.image} />
                     <div class="flex flex-col gap-0">
-                        <div class="flex flex-row gap-2 item-center">
+                        <div class="flex flex-col md:flex-row gap-2 item-center">
                             <h2 class="text-lg font-semibold">
                                 {user.profile?.displayName ||
                                     user.profile?.name ||
                                     truncatedNpub(user)}
                             </h2>
                             {#if user.profile?.nip05}
-                                <div class="flex flex-row items-center gap-1 text-sm">
+                                <div class="flex flex-row items-center gap-1 text-xs md:text-sm">
                                     <VerifiedCheckIcon />
                                     {truncatedNip05(user.profile)}
                                 </div>
                             {/if}
                         </div>
-                        <div class="text-sm">{createdTimeAgo}</div>
+                        <div class="text-xs md:text-sm">{createdTimeAgo}</div>
                     </div>
                 </div>
             {/await}
-            <div class="break-words">{note.content}</div>
+            <div class="break-all md:break-words text-sm md:text-base">{note.content}</div>
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center noteIconsWrapper opacity-20">
             <SharePopover type="Event" id={note.id} />
