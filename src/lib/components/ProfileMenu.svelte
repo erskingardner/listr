@@ -56,9 +56,9 @@
             style="position: absolute; z-index: 10;"
             class="
                 w-48 right-0 flex flex-col
-                bg-stone-100 dark:bg-stone-900
+                bg-zinc-100 dark:bg-zinc-900
                 p-4 rounded-lg shadow-md
-                border border-stone-200 dark:border-stone-800
+                border border-zinc-200 dark:border-zinc-800
             "
         >
             <div class="panel-contents flex flex-col gap-2">

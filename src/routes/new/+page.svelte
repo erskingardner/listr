@@ -13,7 +13,7 @@
     import { currentUser } from '$lib/stores/currentUser';
     import ndk from '$lib/stores/ndk';
     import { db } from '$lib/interfaces/db';
-    import ReplaceableListInterface from '$lib/interfaces/replaceableLists';
+    import ListInterface from '$lib/interfaces/lists';
     import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
 
@@ -131,7 +131,7 @@
             try {
                 listToPublish.publish().then(() => {
                     unsavedListItems = [];
-                    ReplaceableListInterface.create({ event: listToPublish }).then(async (pk) => {
+                    ListInterface.create({ event: listToPublish }).then(async (pk) => {
                         let newList = await db.lists.get(pk);
                         goto(`/a/${newList?.pointer}`);
                     });

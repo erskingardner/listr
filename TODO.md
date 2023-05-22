@@ -4,6 +4,9 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
+-   FIX: Need to change list (and maybe user) interface to use subscribe instead of fetchEvent(s).
+-   FIX: Wrap list and list items in keys? To make sure updates are picked up and shown
+-   Refactor: Lists, List, List Form, List actions into individual components
 -   Social interactions on lists
     -   likes
     -   zaps
@@ -11,6 +14,9 @@ A simple app for managing and discovering Nostr lists.
 -   private list items
 
 ### 👨🏼‍💻 In Progress
+
+-   Show feed of notes for users in list
+    -   Show more details of note, link to note in primal.
 
 ### ✅ Done
 

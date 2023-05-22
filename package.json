@@ -41,6 +41,7 @@
         "@sveltejs/adapter-vercel": "^2.4.1",
         "@vercel/analytics": "^0.1.11",
         "classnames": "^2.3.2",
+        "dayjs": "^1.11.7",
         "dexie": "^4.0.1-alpha.10",
         "eventemitter3": "^5.0.0",
         "flowbite": "^1.6.5",

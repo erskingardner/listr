@@ -1,4 +1,4 @@
-import type { NDKUserProfile } from '@nostr-dev-kit/ndk';
+import type { NDKEvent, NDKUserProfile } from '@nostr-dev-kit/ndk';
 
 declare global {
     namespace App {
@@ -13,6 +13,7 @@ declare global {
             publicItems: NDKTag[];
             // privateItems?: string[];
             lastFetched?: number;
+            expanded: boolean;
         }
 
         interface User extends NDKUserProfile {
@@ -20,6 +21,18 @@ declare global {
             npub?: string;
             hexpubkey?: string;
         }
+
+        interface Note {
+            createdAt?: number;
+            noteId: string;
+            kind: number;
+            content: string;
+            subject: string;
+            authorHexPubkey: string;
+            tags: NDKTags[];
+            sig: string;
+        }
+
         interface PageData {
             flash?: { type: 'success' | 'error'; message: string };
         }

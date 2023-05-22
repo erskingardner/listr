@@ -54,12 +54,13 @@ function buildListFromEvent(event: NDKEvent): App.List {
         authorHexPubkey: event.pubkey,
         publicItems: listValues,
         lastFetched: unixTimeNow(),
-        pointer: event.encode()
+        pointer: event.encode(),
+        expanded: true
     };
     return listItem;
 }
 
-const ReplaceableListInterface = {
+const ListInterface = {
     getForUser: (opts: GetUserParams): Observable<App.List[]> => {
         const ndk = getStore(ndkStore);
         const user = ndk.getUser(opts);
@@ -71,43 +72,48 @@ const ReplaceableListInterface = {
         const replaceableLists: App.List[] = [];
 
         ndk.fetchEvents(filter)
-            .then(async (eventSet) => {
-                eventSet.forEach(async (event) => {
-                    const listName = listNameForEvent(event);
-                    if (listName.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
-                    const listItem: App.List = buildListFromEvent(event);
-                    const keysToDelete: string[] = [];
-                    db.transaction('rw', db.lists, async () => {
-                        const listCollection = db.lists.where({
-                            authorHexPubkey: hexPubkey,
-                            name: listName,
-                            kind: event.kind
-                        });
-                        try {
-                            if ((await listCollection.toArray()).length) {
-                                listCollection.each(async (dbEvent, cursor) => {
-                                    if (
-                                        (listItem.createdAt as number) >
-                                        (dbEvent.createdAt as number)
-                                    ) {
-                                        keysToDelete.push(cursor.primaryKey);
-                                        await db.lists.put(listItem);
-                                        replaceableLists.push(listItem);
-                                    } else {
-                                        // Do nothing because we already have the latest
-                                    }
-                                });
-                                await db.lists.bulkDelete(keysToDelete);
-                            } else {
-                                await db.lists.put(listItem);
-                                replaceableLists.push(listItem);
+            .then(
+                async (eventSet) => {
+                    eventSet.forEach(async (event) => {
+                        const listName = listNameForEvent(event);
+                        if (listName.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
+                        const listItem: App.List = buildListFromEvent(event);
+                        const keysToDelete: string[] = [];
+                        db.transaction('rw', db.lists, async () => {
+                            const listCollection = db.lists.where({
+                                authorHexPubkey: hexPubkey,
+                                name: listName,
+                                kind: event.kind
+                            });
+                            try {
+                                if ((await listCollection.toArray()).length) {
+                                    listCollection.each(async (dbEvent, cursor) => {
+                                        if (
+                                            (listItem.createdAt as number) >
+                                            (dbEvent.createdAt as number)
+                                        ) {
+                                            keysToDelete.push(cursor.primaryKey);
+                                            await db.lists.put(listItem);
+                                            replaceableLists.push(listItem);
+                                        } else {
+                                            // Do nothing because we already have the latest
+                                        }
+                                    });
+                                    await db.lists.bulkDelete(keysToDelete);
+                                } else {
+                                    await db.lists.put(listItem);
+                                    replaceableLists.push(listItem);
+                                }
+                            } catch (error) {
+                                console.log(error);
                             }
-                        } catch (error) {
-                            console.log(error);
-                        }
+                        });
                     });
-                });
-            })
+                },
+                async () => {
+                    console.log('rejected');
+                }
+            )
             .catch((e) => {
                 console.error(e);
             });
@@ -171,4 +177,26 @@ const ReplaceableListInterface = {
     }
 };
 
-export default ReplaceableListInterface;
+export default ListInterface;
+
+export function hasPeople(list: App.List): boolean {
+    const itemsWithPTags = list.publicItems.filter((item) => item[0] === 'p');
+    return itemsWithPTags.length > 0;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toggleExpanded(list: App.List): any {
+    db.lists.where({ listId: list.listId }).modify({ expanded: !list.expanded });
+
+    console.log('List toggled to', list.expanded);
+}
+
+export function userIdsForList(list: App.List): string[] {
+    const userIds: string[] = [];
+    list.publicItems.forEach((item) => {
+        if (item[0] === 'p') {
+            userIds.push(item[1]);
+        }
+    });
+    return userIds;
+}

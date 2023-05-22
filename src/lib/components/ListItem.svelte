@@ -72,7 +72,7 @@
 
 <div
     class="flex flex-row items-center justify-between
-    py-2 px-3 rounded-md border
+    py-2 px-3 rounded-md border listItemWrapper
     {saved ? 'border-solid border-stone-800/20 dark:border-stone-100/20' : 'border-dashed'}
     {action === 'added' ? 'border-green-500 dark:border-green-300/50' : ''}
     {action === 'deleted' ? 'border-orange-500 dark:border-orange-300/50' : ''}"
@@ -83,7 +83,7 @@
                 <Avatar src={$person.image} class="object-cover border border-white/10" />
                 <a href={`/${$person.npub}`}>{$person.displayName || $person.name}</a>
             </div>
-            <div class="flex flex-col md:flex-row gap-4 items-center">
+            <div class="flex flex-col md:flex-row gap-4 items-center listIconsWrapper opacity-20">
                 {#if !saved}
                     <span
                         class="text-sm
@@ -92,10 +92,6 @@
                         >Unpublished {action === 'added' ? 'addition' : 'removal'}</span
                     >
                 {/if}
-                <InfoIcon />
-                <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
-                    {nip19.npubEncode(itemId)}
-                </Tooltip>
                 <SharePopover type={itemType} id={itemId} />
                 <a
                     href="https://primal.net/profile/{nip19.npubEncode(itemId)}"
@@ -105,7 +101,10 @@
                     <LinkOutIcon />
                 </a>
                 {#if $currentUser?.hexpubkey === list.authorHexPubkey && saved && $page.url.pathname.startsWith('/a/')}
-                    <button on:click={submitRemove}>
+                    <button
+                        on:click={submitRemove}
+                        class="hover:text-stone-700 hover:dark:text-stone-400 border-0"
+                    >
                         <XMarkIcon />
                         <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
                             Remove this item from the list
@@ -118,7 +117,7 @@
         <div class="w-4/5 break-words text-sm md:text-base">
             {note?.content || itemId}
         </div>
-        <div class="flex flex-col md:flex-row gap-4 items-center">
+        <div class="flex flex-col md:flex-row gap-4 items-center listIconsWrapper opacity-20">
             <SharePopover type={itemType} id={itemId} />
             {#if encodedNoteId}
                 <a

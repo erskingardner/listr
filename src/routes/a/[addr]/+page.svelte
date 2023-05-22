@@ -1,16 +1,18 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { Observable } from 'dexie';
-    import type { GetListOpts } from '$lib/interfaces/replaceableLists';
-    import ReplaceableListInterface from '$lib/interfaces/replaceableLists';
+    import type { GetListOpts } from '$lib/interfaces/lists';
+    import ListInterface from '$lib/interfaces/lists';
+    import { hasPeople, userIdsForList } from '$lib/interfaces/lists';
     import HashIcon from '$lib/elements/icons/Hash.svelte';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
-    import { Tooltip } from 'flowbite-svelte';
+    import { Tooltip, Avatar } from 'flowbite-svelte';
     import ListItem from '$lib/components/ListItem.svelte';
     import SharePopover from '$lib/components/SharePopover.svelte';
     import UserInterface from '$lib/interfaces/users';
     import ndk from '$lib/stores/ndk';
     import { currentUser } from '$lib/stores/currentUser';
+    import { notes } from '$lib/stores/notes';
     import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
     import ListItemForm from '$lib/components/ListItemForm.svelte';
     import { slide } from 'svelte/transition';
@@ -20,7 +22,8 @@
     import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
     import type { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
     import { browser } from '$app/environment';
-    import { Avatar } from 'flowbite-svelte';
+    import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@rgossiaux/svelte-headlessui';
+    import Note from '$lib/components/Note.svelte';
 
     export let data: PageData;
 
@@ -50,7 +53,7 @@
             userOpts = { hexpubkey: (event as NDKEvent).pubkey };
         }
         user = UserInterface.get(userOpts);
-        list = ReplaceableListInterface.get(optsForAddrType(data.type));
+        list = ListInterface.get(optsForAddrType(data.type));
     }
 
     function optsForAddrType(type: string): GetListOpts {
@@ -66,8 +69,10 @@
         }
         return opts;
     }
+    let notesFetched = false;
 
     if (browser) {
+        $notes = [];
         loadUserAndList();
     }
 
@@ -135,10 +140,10 @@
                     toBeAddedListItems = [];
                     toBeDeletedListItems = [];
                     displayItems = tagsForList.filter((tag) => tag[0] !== 'd');
-                    ReplaceableListInterface.delete({ listId: $list?.listId as string });
-                    ReplaceableListInterface.create({ event: listToPublish }).then(() => {
+                    ListInterface.delete({ listId: $list?.listId as string });
+                    ListInterface.create({ event: listToPublish }).then(() => {
                         loadUserAndList();
-                        setTimeout(() => loadUserAndList(), 1000);
+                        // setTimeout(() => loadUserAndList(), 1000);
                     });
                 });
             } catch (error) {
@@ -151,7 +156,20 @@
         addItemFormVisible = !addItemFormVisible;
     }
 
+    function fetchNotes(userIds: string[]) {
+        const sub = $ndk.subscribe({ kinds: [1], authors: userIds });
+        sub.on('event', (event: NDKEvent) => {
+            $notes.push(event);
+        });
+    }
+
     $: publicListItems = $list?.publicItems || [];
+    $: {
+        if ($list && hasPeople($list) && !notesFetched) {
+            fetchNotes(userIdsForList($list));
+            notesFetched = true;
+        }
+    }
 </script>
 
 <svelte:head>
@@ -166,123 +184,223 @@
 
 <div class="listsWrapper flex flex-col gap-6">
     {#if $list}
-        <div class="listWrapper">
-            <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center justify-between">
-                <div class="flex flex-row gap-2 md:gap-4 items-center">
-                    <h2 class="flex flex-row gap-1 items-center text-lg md:text-2xl font-semibold">
-                        <HashIcon />
-                        {$list.name}
-                    </h2>
-                    <InfoIcon />
-                    <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
-                        Kind: {$list.kind}
-                    </Tooltip>
-                </div>
-                <div class="flex flex-row gap-4 items-center">
-                    {#if $user}
-                        <div class="flex flex-row gap-2">
-                            <span>A list curated by</span>
-                            <Avatar
-                                src={$user.image}
-                                class="object-cover w-6 h-6 border border-white/10"
-                            />
-                            <a href={`/${$user.npub}`}>{$user.displayName || $user.name}</a>
-                        </div>
-                    {/if}
-                    {#if toBeAddedListItems.length || toBeDeletedListItems.length}
-                        <span class="flex flex-row gap-4">
-                            <div class="flex flex-col justify-center">
-                                <span class="text-green-500 dark:text-green-300/50">
-                                    {#if toBeAddedListItems.length}
-                                        {toBeAddedListItems.length}
-                                        {toBeAddedListItems.length === 1 ? 'item' : 'items'} to be added
-                                    {/if}
-                                </span>
-                                <span class="text-orange-500 dark:text-orange-300/50">
-                                    {#if toBeDeletedListItems.length}
-                                        {toBeDeletedListItems.length}
-                                        {toBeDeletedListItems.length === 1 ? 'item' : 'items'} to be
-                                        removed
-                                    {/if}
-                                </span>
+        {#key $list}
+            <div class="listWrapper">
+                <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center justify-between">
+                    <div class="flex flex-row gap-2 md:gap-4 items-center">
+                        <h2
+                            class="flex flex-row gap-1 items-center text-lg md:text-2xl font-semibold"
+                        >
+                            <HashIcon />
+                            {$list.name}
+                        </h2>
+                        <InfoIcon />
+                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                            Kind: {$list.kind}
+                        </Tooltip>
+                    </div>
+                    <div class="flex flex-row gap-4 items-center">
+                        {#if $user}
+                            <div class="flex flex-row gap-2">
+                                <span>A list curated by</span>
+                                <Avatar
+                                    src={$user.image}
+                                    class="object-cover w-6 h-6 border border-white/10"
+                                />
+                                <a href={`/${$user.npub}`}>{$user.displayName || $user.name}</a>
                             </div>
-                            <button
-                                class="px-2 py-1 rounded-md bg-transparent border
+                        {/if}
+                        {#if toBeAddedListItems.length || toBeDeletedListItems.length}
+                            <span class="flex flex-row gap-4">
+                                <div class="flex flex-col justify-center">
+                                    <span class="text-green-500 dark:text-green-300/50">
+                                        {#if toBeAddedListItems.length}
+                                            {toBeAddedListItems.length}
+                                            {toBeAddedListItems.length === 1 ? 'item' : 'items'} to be
+                                            added
+                                        {/if}
+                                    </span>
+                                    <span class="text-orange-500 dark:text-orange-300/50">
+                                        {#if toBeDeletedListItems.length}
+                                            {toBeDeletedListItems.length}
+                                            {toBeDeletedListItems.length === 1 ? 'item' : 'items'} to
+                                            be removed
+                                        {/if}
+                                    </span>
+                                </div>
+                                <button
+                                    class="px-2 py-1 rounded-md bg-transparent border
                             border-orange-500 dark:border-orange-300/80
                             text-orange-500 dark:text-orange-300/80 ml-2
                             hover:bg-orange-500/20 dark:hover:bg-orange-300/20"
-                                on:click={publishListEvent}
-                            >
-                                Publish Now
-                            </button>
-                        </span>
-                    {/if}
-                    {#if $currentUser && $user && $currentUser?.hexpubkey === $user.hexpubkey}
-                        <button class="" on:click={toggleForm}>
-                            <CirclePlusIcon />
-                            <Tooltip
-                                style="custom"
-                                class="dark:bg-stone-800 bg-stone-100 shadow-sm"
-                            >
-                                Add an item to this list
-                            </Tooltip>
-                        </button>
-                    {/if}
-                    <SharePopover list={$list} klass="mr-0 ml-auto" />
-                    <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
-                        Share this list
-                    </Tooltip>
+                                    on:click={publishListEvent}
+                                >
+                                    Publish Now
+                                </button>
+                            </span>
+                        {/if}
+                        <SharePopover list={$list} klass="mr-0 ml-auto" />
+                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                            Share this list
+                        </Tooltip>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-2">
-                {#if $currentUser && $currentUser?.hexpubkey === $list.authorHexPubkey && addItemFormVisible}
-                    <div
-                        transition:slide={{ duration: 400, easing: circInOut }}
-                        class="flex flex-row gap-4 border border-stone-800/20 dark:border-stone-100/20 rounded-md p-4 justify-center"
-                    >
-                        <ListItemForm
-                            on:addItemToList={addUnsavedItem}
-                            on:closeForm={toggleForm}
-                            list={$list}
-                        />
+                {#if hasPeople($list)}
+                    <TabGroup>
+                        <TabList
+                            class="flex flex-row gap-1 w-full justify-around bg-zinc-200/40 dark:bg-zinc-900 p-1 rounded-md"
+                        >
+                            <Tab
+                                class={({ selected }) =>
+                                    selected ? 'tab-selected' : 'tab-unselected'}>List Items</Tab
+                            >
+                            <Tab
+                                class={({ selected }) =>
+                                    selected ? 'tab-selected' : 'tab-unselected'}>List Feed</Tab
+                            >
+                        </TabList>
+                        <TabPanels class="bg-zinc-200/40 dark:bg-zinc-900 p-2 mt-2 rounded-md">
+                            <TabPanel>
+                                {#if $currentUser && $user && $currentUser?.hexpubkey === $user.hexpubkey}
+                                    <div class="my-4 flex flex-row items-center justify-end gap-2">
+                                        <button
+                                            class="flex flex-row gap-2 outlineButton"
+                                            on:click={toggleForm}
+                                        >
+                                            <CirclePlusIcon />
+                                            <span>Add an item to this list</span>
+                                        </button>
+                                    </div>
+                                {/if}
+                                <div class="mb-2">
+                                    {#if $currentUser && $currentUser?.hexpubkey === $list.authorHexPubkey && addItemFormVisible}
+                                        <div
+                                            transition:slide={{ duration: 400, easing: circInOut }}
+                                            class="flex flex-row gap-4 justify-center"
+                                        >
+                                            <ListItemForm
+                                                on:addItemToList={addUnsavedItem}
+                                                on:closeForm={toggleForm}
+                                                list={$list}
+                                            />
+                                        </div>
+                                    {/if}
+                                </div>
+                                <div id="toBeAddedListItems" class="flex flex-col gap-2 mb-2">
+                                    {#each toBeAddedListItems as listItem}
+                                        <ListItem
+                                            item={listItem}
+                                            saved={false}
+                                            list={$list}
+                                            action="added"
+                                        />
+                                    {/each}
+                                </div>
+                                <div id="toBeDeletedListItems" class="flex flex-col gap-2 mb-2">
+                                    {#each toBeDeletedListItems as listItem}
+                                        <ListItem
+                                            item={listItem}
+                                            saved={false}
+                                            list={$list}
+                                            action="deleted"
+                                        />
+                                    {/each}
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    {#if displayItems}
+                                        {#key displayItems}
+                                            {#each displayItems as listItem}
+                                                <ListItem
+                                                    item={listItem}
+                                                    saved={true}
+                                                    list={$list}
+                                                    on:removeItemFromList={addUnsavedItem}
+                                                />
+                                            {/each}
+                                        {/key}
+                                    {:else}
+                                        {#each publicListItems as listItem}
+                                            <ListItem
+                                                item={listItem}
+                                                saved={true}
+                                                list={$list}
+                                                on:removeItemFromList={addUnsavedItem}
+                                            />
+                                        {/each}
+                                    {/if}
+                                </div>
+                            </TabPanel>
+                            <TabPanel>
+                                {#await $notes}
+                                    <h2 class="text-xl animate-pulse">Loading notes...</h2>
+                                {:then notes}
+                                    {#each notes.sort((a, b) => b.created_at - a.created_at) as note}
+                                        <Note {note} />
+                                    {/each}
+                                {/await}
+                            </TabPanel>
+                        </TabPanels>
+                    </TabGroup>
+                {:else}
+                    {#if $currentUser && $user && $currentUser?.hexpubkey === $user.hexpubkey}
+                        <div class="my-4 flex flex-row items-center justify-end gap-2">
+                            <button class="flex flex-row gap-2 outlineButton" on:click={toggleForm}>
+                                <CirclePlusIcon />
+                                <span>Add an item to this list</span>
+                            </button>
+                        </div>
+                    {/if}
+                    <div class="mb-2">
+                        {#if $currentUser && $currentUser?.hexpubkey === $list.authorHexPubkey && addItemFormVisible}
+                            <div
+                                transition:slide={{ duration: 400, easing: circInOut }}
+                                class="flex flex-row gap-4 justify-center"
+                            >
+                                <ListItemForm
+                                    on:addItemToList={addUnsavedItem}
+                                    on:closeForm={toggleForm}
+                                    list={$list}
+                                />
+                            </div>
+                        {/if}
+                    </div>
+                    <div id="toBeAddedListItems" class="flex flex-col gap-2 mb-2">
+                        {#each toBeAddedListItems as listItem}
+                            <ListItem item={listItem} saved={false} list={$list} action="added" />
+                        {/each}
+                    </div>
+                    <div id="toBeDeletedListItems" class="flex flex-col gap-2 mb-2">
+                        {#each toBeDeletedListItems as listItem}
+                            <ListItem item={listItem} saved={false} list={$list} action="deleted" />
+                        {/each}
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        {#if displayItems}
+                            {#key displayItems}
+                                {#each displayItems as listItem}
+                                    <ListItem
+                                        item={listItem}
+                                        saved={true}
+                                        list={$list}
+                                        on:removeItemFromList={addUnsavedItem}
+                                    />
+                                {/each}
+                            {/key}
+                        {:else}
+                            {#each publicListItems as listItem}
+                                <ListItem
+                                    item={listItem}
+                                    saved={true}
+                                    list={$list}
+                                    on:removeItemFromList={addUnsavedItem}
+                                />
+                            {/each}
+                        {/if}
                     </div>
                 {/if}
             </div>
-            <div id="toBeAddedListItems" class="flex flex-col gap-2 mb-2">
-                {#each toBeAddedListItems as listItem}
-                    <ListItem item={listItem} saved={false} list={$list} action="added" />
-                {/each}
-            </div>
-            <div id="toBeDeletedListItems" class="flex flex-col gap-2 mb-2">
-                {#each toBeDeletedListItems as listItem}
-                    <ListItem item={listItem} saved={false} list={$list} action="deleted" />
-                {/each}
-            </div>
-            <div class="flex flex-col gap-2">
-                {#if displayItems}
-                    {#key displayItems}
-                        {#each displayItems as listItem}
-                            <ListItem
-                                item={listItem}
-                                saved={true}
-                                list={$list}
-                                on:removeItemFromList={addUnsavedItem}
-                            />
-                        {/each}
-                    {/key}
-                {:else}
-                    {#each publicListItems as listItem}
-                        <ListItem
-                            item={listItem}
-                            saved={true}
-                            list={$list}
-                            on:removeItemFromList={addUnsavedItem}
-                        />
-                    {/each}
-                {/if}
-            </div>
-        </div>
+        {/key}
     {:else}
-        <h2 class="text-xl">List loading...</h2>
+        <h2 class="text-xl animate-pulse">List loading...</h2>
     {/if}
 </div>

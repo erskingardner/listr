@@ -7,11 +7,10 @@
     import ListItem from '$lib/components/ListItem.svelte';
     import HashIcon from '$lib/elements/icons/Hash.svelte';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
-    import ReplaceableListInterface from '$lib/interfaces/replaceableLists';
-    import UserInterface from '$lib/interfaces/users';
+    import ChevronIcon from '$lib/elements/icons/Chevron.svelte';
     import SharePopover from '$lib/components/SharePopover.svelte';
     import { pointerForList } from '$lib/utils/helpers';
-    import { browser } from '$app/environment';
+    import { toggleExpanded } from '$lib/interfaces/lists';
 
     export let data: PageData;
     const defaultBannerImage =
@@ -20,20 +19,8 @@
     let user: Observable<App.User>;
     let lists: Observable<App.List[]>;
 
-    function updateUserAndLists() {
-        user = UserInterface.get({ hexpubkey: data.userHexPub });
-        lists = ReplaceableListInterface.getForUser({ hexpubkey: data.userHexPub });
-    }
-
-    if (browser) {
-        updateUserAndLists();
-    }
-
-    $: {
-        if ($user && data.userHexPub !== $user?.hexpubkey) {
-            updateUserAndLists();
-        }
-    }
+    $: lists = data.lists;
+    $: user = data.user;
 </script>
 
 <svelte:head>
@@ -74,31 +61,35 @@
 <!-- Lists -->
 <div class="listsWrapper flex flex-col gap-6">
     {#if $lists && $lists.length > 0}
-        {#each $lists as list}
-            <div class="listWrapper">
-                <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center">
-                    <h2
-                        class="flex flex-row gap-1 items-center text-lg md:text-2xl break-words font-semibold"
-                    >
-                        <HashIcon />
-                        <a href="/a/{pointerForList(list)}">
-                            {list.name}
-                        </a>
-                    </h2>
-                    <InfoIcon />
-                    <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
-                        Kind: {list.kind}
-                    </Tooltip>
-                    <SharePopover {list} klass="mr-0 ml-auto" />
+        {#key $lists}
+            {#each $lists as list}
+                <div class="listWrapper">
+                    <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center">
+                        <h2
+                            class="flex flex-row gap-1 items-center text-lg md:text-2xl break-words font-semibold"
+                        >
+                            <button on:click={toggleExpanded(list)}>
+                                <ChevronIcon bind:expanded={list.expanded} />
+                            </button>
+                            <a href="/a/{pointerForList(list)}">
+                                {list.name}
+                            </a>
+                        </h2>
+                        <InfoIcon />
+                        <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
+                            Kind: {list.kind}
+                        </Tooltip>
+                        <SharePopover {list} klass="mr-0 ml-auto opacity-20" />
+                    </div>
+                    <div class="{list.expanded ? 'flex' : 'hidden'} flex-col gap-2">
+                        {#each list.publicItems as listItem}
+                            <ListItem item={listItem} saved={true} {list} />
+                        {/each}
+                    </div>
                 </div>
-                <div class="flex flex-col gap-2">
-                    {#each list.publicItems as listItem}
-                        <ListItem item={listItem} saved={true} {list} />
-                    {/each}
-                </div>
-            </div>
-        {/each}
+            {/each}
+        {/key}
     {:else}
-        <h2 class="text-xl">Loading lists...</h2>
+        <h2 class="text-xl animate-pulse">Loading lists...</h2>
     {/if}
 </div>

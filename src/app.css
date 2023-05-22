@@ -9,17 +9,42 @@ a {
 }
 
 .primaryButton {
-    @apply px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md ml-auto h-fit;
+    @apply transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md ml-auto h-fit;
+}
+
+.outlineButton {
+    @apply transition-all px-2 py-1 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-md ml-auto h-fit ring-1 ring-inset ring-zinc-400 dark:ring-zinc-600;
 }
 
 .popoverPanelLink {
-    @apply flex flex-row gap-2 items-center no-underline px-2 py-1 font-medium bg-stone-300 hover:bg-stone-200 dark:bg-stone-800 hover:dark:bg-stone-700 rounded-md text-stone-950 dark:text-stone-100 border-0;
+    @apply flex flex-row gap-2 items-center no-underline px-2 py-1 font-medium bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-700 rounded-md text-zinc-950 dark:text-zinc-100 border-0;
 }
 
 .listWrapper {
-    @apply border border-stone-800/20 dark:border-stone-100/20 rounded-lg p-4;
+    @apply border border-zinc-800/20 dark:border-zinc-100/20 rounded-lg p-4;
+}
+
+.listItemWrapper:hover .listIconsWrapper {
+    @apply opacity-100;
+}
+
+.listWrapper:hover .sharePopoverWrapper {
+    @apply opacity-100;
 }
 
 .flashMessage {
-    @apply flex flex-row gap-2 absolute top-6 left-1/2 -translate-x-1/2 max-w-xs px-2 py-1 border border-stone-800/20 dark:border-stone-100/20 rounded-md shadow-md;
+    @apply flex flex-row gap-2 absolute top-6 left-1/2 -translate-x-1/2 max-w-xs px-2 py-1 border border-zinc-800/20 dark:border-zinc-100/20 rounded-md shadow-md;
+}
+
+.tab-selected,
+.tab-unselected {
+    @apply w-full transition-all rounded-md py-1 px-3 dark:text-white border-0;
+}
+
+.tab-selected {
+    @apply bg-zinc-700/30 ring-1 ring-inset ring-zinc-800/30;
+}
+
+.tab-unselected {
+    @apply hover:bg-zinc-300 dark:hover:bg-indigo-400/20 dark:hover:text-indigo-300 hover:ring-indigo-300;
 }
