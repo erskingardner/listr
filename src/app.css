@@ -24,10 +24,12 @@ a {
     @apply border border-zinc-800/20 dark:border-zinc-100/20 rounded-lg p-4;
 }
 
-.listItemWrapper:hover .listIconsWrapper {
+.listItemWrapper:hover .listIconsWrapper,
+.noteListWrapper:hover .noteIconsWrapper {
     @apply opacity-100;
 }
 
+.listWrapper:hover .sharePopoverWrapper,
 .listWrapper:hover .sharePopoverWrapper {
     @apply opacity-100;
 }

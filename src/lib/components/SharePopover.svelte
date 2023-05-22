@@ -49,7 +49,7 @@
         await fetchData().catch((e) => {
             console.error(e);
         });
-        let url: string;
+        let url: string = '';
         if (naddrName === 'naddr') {
             url = `https://listr.lol/a/${naddr}`;
         } else if (naddrName === 'note') {

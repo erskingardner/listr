@@ -4,13 +4,14 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   FIX: Wrap list and list items in keys? To make sure updates are picked up and shown
+-   FIX: Wrap list and list items in keys? To make sure updates are picked up and shown??
 -   Refactor: Lists, List, List Form, List actions into individual components
 -   Social interactions on lists
     -   likes
     -   zaps
     -   comments
 -   private list items
+-   Add follow button to notes feed, people lists, etc. (only for logged in users)
 
 ### 👨🏼‍💻 In Progress
 

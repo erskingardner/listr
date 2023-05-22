@@ -1,13 +1,12 @@
 <script lang="ts">
     import { Avatar, Tooltip } from 'flowbite-svelte';
     import UserInterface from '$lib/interfaces/users';
-    import InfoIcon from '$lib/elements/icons/Info.svelte';
+    import NoteInterface from '$lib/interfaces/notes';
     import LinkOutIcon from '$lib/elements/icons/LinkOut.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
     import { nip19 } from 'nostr-tools';
     import type { Observable } from 'dexie';
     import SharePopover from './SharePopover.svelte';
-    import ndk from '$lib/stores/ndk';
     import type { NDKEvent } from '@nostr-dev-kit/ndk';
     import { currentUser } from '$lib/stores/currentUser';
     import { createEventDispatcher } from 'svelte';
@@ -24,7 +23,7 @@
     let itemId: string = item[1];
     let encodedNoteId: string = '';
     let person: Observable<App.User>;
-    let note: NDKEvent;
+    let note: Observable<NDKEvent>;
 
     if (item[0] === 'e') {
         itemType = 'Event';
@@ -33,13 +32,7 @@
         } catch (error) {
             console.log('Error encoding note ID: ', error);
         }
-        $ndk.fetchEvent({ ids: [itemId] })
-            .then(async (event) => {
-                note = event;
-            })
-            .catch((e) => {
-                console.error(e);
-            });
+        note = NoteInterface.getNote(itemId);
     }
 
     if (item[0] === 'p') {
@@ -113,9 +106,11 @@
                 {/if}
             </div>
         {/if}
+    {:else if $note === undefined}
+        <h2 class="animate-pulse">Loading note...</h2>
     {:else}
         <div class="w-4/5 break-words text-sm md:text-base">
-            {note?.content || itemId}
+            {$note?.content || itemId}
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center listIconsWrapper opacity-20">
             <SharePopover type={itemType} id={itemId} />

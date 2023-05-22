@@ -3,7 +3,7 @@
     import type { Observable } from 'dexie';
     import type { GetListOpts } from '$lib/interfaces/lists';
     import ListInterface from '$lib/interfaces/lists';
-    import { hasPeople, userIdsForList } from '$lib/interfaces/lists';
+    import { hasPeople } from '$lib/interfaces/lists';
     import HashIcon from '$lib/elements/icons/Hash.svelte';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import { Tooltip, Avatar } from 'flowbite-svelte';
@@ -12,7 +12,6 @@
     import UserInterface from '$lib/interfaces/users';
     import ndk from '$lib/stores/ndk';
     import { currentUser } from '$lib/stores/currentUser';
-    import { notes } from '$lib/stores/notes';
     import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
     import ListItemForm from '$lib/components/ListItemForm.svelte';
     import { slide } from 'svelte/transition';
@@ -23,7 +22,7 @@
     import type { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
     import { browser } from '$app/environment';
     import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@rgossiaux/svelte-headlessui';
-    import Note from '$lib/components/Note.svelte';
+    import ListFeed from '$lib/components/ListFeed.svelte';
 
     export let data: PageData;
 
@@ -69,10 +68,8 @@
         }
         return opts;
     }
-    let notesFetched = false;
 
     if (browser) {
-        $notes = [];
         loadUserAndList();
     }
 
@@ -156,20 +153,7 @@
         addItemFormVisible = !addItemFormVisible;
     }
 
-    function fetchNotes(userIds: string[]) {
-        const sub = $ndk.subscribe({ kinds: [1], authors: userIds });
-        sub.on('event', (event: NDKEvent) => {
-            $notes.push(event);
-        });
-    }
-
     $: publicListItems = $list?.publicItems || [];
-    $: {
-        if ($list && hasPeople($list) && !notesFetched) {
-            fetchNotes(userIdsForList($list));
-            notesFetched = true;
-        }
-    }
 </script>
 
 <svelte:head>
@@ -202,7 +186,7 @@
                     <div class="flex flex-row gap-4 items-center">
                         {#if $user}
                             <div class="flex flex-row gap-2">
-                                <span>A list curated by</span>
+                                <span>Curated by</span>
                                 <Avatar
                                     src={$user.image}
                                     class="object-cover w-6 h-6 border border-white/10"
@@ -331,13 +315,7 @@
                                 </div>
                             </TabPanel>
                             <TabPanel>
-                                {#await $notes}
-                                    <h2 class="text-xl animate-pulse">Loading notes...</h2>
-                                {:then notes}
-                                    {#each notes.sort((a, b) => b.created_at - a.created_at) as note}
-                                        <Note {note} />
-                                    {/each}
-                                {/await}
+                                <ListFeed list={$list} />
                             </TabPanel>
                         </TabPanels>
                     </TabGroup>

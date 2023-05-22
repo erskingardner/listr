@@ -87,37 +87,6 @@ const ListInterface = {
                         if (returnedlists.length) {
                             replaceableLists = returnedlists;
                         }
-                        // const listItem: App.List = buildListFromEvent(event);
-                        // const keysToDelete: string[] = [];
-                        // db.transaction('rw', db.lists, async () => {
-                        //     const listCollection = db.lists.where({
-                        //         authorHexPubkey: hexPubkey,
-                        //         name: listName,
-                        //         kind: event.kind
-                        //     });
-                        //     try {
-                        //         if ((await listCollection.toArray()).length) {
-                        //             listCollection.each(async (dbEvent, cursor) => {
-                        //                 if (
-                        //                     (listItem.createdAt as number) >
-                        //                     (dbEvent.createdAt as number)
-                        //                 ) {
-                        //                     keysToDelete.push(cursor.primaryKey);
-                        //                     await db.lists.put(listItem);
-                        //                     replaceableLists.push(listItem);
-                        //                 } else {
-                        //                     // Do nothing because we already have the latest
-                        //                 }
-                        //             });
-                        //             await db.lists.bulkDelete(keysToDelete);
-                        //         } else {
-                        //             await db.lists.put(listItem);
-                        //             replaceableLists.push(listItem);
-                        //         }
-                        //     } catch (error) {
-                        //         console.log(error);
-                        //     }
-                        // });
                     });
                 },
                 async () => {

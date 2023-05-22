@@ -11,6 +11,7 @@
     import SharePopover from '$lib/components/SharePopover.svelte';
     import { pointerForList } from '$lib/utils/helpers';
     import { toggleExpanded } from '$lib/interfaces/lists';
+    import { truncatedNip05 } from '$lib/interfaces/users';
 
     export let data: PageData;
     const defaultBannerImage =
@@ -48,9 +49,9 @@
                 {$user.displayName || $user.name}
             </h1>
             {#if $user.nip05}
-                <p class="flex flex-row gap-1 text-xl font-medium">
-                    {$user.nip05}
-                    <VerifiedCheckIcon />
+                <p class="flex flex-row gap-1 text-xl font-medium items-center">
+                    {truncatedNip05($user)}
+                    <VerifiedCheckIcon klass="w-5 h-5" />
                 </p>
             {/if}
 

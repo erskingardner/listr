@@ -1,6 +1,6 @@
 import { get as getStore } from 'svelte/store';
 import ndkStore from '$lib/stores/ndk';
-import type { GetUserParams } from '@nostr-dev-kit/ndk';
+import type { NDKUser, GetUserParams, NDKUserProfile } from '@nostr-dev-kit/ndk';
 import { liveQuery, type Observable } from 'dexie';
 import { browser } from '$app/environment';
 import { db } from '$lib/interfaces/db';
@@ -36,5 +36,17 @@ const UserInterface = {
         ) as Observable<App.User>;
     }
 };
+
+export function truncatedNpub(user: NDKUser): string {
+    return `${user.npub.substring(0, 9)}...`;
+}
+
+export function truncatedNip05(userProfile: NDKUserProfile): string {
+    if (userProfile.nip05?.substring(0, 1) === '_') {
+        return userProfile.nip05.substring(2) as string;
+    } else {
+        return userProfile.nip05 as string;
+    }
+}
 
 export default UserInterface;

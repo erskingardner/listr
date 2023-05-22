@@ -1,17 +1,25 @@
 import { get as getStore } from 'svelte/store';
 import ndkStore from '$lib/stores/ndk';
 import { liveQuery, type Observable } from 'dexie';
-import { browser } from '$app/environment';
-import { db } from '$lib/interfaces/db';
+import type { NDKEvent } from '@nostr-dev-kit/ndk';
 
 const NoteInterface = {
-    getNotesForUsers: (authorIds: string[]): Observable<App.User> => {
+    getNotesForUsers: (userIds: string[]): Observable<NDKEvent[]> => {
         const ndk = getStore(ndkStore);
-        ndk.fetchEvents({ kinds: [1], authors: authorIds });
+        const notes = ndk
+            .fetchEvents({ kinds: [1], authors: userIds })
+            .then((events: Set<NDKEvent>) => {
+                return Array.from(events).sort(
+                    (a, b) => (b.created_at as number) - (a.created_at as number)
+                );
+            });
 
-        return liveQuery(() =>
-            browser ? db.events.where({ id: ndkUser.hexpubkey() }).first() || userForDb : userForDb
-        ) as Observable<App.User>;
+        return liveQuery(() => notes) as Observable<NDKEvent[]>;
+    },
+    getNote: (noteId: string): Observable<NDKEvent> => {
+        const ndk = getStore(ndkStore);
+        const note = ndk.fetchEvent({ ids: [noteId] });
+        return liveQuery(() => note) as Observable<NDKEvent>;
     }
 };
 
