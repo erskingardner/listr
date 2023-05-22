@@ -69,7 +69,7 @@ const ListInterface = {
             kinds: [10000, 10001, 30000, 30001],
             authors: [hexPubkey]
         };
-        const replaceableLists: App.List[] = [];
+        let replaceableLists: App.List[] = [];
 
         ndk.fetchEvents(filter)
             .then(
@@ -77,37 +77,47 @@ const ListInterface = {
                     eventSet.forEach(async (event) => {
                         const listName = listNameForEvent(event);
                         if (listName.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
-                        const listItem: App.List = buildListFromEvent(event);
-                        const keysToDelete: string[] = [];
-                        db.transaction('rw', db.lists, async () => {
-                            const listCollection = db.lists.where({
-                                authorHexPubkey: hexPubkey,
-                                name: listName,
-                                kind: event.kind
-                            });
-                            try {
-                                if ((await listCollection.toArray()).length) {
-                                    listCollection.each(async (dbEvent, cursor) => {
-                                        if (
-                                            (listItem.createdAt as number) >
-                                            (dbEvent.createdAt as number)
-                                        ) {
-                                            keysToDelete.push(cursor.primaryKey);
-                                            await db.lists.put(listItem);
-                                            replaceableLists.push(listItem);
-                                        } else {
-                                            // Do nothing because we already have the latest
-                                        }
-                                    });
-                                    await db.lists.bulkDelete(keysToDelete);
-                                } else {
-                                    await db.lists.put(listItem);
-                                    replaceableLists.push(listItem);
-                                }
-                            } catch (error) {
-                                console.log(error);
-                            }
-                        });
+                        let returnedlists: App.List[] = [];
+                        returnedlists = checkForExistingList(
+                            hexPubkey,
+                            listName,
+                            event,
+                            true
+                        ) as App.List[];
+                        if (returnedlists.length) {
+                            replaceableLists = returnedlists;
+                        }
+                        // const listItem: App.List = buildListFromEvent(event);
+                        // const keysToDelete: string[] = [];
+                        // db.transaction('rw', db.lists, async () => {
+                        //     const listCollection = db.lists.where({
+                        //         authorHexPubkey: hexPubkey,
+                        //         name: listName,
+                        //         kind: event.kind
+                        //     });
+                        //     try {
+                        //         if ((await listCollection.toArray()).length) {
+                        //             listCollection.each(async (dbEvent, cursor) => {
+                        //                 if (
+                        //                     (listItem.createdAt as number) >
+                        //                     (dbEvent.createdAt as number)
+                        //                 ) {
+                        //                     keysToDelete.push(cursor.primaryKey);
+                        //                     await db.lists.put(listItem);
+                        //                     replaceableLists.push(listItem);
+                        //                 } else {
+                        //                     // Do nothing because we already have the latest
+                        //                 }
+                        //             });
+                        //             await db.lists.bulkDelete(keysToDelete);
+                        //         } else {
+                        //             await db.lists.put(listItem);
+                        //             replaceableLists.push(listItem);
+                        //         }
+                        //     } catch (error) {
+                        //         console.log(error);
+                        //     }
+                        // });
                     });
                 },
                 async () => {
@@ -130,7 +140,6 @@ const ListInterface = {
     get: (opts: GetListOpts): Observable<App.List | undefined> => {
         const ndk = getStore(ndkStore);
         let filter: NDKFilter;
-        let event: NDKEvent | undefined = undefined;
         if (opts.listId) {
             filter = { ids: [opts.listId] };
         } else {
@@ -145,11 +154,16 @@ const ListInterface = {
         if (filter) {
             ndk.fetchEvent(filter)
                 .then((fetchedEvent) => {
-                    event = fetchedEvent;
-                    listItem = buildListFromEvent(event);
-                    db.lists.put(listItem).catch((e) => {
-                        console.error(e);
-                    });
+                    const listName = listNameForEvent(fetchedEvent);
+                    const returnedList = checkForExistingList(
+                        fetchedEvent.pubkey,
+                        listName,
+                        fetchedEvent,
+                        false
+                    ) as App.List;
+                    if (returnedList) {
+                        listItem = returnedList;
+                    }
                 })
                 .catch((e) => {
                     console.error(e);
@@ -199,4 +213,48 @@ export function userIdsForList(list: App.List): string[] {
         }
     });
     return userIds;
+}
+
+function checkForExistingList(
+    authorHexPubkey: string,
+    listName: string,
+    event: NDKEvent,
+    returnArray: boolean
+): App.List | App.List[] {
+    const replaceableLists: App.List[] = [];
+    const listItem: App.List = buildListFromEvent(event);
+    const keysToDelete: string[] = [];
+
+    db.transaction('rw', db.lists, async () => {
+        const listCollection = db.lists.where({
+            authorHexPubkey: authorHexPubkey,
+            name: listName,
+            kind: event.kind
+        });
+        try {
+            if ((await listCollection.toArray()).length) {
+                listCollection.each(async (dbEvent, cursor) => {
+                    if ((listItem.createdAt as number) > (dbEvent.createdAt as number)) {
+                        keysToDelete.push(cursor.primaryKey);
+                        await db.lists.put(listItem);
+                        if (returnArray) {
+                            replaceableLists.push(listItem);
+                        }
+                    } else {
+                        // Do nothing because we already have the latest
+                    }
+                });
+                await db.lists.bulkDelete(keysToDelete);
+            } else {
+                await db.lists.put(listItem);
+                if (returnArray) {
+                    replaceableLists.push(listItem);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    return returnArray ? replaceableLists : listItem;
 }

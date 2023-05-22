@@ -4,7 +4,6 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   FIX: Need to change list (and maybe user) interface to use subscribe instead of fetchEvent(s).
 -   FIX: Wrap list and list items in keys? To make sure updates are picked up and shown
 -   Refactor: Lists, List, List Form, List actions into individual components
 -   Social interactions on lists
@@ -20,6 +19,7 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   FIX: Fix issue creating multiple of the same list when refreshing the naddr page.
 -   Add donation button
 -   Remove items from a list
 -   Fix avatar image aspect ratio
