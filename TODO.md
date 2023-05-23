@@ -4,21 +4,26 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   FIX: Wrap list and list items in keys? To make sure updates are picked up and shown??
--   Refactor: Lists, List, List Form, List actions into individual components
 -   Social interactions on lists
     -   likes
     -   zaps
     -   comments
 -   private list items
 -   Add follow button to notes feed, people lists, etc. (only for logged in users)
+-   Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
+-   Contact list support
+    -   `nevent1qqsg8ycyjtqu0mtlg8syu7p6uzq2lx9th2g6203pasxc8vfwjtecczgldqmkr`
+-   Emoji tag support
+    -   `nevent1qqs8j4a3mfkdy9fwn32fnz5cnffyy42atyuspurdqcqw0hwccjam97cpv6xxw`
+    -   https://github.com/nostr-protocol/nips/blob/master/30.md
 
 ### 👨🏼‍💻 In Progress
 
--   Update List items that are notes to use the new Note component
-
 ### ✅ Done
 
+-   render list content properly
+-   Update List items that are notes to use the new Note component
+-   Refactor: Lists, List, List Form, List actions into individual components
 -   Fix bug with NIP07Signer
 -   Show feed of notes for users in list
     -   Show more details of note, link to note in primal.

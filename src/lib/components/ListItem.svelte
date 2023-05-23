@@ -11,6 +11,7 @@
     import { currentUser } from '$lib/stores/currentUser';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
+    import Note from '$lib/components/Note.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -109,7 +110,8 @@
     {:else if $note === undefined}
         <h2 class="animate-pulse">Loading note...</h2>
     {:else}
-        <div class="w-4/5 break-words text-sm md:text-base">
+        <Note note={$note} {list} {saved} isFeed={false} on:removeItemFromList />
+        <!-- <div class="w-4/5 break-words text-sm md:text-base">
             {$note?.content || itemId}
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center listIconsWrapper opacity-20">
@@ -131,6 +133,6 @@
                     </Tooltip>
                 </button>
             {/if}
-        </div>
+        </div> -->
     {/if}
 </div>

@@ -15,11 +15,7 @@
 </svelte:head>
 
 <div class="prose-stone prose-lg dark:prose-invert mx-auto mb-10">
-    <p class="">
-        Listr is a simple tool that allows you to browse your own lists and the lists of other
-        users. Soon you'll also be able to manage your lists; adding and removing items and deciding
-        what is publicly listed and what is private.
-    </p>
+    <p class="">Listr is a simple tool that allows you to browse and manage Nostr lists.</p>
     <h2 class="text-xl md:text-3xl mb-4 font-bold tracking-tight">
         Check out a few examples, then sign in to view your own!
     </h2>

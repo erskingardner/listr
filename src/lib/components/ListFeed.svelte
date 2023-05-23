@@ -15,10 +15,17 @@
     }
 </script>
 
-{#if $notes === undefined || $notes.length === 0}
-    <h2 class="animate-pulse">Loading notes...</h2>
-{:else}
-    {#each $notes as note}
-        <Note {note} />
-    {/each}
-{/if}
+<div class="flex flex-col gap-2">
+    {#if $notes === undefined || $notes.length === 0}
+        <h2 class="animate-pulse">Loading notes...</h2>
+    {:else}
+        {#each $notes as note}
+            <div
+                class="flex flex-row items-center justify-between py-2 px-3 rounded-md
+            border border-solid border-stone-800/20 dark:border-stone-100/20 listItemWrapper"
+            >
+                <Note {note} {list} saved={true} isFeed={true} />
+            </div>
+        {/each}
+    {/if}
+</div>

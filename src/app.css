@@ -25,7 +25,7 @@ a {
 }
 
 .listItemWrapper:hover .listIconsWrapper,
-.noteListWrapper:hover .noteIconsWrapper {
+.listItemWrapper:hover .noteIconsWrapper {
     @apply opacity-100;
 }
 

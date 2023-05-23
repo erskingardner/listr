@@ -170,8 +170,6 @@ export function hasPeople(list: App.List): boolean {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toggleExpanded(list: App.List): any {
     db.lists.where({ listId: list.listId }).modify({ expanded: !list.expanded });
-
-    console.log('List toggled to', list.expanded);
 }
 
 export function userIdsForList(list: App.List): string[] {

@@ -172,10 +172,7 @@
             <div class="listWrapper">
                 <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center justify-between">
                     <div class="flex flex-row gap-2 md:gap-4 items-center">
-                        <h2
-                            class="flex flex-row gap-1 items-center text-lg md:text-2xl font-semibold"
-                        >
-                            <HashIcon />
+                        <h2 class="text-lg md:text-2xl font-semibold">
                             {$list.name}
                         </h2>
                         <InfoIcon />
@@ -219,7 +216,7 @@
                             hover:bg-orange-500/20 dark:hover:bg-orange-300/20"
                                     on:click={publishListEvent}
                                 >
-                                    Publish Now
+                                    Publish
                                 </button>
                             </span>
                         {/if}

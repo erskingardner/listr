@@ -77,8 +77,8 @@
     fetchData();
 </script>
 
-<Popover style="position: relative;" class="sharePopoverWrapper h-6 w-6 {klass}">
-    <PopoverButton class=" h-6 w-6 hover:text-stone-700 hover:dark:text-stone-400">
+<Popover style="position: relative;" class="sharePopoverWrapper w-4 h-4 md:h-6 md:w-6 {klass}">
+    <PopoverButton class="w-4 h-4 md:h-6 md:w-6 hover:text-stone-700 hover:dark:text-stone-400">
         <ShareIcon />
     </PopoverButton>
 
