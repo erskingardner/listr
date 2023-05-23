@@ -25,7 +25,7 @@
     let nameSet: boolean = false;
     let unsavedListItems: NDKTag[] = [];
 
-    if (browser) {
+    if (browser && $currentUser) {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
     }
@@ -36,7 +36,8 @@
             name: listName,
             content: '',
             authorHexPubkey: $currentUser?.hexpubkey as string,
-            publicItems: unsavedListItems
+            publicItems: unsavedListItems,
+            expanded: true
         };
     }
     function validateKind() {

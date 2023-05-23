@@ -15,11 +15,13 @@ A simple app for managing and discovering Nostr lists.
 
 ### 👨🏼‍💻 In Progress
 
--   Show feed of notes for users in list
-    -   Show more details of note, link to note in primal.
+-   Update List items that are notes to use the new Note component
 
 ### ✅ Done
 
+-   Fix bug with NIP07Signer
+-   Show feed of notes for users in list
+    -   Show more details of note, link to note in primal.
 -   FIX: Fix issue creating multiple of the same list when refreshing the naddr page.
 -   Add donation button
 -   Remove items from a list

@@ -30,7 +30,7 @@
     let user: Observable<App.User>;
     const parsedData = JSON.parse(data.data);
 
-    if (browser) {
+    if (browser && $currentUser) {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
     }
