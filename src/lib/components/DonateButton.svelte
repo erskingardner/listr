@@ -17,4 +17,9 @@
     let classNames = `${classes} ${variantStyles[variant]} no-underline`;
 </script>
 
-<a href="lightning:erskingardner@getalby.com" class={classNames}> ⚡ Donate to Listr </a>
+<button
+    data-npub="npub1lstr2kmdthkgfuzne8e4cn2nhr646x8jt25szdj7t4wr6xemtuuq3lczsj"
+    class={classNames}
+>
+    ⚡ Donate to Listr
+</button>

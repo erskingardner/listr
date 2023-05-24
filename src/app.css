@@ -50,3 +50,25 @@ a {
 .tab-unselected {
     @apply hover:bg-zinc-300 dark:hover:bg-indigo-400/20 dark:hover:text-indigo-300 hover:ring-indigo-300;
 }
+
+/* Override Nostr Zap Dialog styles */
+
+.nostr-zap-dialog {
+    @apply font-sans antialiased;
+}
+
+.nostr-zap-dialog button.close-button {
+    @apply leading-none font-bold;
+}
+
+.nostr-zap-dialog > .dialog-header-container > h2 {
+    @apply font-bold text-2xl;
+}
+
+.nostr-zap-dialog > .dialog-header-container > img {
+    @apply mx-auto my-4;
+}
+
+.nostr-zap-dialog > form > button.cta-button {
+    @apply font-bold;
+}
