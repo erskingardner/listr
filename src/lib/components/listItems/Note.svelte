@@ -13,7 +13,7 @@
     import relativeTime from 'dayjs/plugin/relativeTime';
     dayjs.extend(relativeTime);
     import { createEventDispatcher } from 'svelte';
-    import NoteContent from './NoteContent.svelte';
+    import NoteContent from '../NoteContent.svelte';
 
     const dispatch = createEventDispatcher();
 

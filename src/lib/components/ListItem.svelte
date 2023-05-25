@@ -11,7 +11,8 @@
     import { currentUser } from '$lib/stores/currentUser';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
-    import Note from '$lib/components/Note.svelte';
+    import Note from '$lib/components/listItems/Note.svelte';
+    import Emoji from '$lib/components/listItems/Emoji.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -39,6 +40,10 @@
     if (item[0] === 'p') {
         itemType = 'Person';
         person = UserInterface.get({ hexpubkey: itemId });
+    }
+
+    if (item[0] === 'emoji') {
+        itemType = 'Emoji';
     }
 
     function encodedId(hexId: string): string {
@@ -107,32 +112,11 @@
                 {/if}
             </div>
         {/if}
+    {:else if itemType === 'Emoji'}
+        <Emoji {item} {list} {saved} isFeed={false} on:removeItemFromList />
     {:else if $note === undefined}
         <h2 class="animate-pulse">Loading note...</h2>
     {:else}
         <Note note={$note} {list} {saved} isFeed={false} on:removeItemFromList />
-        <!-- <div class="w-4/5 break-words text-sm md:text-base">
-            {$note?.content || itemId}
-        </div>
-        <div class="flex flex-col md:flex-row gap-4 items-center listIconsWrapper opacity-20">
-            <SharePopover type={itemType} id={itemId} />
-            {#if encodedNoteId}
-                <a
-                    href="https://primal.net/thread/{nip19.noteEncode(itemId)}"
-                    class="hover:text-stone-700 hover:dark:text-stone-400 border-0"
-                    target="_blank"
-                >
-                    <LinkOutIcon />
-                </a>
-            {/if}
-            {#if $currentUser?.hexpubkey === list.authorHexPubkey && saved && $page.url.pathname.startsWith('/a/')}
-                <button on:click={submitRemove}>
-                    <XMarkIcon />
-                    <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
-                        Remove this item from the list
-                    </Tooltip>
-                </button>
-            {/if}
-        </div> -->
     {/if}
 </div>

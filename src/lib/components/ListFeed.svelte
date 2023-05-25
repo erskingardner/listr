@@ -2,7 +2,7 @@
     import { hasPeople, userIdsForList } from '$lib/interfaces/lists';
     import type { NDKEvent } from '@nostr-dev-kit/ndk';
     import NoteInterface from '$lib/interfaces/notes';
-    import Note from '$lib/components/Note.svelte';
+    import Note from '$lib/components/listItems/Note.svelte';
     import type { Observable } from 'dexie';
 
     export let list: App.List;

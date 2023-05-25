@@ -13,14 +13,18 @@ A simple app for managing and discovering Nostr lists.
 -   Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
 -   Contact list support
     -   `nevent1qqsg8ycyjtqu0mtlg8syu7p6uzq2lx9th2g6203pasxc8vfwjtecczgldqmkr`
--   Emoji tag support
-    -   `nevent1qqs8j4a3mfkdy9fwn32fnz5cnffyy42atyuspurdqcqw0hwccjam97cpv6xxw`
-    -   https://github.com/nostr-protocol/nips/blob/master/30.md
 
 ### 👨🏼‍💻 In Progress
 
+-   Emoji tag support
+    -   Support emoji removal from lists
+    -   Support emoji addition to lists
+
 ### ✅ Done
 
+-   Emoji tag support
+    -   `nevent1qqs8j4a3mfkdy9fwn32fnz5cnffyy42atyuspurdqcqw0hwccjam97cpv6xxw`
+    -   https://github.com/nostr-protocol/nips/blob/master/30.md
 -   render list content properly
 -   Update List items that are notes to use the new Note component
 -   Refactor: Lists, List, List Form, List actions into individual components

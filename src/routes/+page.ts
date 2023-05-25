@@ -17,6 +17,7 @@ export const load = (async () => {
         'npub1hu3hdctm5nkzd8gslnyedfr5ddz3z547jqcl5j88g4fame2jd08qh6h8nh', // Carla
         'npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m', // Jack
         'npub1dergggklka99wwrs92yz8wdjs952h2ux2ha2ed598ngwu9w7a6fsh9xzpc', // Gigi
+        'npub107jk7htfv243u0x5ynn43scq9wrxtaasmrwwa8lfu2ydwag6cx2quqncxg', // verbiricha
         'npub1ejxswthae3nkljavznmv66p9ahp4wmj4adux525htmsrff4qym9sz2t3tv' // Sherry
         // 'npub1a7n2h5y3gt90y00mwrknhx74fyzzjqw25ehkscje58x9tfyhqd5snyvfnu' // Elidy
         // 'npub1y67n93njx27lzmg9ua37ce7csvq4awvl6ynfqffzfssvdn7mq9vqlhq62h' // Marce

@@ -64,7 +64,6 @@
             }
         }
     }
-    $: console.log('Content', content);
 </script>
 
 <div>
