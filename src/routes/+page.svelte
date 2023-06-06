@@ -20,9 +20,9 @@
         Check out a few examples, then sign in to view your own!
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {#key data.npubs}
-            {#each data.npubs as personNpub}
-                <PersonCard npub={personNpub} />
+        {#key data.ids}
+            {#each data.ids as id}
+                <PersonCard {id} />
             {/each}
         {/key}
     </div>

@@ -2,11 +2,12 @@
     import { currentUser } from '$lib/stores/currentUser';
     import { page } from '$app/stores';
     import { createEventDispatcher } from 'svelte';
+    import type List from '$lib/classes/list';
 
     const dispatch = createEventDispatcher();
 
     export let item: string[];
-    export let list: App.List;
+    export let list: List;
     export let saved: boolean;
     export let isFeed: boolean;
 

@@ -5,19 +5,17 @@
     import ListItem from '$lib/components/ListItem.svelte';
     import ListItemForm from '$lib/components/ListItemForm.svelte';
     import { Tooltip } from 'flowbite-svelte';
-    import { nip19 } from 'nostr-tools';
     import { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
     import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
-    import type { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
     import { unixTimeNow } from '$lib/utils/helpers';
     import { currentUser } from '$lib/stores/currentUser';
     import ndk from '$lib/stores/ndk';
     import { db } from '$lib/interfaces/db';
-    import ListInterface from '$lib/interfaces/lists';
     import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
+    import List from '$lib/classes/list';
 
-    let list: App.List;
+    let list: List;
     let listName: string;
     let listKind: string;
     let warningMessage: string = '';
@@ -25,20 +23,16 @@
     let nameSet: boolean = false;
     let unsavedListItems: NDKTag[] = [];
 
-    if (browser && $currentUser) {
-        const signer = new NDKNip07Signer();
-        $ndk.signer = signer;
-    }
-
     function buildListObject() {
-        list = {
+        list = new List({
             kind: parseInt(listKind),
             name: listName,
             content: '',
-            authorHexPubkey: $currentUser?.hexpubkey as string,
+            authorPubkey: $currentUser?.pubkey as string,
             publicItems: unsavedListItems,
+            privateItems: [],
             expanded: true
-        };
+        });
     }
     function validateKind() {
         if (listKind === '10000') {
@@ -84,34 +78,16 @@
     }
 
     function addUnsavedItem(event: any) {
-        const decodedEvent = nip19.decode(event.detail.addr);
-        let itemTag: NDKTag = [];
-        switch (decodedEvent.type) {
-            case 'npub':
-                itemTag = ['p', decodedEvent.data as string];
-                break;
-            case 'nprofile':
-                itemTag = ['p', (decodedEvent.data as ProfilePointer).pubkey as string];
-                break;
-            case 'nevent':
-                itemTag = ['e', (decodedEvent.data as EventPointer).id as string];
-                break;
-            case 'note':
-                itemTag = ['e', decodedEvent.data as string];
-                break;
-            case 'naddr':
-                itemTag = ['e', (decodedEvent.data as EventPointer).id as string];
-                break;
-            default:
-                break;
-        }
-        if (itemTag.length === 2) {
-            unsavedListItems.push(itemTag);
-            unsavedListItems = unsavedListItems;
-        }
+        let itemTag: NDKTag = List.tagFromNip19String(event.detail.addr);
+        unsavedListItems.push(itemTag);
+        unsavedListItems = unsavedListItems;
     }
 
     function publishListEvent() {
+        if (browser && $currentUser) {
+            const signer = new NDKNip07Signer();
+            $ndk.signer = signer;
+        }
         if (list && unsavedListItems.length) {
             let tagsForList: NDKTag[] = unsavedListItems;
             // Only add a "d" tag if needed
@@ -123,7 +99,7 @@
             let listToPublish = new NDKEvent($ndk, {
                 content: list.content as string,
                 kind: list.kind,
-                pubkey: list.authorHexPubkey as string,
+                pubkey: list.authorPubkey as string,
                 created_at: unixTimeNow(),
                 tags: tagsForList
             });
@@ -132,9 +108,9 @@
             try {
                 listToPublish.publish().then(() => {
                     unsavedListItems = [];
-                    ListInterface.create({ event: listToPublish }).then(async (pk) => {
+                    List.create({ event: listToPublish }).then(async (pk) => {
                         let newList = await db.lists.get(pk);
-                        goto(`/a/${newList?.pointer}`);
+                        goto(`/a/${newList?.nip19}`);
                     });
                 });
             } catch (error) {

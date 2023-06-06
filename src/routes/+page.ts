@@ -1,31 +1,27 @@
 import type { PageLoad } from './$types';
 
 export const load = (async () => {
-    const npubs: string[] = [
-        'npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6', // Fiatjaf
-        // 'npub1l2vyh47mk2p0qlsku7hg0vn29faehy9hy34ygaclpn66ukqp3afqutajft', // Pablo
-        'npub1zuuajd7u3sx8xu92yav9jwxpr839cs0kc3q6t56vd5u9q033xmhsk6c2uc', // Me
-        'npub16c0nh3dnadzqpm76uctf5hqhe2lny344zsmpm6feee9p5rdxaa9q586nvr', // Miljan
-        'npub1h50pnxqw9jg7dhr906fvy4mze2yzawf895jhnc3p7qmljdugm6gsrurqev', // Vanessa
-        'npub1csamkk8zu67zl9z4wkp90a462v53q775aqn5q6xzjdkxnkvcpd7srtz4x9', // Roya
-        // 'npub19vvkfwy9mcluhvehw7r56p4stsj5lmx4v9g3vgkwsm3arpgef8aqsrt562', // Angela
-        'npub1utx00neqgqln72j22kej3ux7803c2k986henvvha4thuwfkper4s7r50e8', // UTXO
-        'npub1xtscya34g58tk0z605fvr788k263gsu6cy9x0mhnm87echrgufzsevkk5s', // JB55
-        // 'npub158mxap4gsexqeutj5sws2pfkngyq3lh726gex8wa7flt28tzhytq4jy85z', // Amanda
-        // 'npub1rpes5hhk6mxun5ddt5kecxfm8y3xdr0h5jwal32mc6mxafr48hxsaj2et2', // Mads
-        'npub1jt0x3vsnqtazzda3ewa8ykdch2t8k566qhrd9vyy0k0ntleu744q8h6q3n', // SusieBdds
-        'npub1hu3hdctm5nkzd8gslnyedfr5ddz3z547jqcl5j88g4fame2jd08qh6h8nh', // Carla
-        'npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m', // Jack
-        'npub1dergggklka99wwrs92yz8wdjs952h2ux2ha2ed598ngwu9w7a6fsh9xzpc', // Gigi
-        'npub107jk7htfv243u0x5ynn43scq9wrxtaasmrwwa8lfu2ydwag6cx2quqncxg', // verbiricha
-        'npub1ejxswthae3nkljavznmv66p9ahp4wmj4adux525htmsrff4qym9sz2t3tv' // Sherry
-        // 'npub1a7n2h5y3gt90y00mwrknhx74fyzzjqw25ehkscje58x9tfyhqd5snyvfnu' // Elidy
-        // 'npub1y67n93njx27lzmg9ua37ce7csvq4awvl6ynfqffzfssvdn7mq9vqlhq62h' // Marce
+    const ids: string[] = [
+        '3bf0c63fcb93463407af97a5e5ee64fa883d107ef9e558472c4eb9aaaefa459d', // Fiatjaf
+        '1739d937dc8c0c7370aa27585938c119e25c41f6c441a5d34c6d38503e3136ef', // Me
+        'd61f3bc5b3eb4400efdae6169a5c17cabf3246b514361de939ce4a1a0da6ef4a', // Miljan
+        'bd1e19980e2c91e6dc657e92c25762ca882eb9272d2579e221f037f93788de91', // Vanessa
+        'c43bbb58e2e6bc2f9455758257f6ba5329107bd4e8274068c2936c69d9980b7d', // Roya
+        '32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245', // JB55
+        '92de68b21302fa2137b1cbba7259b8ba967b535a05c6d2b0847d9f35ff3cf56a', // SusieBdds
+        'bf2376e17ba4ec269d10fcc996a4746b451152be9031fa48e74553dde5526bce', // Carla
+        'c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11', // Walker
+        '460c25e682fda7832b52d1f22d3d22b3176d972f60dcdc3212ed8c92ef85065c', // Vitor
+        '6e468422dfb74a5738702a8823b9b28168abab8655faacb6853cd0ee15deee93', // Gigi
+        '7fa56f5d6962ab1e3cd424e758c3002b8665f7b0d8dcee9fe9e288d7751ac194', // verbiricha
+        'cc8d072efdcc676fcbac14f6cd6825edc3576e55eb786a2a975ee034a6a026cb', // Sherry
+        'efa6abd09142caf23dfb70ed3b9bd549042901caa66f686259a1cc55a4970369', // Elidy
+        '26bd32c67232bdf16d05e763ec67d883015eb99fd1269025224c20c6cfdb0158' // Marce
     ];
 
-    const shuffled = npubs.sort(() => 0.5 - Math.random()).slice(0, 9);
+    const shuffled = ids.sort(() => 0.5 - Math.random()).slice(0, 9);
 
     return {
-        npubs: shuffled
+        ids: shuffled
     };
 }) satisfies PageLoad;

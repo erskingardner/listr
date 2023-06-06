@@ -2,11 +2,11 @@
     import { Popover, PopoverButton, PopoverPanel } from '@rgossiaux/svelte-headlessui';
     import ShareIcon from '$lib/elements/icons/Share.svelte';
     import { copyToClipboard } from '$lib/utils/helpers';
-    import ndk from '$lib/stores/ndk';
     import type { NDKEvent } from '@nostr-dev-kit/ndk';
     import { nip19 } from 'nostr-tools';
+    import type List from '$lib/classes/list';
 
-    export let list: App.List | undefined = undefined;
+    export let list: List | undefined = undefined;
     export let event: NDKEvent | undefined = undefined;
     export let person: App.User | undefined = undefined;
     export let type: string | undefined = undefined;
@@ -21,11 +21,8 @@
         if (list) {
             if (list.kind === 10000 || list.kind === 10001) naddrName = 'note';
             if (list.kind === 30000 || list.kind === 30001) naddrName = 'naddr';
-            let ndkEvent = await $ndk.fetchEvent({ ids: [list.listId] }).catch((e) => {
-                console.error(e);
-            });
-            naddr = (ndkEvent as NDKEvent).encode();
-            id = list.listId;
+            naddr = list.nip19!;
+            id = list.id;
         } else if (event) {
             naddrName = 'note';
             naddr = event.encode();

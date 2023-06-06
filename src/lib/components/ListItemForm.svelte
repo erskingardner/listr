@@ -4,10 +4,11 @@
     import { nip19 } from 'nostr-tools';
     import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
     import { createEventDispatcher } from 'svelte';
+    import type List from '$lib/classes/list';
 
     const dispatch = createEventDispatcher();
 
-    export let list: App.List;
+    export let list: List;
 
     let itemAddr: string = '';
     let errorMessage: string = '';

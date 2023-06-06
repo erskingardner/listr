@@ -1,39 +1,30 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { Observable } from 'dexie';
-    import type { GetListOpts } from '$lib/interfaces/lists';
-    import ListInterface from '$lib/interfaces/lists';
-    import { hasPeople } from '$lib/interfaces/lists';
-    import HashIcon from '$lib/elements/icons/Hash.svelte';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import { Tooltip, Avatar } from 'flowbite-svelte';
     import ListItem from '$lib/components/ListItem.svelte';
     import SharePopover from '$lib/components/SharePopover.svelte';
-    import UserInterface from '$lib/interfaces/users';
     import ndk from '$lib/stores/ndk';
     import { currentUser } from '$lib/stores/currentUser';
     import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
     import ListItemForm from '$lib/components/ListItemForm.svelte';
     import { slide } from 'svelte/transition';
     import { circInOut } from 'svelte/easing';
-    import { nip19 } from 'nostr-tools';
     import { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
+    import type { NDKFilter } from '@nostr-dev-kit/ndk';
     import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
-    import type { EventPointer, ProfilePointer } from 'nostr-tools/lib/nip19';
     import { browser } from '$app/environment';
     import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@rgossiaux/svelte-headlessui';
     import ListFeed from '$lib/components/ListFeed.svelte';
+    import List from '$lib/classes/list';
+    import User from '$lib/classes/user';
 
     export let data: PageData;
 
-    let list: Observable<App.List | undefined>;
-    let user: Observable<App.User>;
+    let list: Observable<List>;
+    let user: Observable<User>;
     const parsedData = JSON.parse(data.data);
-
-    if (browser && $currentUser) {
-        const signer = new NDKNip07Signer();
-        $ndk.signer = signer;
-    }
 
     let addItemFormVisible = false;
     let toBeAddedListItems: NDKTag[] = [];
@@ -51,22 +42,22 @@
             });
             userOpts = { hexpubkey: (event as NDKEvent).pubkey };
         }
-        user = UserInterface.get(userOpts);
-        list = ListInterface.get(optsForAddrType(data.type));
+        user = User.get(userOpts.hexpubkey);
+        list = List.get(filterForAddrType(data.type));
     }
 
-    function optsForAddrType(type: string): GetListOpts {
-        let opts: GetListOpts = {};
+    function filterForAddrType(type: string): NDKFilter {
+        let filter: NDKFilter = {};
         if (type === 'note') {
-            opts = { listId: parsedData };
+            filter = { ids: [parsedData] };
         } else if (type === 'naddr') {
-            opts = {
-                authorHexPubkey: parsedData.pubkey,
-                name: parsedData.identifier,
-                kind: parsedData.kind
+            filter = {
+                authors: [parsedData.pubkey],
+                '#d': [parsedData.identifier],
+                kinds: [parsedData.kind]
             };
         }
-        return opts;
+        return filter;
     }
 
     if (browser) {
@@ -74,32 +65,13 @@
     }
 
     function addUnsavedItem(event: any) {
-        const decodedEvent = nip19.decode(event.detail.addr);
-        let itemTag: NDKTag = [];
-        switch (decodedEvent.type) {
-            case 'npub':
-                itemTag = ['p', decodedEvent.data as string];
-                break;
-            case 'nprofile':
-                itemTag = ['p', (decodedEvent.data as ProfilePointer).pubkey as string];
-                break;
-            case 'nevent':
-                itemTag = ['e', (decodedEvent.data as EventPointer).id as string];
-                break;
-            case 'note':
-                itemTag = ['e', decodedEvent.data as string];
-                break;
-            case 'naddr':
-                itemTag = ['e', (decodedEvent.data as EventPointer).id as string];
-                break;
-            default:
-                break;
-        }
-        if (itemTag.length === 2) {
-            if (event.detail.action === 'add') {
+        const itemTag: NDKTag = List.tagFromNip19String(event.detail.addr);
+        switch (event.detail.action) {
+            case 'add':
                 toBeAddedListItems.push(itemTag);
                 toBeAddedListItems = toBeAddedListItems;
-            } else if (event.detail.action === 'delete') {
+                break;
+            case 'delete':
                 toBeDeletedListItems.push(itemTag);
                 toBeDeletedListItems = toBeDeletedListItems;
                 const currentList = displayItems || publicListItems;
@@ -108,11 +80,16 @@
                 const indexOfItemToDelete = publicStrings.indexOf(JSON.stringify(itemTag));
                 currentList.splice(indexOfItemToDelete, 1);
                 displayItems = currentList;
-            }
+            default:
+                break;
         }
     }
 
     function publishListEvent() {
+        if (browser && $currentUser) {
+            const signer = new NDKNip07Signer();
+            $ndk.signer = signer;
+        }
         if ($list && (toBeAddedListItems.length || toBeDeletedListItems.length)) {
             // Combine tags from old list and new unsaved changes
             const currentList = displayItems || publicListItems;
@@ -126,7 +103,7 @@
             let listToPublish = new NDKEvent($ndk, {
                 content: $list?.content as string,
                 kind: $list?.kind,
-                pubkey: $list?.authorHexPubkey as string,
+                pubkey: $list?.authorPubkey as string,
                 created_at: Math.floor(Date.now() / 1000),
                 tags: tagsForList
             });
@@ -137,10 +114,9 @@
                     toBeAddedListItems = [];
                     toBeDeletedListItems = [];
                     displayItems = tagsForList.filter((tag) => tag[0] !== 'd');
-                    ListInterface.delete({ listId: $list?.listId as string });
-                    ListInterface.create({ event: listToPublish }).then(() => {
+                    $list.delete();
+                    List.create({ event: listToPublish }).then(() => {
                         loadUserAndList();
-                        // setTimeout(() => loadUserAndList(), 1000);
                     });
                 });
             } catch (error) {
@@ -153,31 +129,42 @@
         addItemFormVisible = !addItemFormVisible;
     }
 
+    // This is a gross hack to get back a real User object, not a duck-typed pseudo-user.
+    let realUser: User;
+    $: if ($user && !realUser) realUser = new User($user);
+
+    // This is a gross hack to get back a real List object, not a duck-typed pseudo-list.
+    let realList: List;
+    $: console.log($list);
+    $: if ($list) realList = new List($list);
+
     $: publicListItems = $list?.publicItems || [];
 </script>
 
 <svelte:head>
-    <title>Listr: "{$list?.name}" from {$user?.displayName || $user?.name}</title>
-    <meta
-        name="description"
-        content={`Listr list page showing the ${$list?.name} list from ${
-            $user?.displayName || $user?.name
-        }`}
-    />
+    {#if realUser}
+        <title>Listr: "{$list?.name}" from {realUser.displayableName()}</title>
+        <meta
+            name="description"
+            content={`Listr list page showing the ${
+                $list?.name
+            } list from ${realUser.displayableName()}`}
+        />
+    {/if}
 </svelte:head>
 
 <div class="listsWrapper flex flex-col gap-6">
-    {#if $list}
-        {#key $list}
+    {#if realList}
+        {#key realList}
             <div class="listWrapper">
                 <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center justify-between">
                     <div class="flex flex-row gap-2 md:gap-4 items-center">
                         <h2 class="text-lg md:text-2xl font-semibold">
-                            {$list.name}
+                            {realList.name}
                         </h2>
                         <InfoIcon />
                         <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
-                            Kind: {$list.kind}
+                            Kind: {realList.kind}
                         </Tooltip>
                     </div>
                     <div class="flex flex-row gap-4 items-center">
@@ -185,10 +172,10 @@
                             <div class="flex flex-row gap-2">
                                 <span class="hidden md:flex">Curated by</span>
                                 <Avatar
-                                    src={$user.image}
+                                    src={realUser.image}
                                     class="object-cover w-6 h-6 border border-white/10"
                                 />
-                                <a href={`/${$user.npub}`}>{$user.displayName || $user.name}</a>
+                                <a href={`/${realUser.npub}`}>{realUser.displayableName()}</a>
                             </div>
                         {/if}
                         {#if toBeAddedListItems.length || toBeDeletedListItems.length}
@@ -220,13 +207,13 @@
                                 </button>
                             </span>
                         {/if}
-                        <SharePopover list={$list} klass="mr-0 ml-auto" />
+                        <SharePopover list={realList} klass="mr-0 ml-auto" />
                         <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
                             Share this list
                         </Tooltip>
                     </div>
                 </div>
-                {#if hasPeople($list)}
+                {#if realList.hasPeople(realList.authorPubkey === $currentUser?.pubkey)}
                     <TabGroup>
                         <TabList
                             class="flex flex-row gap-1 w-full justify-around bg-zinc-200/40 dark:bg-zinc-900 p-1 rounded-md"
@@ -242,7 +229,7 @@
                         </TabList>
                         <TabPanels class="bg-zinc-200/40 dark:bg-zinc-900 p-2 mt-2 rounded-md">
                             <TabPanel>
-                                {#if $currentUser && $user && $currentUser?.hexpubkey === $user.hexpubkey}
+                                {#if $currentUser && $user && $currentUser?.pubkey === $user.pubkey}
                                     <div class="my-4 flex flex-row items-center justify-end gap-2">
                                         <button
                                             class="flex flex-row gap-2 outlineButton"
@@ -254,7 +241,7 @@
                                     </div>
                                 {/if}
                                 <div class="mb-2">
-                                    {#if $currentUser && $currentUser?.hexpubkey === $list.authorHexPubkey && addItemFormVisible}
+                                    {#if $currentUser && $currentUser?.pubkey === realList.authorPubkey && addItemFormVisible}
                                         <div
                                             transition:slide={{ duration: 400, easing: circInOut }}
                                             class="flex flex-row gap-4 justify-center"
@@ -262,7 +249,7 @@
                                             <ListItemForm
                                                 on:addItemToList={addUnsavedItem}
                                                 on:closeForm={toggleForm}
-                                                list={$list}
+                                                list={realList}
                                             />
                                         </div>
                                     {/if}
@@ -272,7 +259,7 @@
                                         <ListItem
                                             item={listItem}
                                             saved={false}
-                                            list={$list}
+                                            list={realList}
                                             action="added"
                                         />
                                     {/each}
@@ -282,7 +269,7 @@
                                         <ListItem
                                             item={listItem}
                                             saved={false}
-                                            list={$list}
+                                            list={realList}
                                             action="deleted"
                                         />
                                     {/each}
@@ -294,7 +281,7 @@
                                                 <ListItem
                                                     item={listItem}
                                                     saved={true}
-                                                    list={$list}
+                                                    list={realList}
                                                     on:removeItemFromList={addUnsavedItem}
                                                 />
                                             {/each}
@@ -304,7 +291,7 @@
                                             <ListItem
                                                 item={listItem}
                                                 saved={true}
-                                                list={$list}
+                                                list={realList}
                                                 on:removeItemFromList={addUnsavedItem}
                                             />
                                         {/each}
@@ -312,12 +299,12 @@
                                 </div>
                             </TabPanel>
                             <TabPanel>
-                                <ListFeed list={$list} />
+                                <ListFeed list={realList} />
                             </TabPanel>
                         </TabPanels>
                     </TabGroup>
                 {:else}
-                    {#if $currentUser && $user && $currentUser?.hexpubkey === $user.hexpubkey}
+                    {#if $currentUser && $user && $currentUser?.pubkey === $user.pubkey}
                         <div class="my-4 flex flex-row items-center justify-end gap-2">
                             <button class="flex flex-row gap-2 outlineButton" on:click={toggleForm}>
                                 <CirclePlusIcon />
@@ -326,7 +313,7 @@
                         </div>
                     {/if}
                     <div class="mb-2">
-                        {#if $currentUser && $currentUser?.hexpubkey === $list.authorHexPubkey && addItemFormVisible}
+                        {#if $currentUser && $currentUser?.pubkey === realList.authorPubkey && addItemFormVisible}
                             <div
                                 transition:slide={{ duration: 400, easing: circInOut }}
                                 class="flex flex-row gap-4 justify-center"
@@ -334,19 +321,29 @@
                                 <ListItemForm
                                     on:addItemToList={addUnsavedItem}
                                     on:closeForm={toggleForm}
-                                    list={$list}
+                                    list={realList}
                                 />
                             </div>
                         {/if}
                     </div>
                     <div id="toBeAddedListItems" class="flex flex-col gap-2 mb-2">
                         {#each toBeAddedListItems as listItem}
-                            <ListItem item={listItem} saved={false} list={$list} action="added" />
+                            <ListItem
+                                item={listItem}
+                                saved={false}
+                                list={realList}
+                                action="added"
+                            />
                         {/each}
                     </div>
                     <div id="toBeDeletedListItems" class="flex flex-col gap-2 mb-2">
                         {#each toBeDeletedListItems as listItem}
-                            <ListItem item={listItem} saved={false} list={$list} action="deleted" />
+                            <ListItem
+                                item={listItem}
+                                saved={false}
+                                list={realList}
+                                action="deleted"
+                            />
                         {/each}
                     </div>
                     <div class="flex flex-col gap-2">
@@ -356,7 +353,7 @@
                                     <ListItem
                                         item={listItem}
                                         saved={true}
-                                        list={$list}
+                                        list={realList}
                                         on:removeItemFromList={addUnsavedItem}
                                     />
                                 {/each}
@@ -366,7 +363,7 @@
                                 <ListItem
                                     item={listItem}
                                     saved={true}
-                                    list={$list}
+                                    list={realList}
                                     on:removeItemFromList={addUnsavedItem}
                                 />
                             {/each}

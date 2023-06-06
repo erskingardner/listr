@@ -32,6 +32,7 @@
         savestore = true;
     });
 
+    // Hide the flash after an amount of time
     $: {
         if ($flash) {
             setTimeout(() => {
