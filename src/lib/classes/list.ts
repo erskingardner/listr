@@ -141,7 +141,7 @@ export default class List {
             fetchedList = List.fromNdkEvent(event as NDKEvent);
             fetchedList.save();
         });
-        console.log('filter', filter);
+
         let dbQueryFilter: {
             kind?: number;
             authorPubkey?: string;
@@ -160,7 +160,6 @@ export default class List {
             };
         }
 
-        console.log(dbQueryFilter);
         return liveQuery(() =>
             browser ? db.lists.get(dbQueryFilter) : fetchedList
         ) as Observable<List>;

@@ -135,7 +135,6 @@
 
     // This is a gross hack to get back a real List object, not a duck-typed pseudo-list.
     let realList: List;
-    $: console.log($list);
     $: if ($list) realList = new List($list);
 
     $: publicListItems = $list?.publicItems || [];
