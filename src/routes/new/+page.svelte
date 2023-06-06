@@ -11,7 +11,6 @@
     import { currentUser } from '$lib/stores/currentUser';
     import ndk from '$lib/stores/ndk';
     import { db } from '$lib/interfaces/db';
-    import ListInterface from '$lib/interfaces/lists';
     import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
     import List from '$lib/classes/list';
@@ -109,7 +108,7 @@
             try {
                 listToPublish.publish().then(() => {
                     unsavedListItems = [];
-                    ListInterface.create({ event: listToPublish }).then(async (pk) => {
+                    List.create({ event: listToPublish }).then(async (pk) => {
                         let newList = await db.lists.get(pk);
                         goto(`/a/${newList?.nip19}`);
                     });
