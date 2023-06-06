@@ -1,38 +1,52 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { Observable } from 'dexie';
-    import List from '$lib/components/List.svelte';
+    import ListComponent from '$lib/components/List.svelte';
     import UserProfileHeader from '$lib/components/UserProfileHeader.svelte';
+    import User from '$lib/classes/user';
+    import List from '$lib/classes/list';
 
     export let data: PageData;
 
-    let user: Observable<App.User>;
-    let lists: Observable<App.List[]>;
+    let user: Observable<User>;
+    let lists: Observable<List[]>;
 
-    $: lists = data.lists;
     $: user = data.user;
+    $: lists = List.forUser(data.pubkey);
+
+    // This is a gross hack to get back a real User object, not a duck-typed pseudo-user.
+    let realUser: User;
+    $: if ($user) realUser = new User($user);
+
+    // This is a gross hack to get back a real User object, not a duck-typed pseudo-user.
+    let realLists: List[];
+    $: if ($lists) realLists = $lists.map((list) => new List(list));
 </script>
 
 <svelte:head>
-    <title>Listr: {$user?.displayName || $user?.name}</title>
-    <meta
-        name="description"
-        content={`Listr user page showing all lists for ${$user?.displayName || $user?.name}`}
-    />
+    {#if realUser}
+        <title>Listr: {realUser.displayableName()}</title>
+        <meta
+            name="description"
+            content={`Listr user page showing all lists for ${realUser.displayableName()}`}
+        />
+    {:else}
+        <title>Listr</title>
+        <meta name="description" content="Listr user page showing all lists" />
+    {/if}
 </svelte:head>
 
 <!-- Profile Header -->
-<UserProfileHeader {user} />
+{#if realUser}
+    <UserProfileHeader user={realUser} />
+{/if}
 
 <!-- Lists -->
 <div class="listsWrapper flex flex-col gap-6">
-    <!-- Contact List -->
-
-    <!-- Other Lists -->
-    {#if $lists && $lists.length > 0}
-        {#key $lists}
-            {#each $lists as list}
-                <List {list} />
+    {#if realLists && realLists.length > 0}
+        {#key realLists}
+            {#each realLists as list}
+                <ListComponent {list} />
             {/each}
         {/key}
     {:else}

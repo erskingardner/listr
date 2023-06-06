@@ -5,14 +5,14 @@
     import { Popover, PopoverButton, PopoverPanel } from '@rgossiaux/svelte-headlessui';
     import { NDKNip07Signer } from '@nostr-dev-kit/ndk';
     import { Avatar } from 'flowbite-svelte';
-    import UserInterface from '$lib/interfaces/users';
     import type { Observable } from 'dexie';
     import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
     import LogoutIcon from '$lib/elements/icons/Logout.svelte';
     import PersonIcon from '$lib/elements/icons/Person.svelte';
     import { dateTomorrow } from '$lib/utils/helpers';
+    import User from '$lib/classes/user';
 
-    let user: Observable<App.User>;
+    let user: Observable<User>;
 
     async function login() {
         const signer = new NDKNip07Signer();
@@ -20,12 +20,12 @@
         ndk.set($ndk);
         signer.user().then(async (ndkUser) => {
             if (!!ndkUser.npub) {
-                const userAttr = { hexpubkey: ndkUser.hexpubkey() };
-                currentUser.set(userAttr);
-                window.sessionStorage.setItem('listrCurrentUser', JSON.stringify(userAttr));
+                ndkUser.ndk = $ndk;
+                user = User.get(ndkUser.hexpubkey());
+                currentUser.set($user);
+                window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($user));
                 document.cookie = `userNpub=${ndkUser.npub};
                 expires=${dateTomorrow()}; SameSite=Lax; Secure`;
-                user = UserInterface.get(userAttr);
             }
         });
     }

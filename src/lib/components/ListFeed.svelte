@@ -1,16 +1,18 @@
 <script lang="ts">
-    import { hasPeople, userIdsForList } from '$lib/interfaces/lists';
-    import type { NDKEvent } from '@nostr-dev-kit/ndk';
-    import NoteInterface from '$lib/interfaces/notes';
-    import Note from '$lib/components/listItems/Note.svelte';
+    import NoteComponent from '$lib/components/listItems/Note.svelte';
     import type { Observable } from 'dexie';
+    import type List from '$lib/classes/list';
+    import { currentUser } from '$lib/stores/currentUser';
+    import Note from '$lib/classes/note';
 
-    export let list: App.List;
+    export let list: List;
     let notesFetched = false;
-    let notes: Observable<NDKEvent[]>;
+    let notes: Observable<Note[]>;
 
-    if (list && hasPeople(list) && !notesFetched) {
-        notes = NoteInterface.getNotesForUsers(userIdsForList(list));
+    if (list && list.hasPeople($currentUser?.pubkey === list.authorPubkey) && !notesFetched) {
+        notes = Note.getNotesForUsers(
+            list.userIdsForList($currentUser?.pubkey === list.authorPubkey)
+        );
         notesFetched = true;
     }
 </script>
@@ -24,7 +26,7 @@
                 class="flex flex-row items-center justify-between py-2 px-3 rounded-md
             border border-solid border-stone-800/20 dark:border-stone-100/20 listItemWrapper"
             >
-                <Note {note} {list} saved={true} isFeed={true} />
+                <NoteComponent {note} {list} saved={true} isFeed={true} />
             </div>
         {/each}
     {/if}

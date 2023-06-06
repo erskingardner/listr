@@ -1,14 +1,19 @@
 import Dexie, { type Table } from 'dexie';
+import type List from '$lib/classes/list';
+import type User from '$lib/classes/user';
+import type Note from '$lib/classes/note';
 
 export class Database extends Dexie {
-    users!: Table<App.User>;
-    lists!: Table<App.List>;
+    users!: Table<User>;
+    lists!: Table<List>;
+    notes!: Table<Note>;
 
     constructor() {
-        super('Listr');
-        this.version(9).stores({
-            users: '++id, name, displayName, image, banner, bio, nip05, lud16, about, zapService, lastFetched',
-            lists: '++id, listId, pointer, name, kind, content, createdAt, authorHexPubkey, publicItems*, privateItems*, npub, hexpubkey, lastFetched, expanded, [authorHexPubkey+name+kind], [authorHexPubkey+name+kind+listId]'
+        super('Listr2');
+        this.version(1).stores({
+            users: '&pubkey, npub, name, displayName, image, banner, bio, nip05, lud16, about, zapService, event, lastFetched',
+            lists: '&id, nip19, authorPubkey, name, createdAt, kind, expanded, privateItems*, publicItems*, event, eventId, [kind+authorPubkey], [kind+authorPubkey+name]',
+            notes: '&id, nip19, authorPubkey, createdAt, kind, event, content, [kind+authorPubkey]'
         });
     }
 }

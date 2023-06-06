@@ -4,19 +4,18 @@
     import SharePopover from '$lib/components/SharePopover.svelte';
     import ListItem from '$lib/components/ListItem.svelte';
     import { Tooltip } from 'flowbite-svelte';
-    import { pointerForList } from '$lib/utils/helpers';
-    import { toggleExpanded } from '$lib/interfaces/lists';
+    import type List from '$lib/classes/list';
 
-    export let list: App.List;
+    export let list: List;
 </script>
 
 <div class="listWrapper">
     <div class="flex flex-row gap-2 md:gap-4 mb-6 items-center">
         <h2 class="flex flex-row gap-1 items-center text-lg md:text-2xl break-words font-semibold">
-            <button on:click={toggleExpanded(list)}>
+            <button on:click={list.toggleExpanded()}>
                 <ChevronIcon bind:expanded={list.expanded} />
             </button>
-            <a href="/a/{pointerForList(list)}">
+            <a href="/a/{list.nip19}">
                 {list.name}
             </a>
         </h2>
