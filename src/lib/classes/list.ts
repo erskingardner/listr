@@ -112,9 +112,7 @@ export default class List {
         const listsForUser: List[] = [];
 
         ndk.fetchEvents(filter).then((eventSet) => {
-            console.log(eventSet);
             eventSet.forEach((event: NDKEvent) => {
-                console.log(event);
                 const list = List.fromNdkEvent(event);
                 if (list.name?.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
                 listsForUser.push(list);
