@@ -66,7 +66,7 @@
                 type="text"
                 name="search"
                 id="search"
-                class="searchInput rounded-md bg-transparent w-full text-sm"
+                class="searchInput rounded-md bg-transparent w-full text-sm pr-10"
                 placeholder="npub..."
             />
             <button type="submit" class="p-2 -ml-12">
@@ -86,12 +86,12 @@
         <div class="ml-2 logoText text-3xl md:text-4xl font-bold font-cursive">Listr</div>
     </a>
     <div class="flex flex-row justify-center w-full">
-        <form class="flex gap-2 w-full md:w-2/3" on:submit|preventDefault={searchSubmit}>
+        <form class="flex gap-2 w-full md:w-3/4" on:submit|preventDefault={searchSubmit}>
             <input
                 type="text"
                 name="search"
                 id="search"
-                class="searchInput rounded-md bg-transparent w-full text-sm"
+                class="searchInput rounded-md bg-transparent w-full text-sm pr-10"
                 placeholder="npub..."
             />
             <button type="submit" class="p-2 -ml-12">
