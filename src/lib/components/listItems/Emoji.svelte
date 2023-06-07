@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { currentUser } from '$lib/stores/currentUser';
-    import { page } from '$app/stores';
     import { createEventDispatcher } from 'svelte';
-    import type List from '$lib/classes/list';
+    // import { currentUser } from '$lib/stores/currentUser';
+    // import { page } from '$app/stores';
+    // import type List from '$lib/classes/list';
 
     const dispatch = createEventDispatcher();
 
     export let item: string[];
-    export let list: List;
-    export let saved: boolean;
-    export let isFeed: boolean;
+    // export let list: List;
+    // export let saved: boolean;
+    // export let isFeed: boolean;
 
     const emojiName: string = item[1];
     const emojiImg: string = item[2];

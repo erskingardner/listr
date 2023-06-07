@@ -21,5 +21,5 @@
     data-npub="npub1lstr2kmdthkgfuzne8e4cn2nhr646x8jt25szdj7t4wr6xemtuuq3lczsj"
     class={classNames}
 >
-    ⚡ Donate to Listr
+    ⚡ Zap Listr
 </button>

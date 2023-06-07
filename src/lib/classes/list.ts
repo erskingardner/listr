@@ -111,21 +111,19 @@ export default class List {
         };
         const listsForUser: List[] = [];
 
-        ndk.fetchEvents(filter)
-            .then((eventSet) => {
-                eventSet.forEach((event) => {
-                    const list = List.fromNdkEvent(event);
-                    if (list.name?.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
-                    listsForUser.push(list);
-                    list.save();
-                });
-            })
-            .catch((e) => {
-                console.error(e);
+        ndk.fetchEvents(filter).then((eventSet) => {
+            console.log(eventSet);
+            eventSet.forEach((event: NDKEvent) => {
+                console.log(event);
+                const list = List.fromNdkEvent(event);
+                if (list.name?.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
+                listsForUser.push(list);
+                list.save();
             });
+        });
 
         return liveQuery(() =>
-            browser ? db.lists.where({ authorPubkey: pubkey }).toArray() : listsForUser
+            browser ? db.lists.where('authorPubkey').equals(pubkey).toArray() : listsForUser
         ) as Observable<List[]>;
     }
 

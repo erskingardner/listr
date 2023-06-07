@@ -1,8 +1,8 @@
 <script lang="ts">
-    import ListBulletIcon from '$lib/elements/icons/ListBullet.svg.svelte';
     import ProfileMenu from '$lib/components/ProfileMenu.svelte';
     import SearchIcon from '$lib/elements/icons/Search.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
+    import ListrIcon from '$lib/elements/icons/Listr.svelte';
     import { goto } from '$app/navigation';
     import { fade } from 'svelte/transition';
     import DonateButton from '$lib/components/DonateButton.svelte';
@@ -53,14 +53,14 @@
     <div class="flex flex-row items-center justify-between w-full">
         <a
             href="/"
-            class="no-underline logo flex flex-row items-center hover:text-stone-700 hover:dark:text-stone-300"
+            class="no-underline logo flex flex-row items-baseline hover:text-stone-700 hover:dark:text-stone-300 border-0"
         >
-            <ListBulletIcon iconClass="w-8 h-8" />
-            <div class="logoText text-4xl font-bold font-cursive">Listr</div>
+            <ListrIcon klass="w-6 h-6" />
+            <div class="ml-2 logoText text-4xl font-bold font-cursive">Listr</div>
         </a>
         <ProfileMenu />
     </div>
-    <!-- <div class="grow flex flex-row justify-center w-full">
+    <div class="grow flex flex-row justify-center w-full">
         <form class="flex gap-2 w-full md:w-3/4" on:submit|preventDefault={searchSubmit}>
             <input
                 type="text"
@@ -73,20 +73,20 @@
                 <SearchIcon />
             </button>
         </form>
-    </div> -->
+    </div>
 </div>
 
 <!-- Desktop menu -->
 <div class="header hidden md:flex flex-row mb-10 items-center justify-between">
     <a
         href="/"
-        class="no-underline border-0 logo flex flex-row items-center hover:text-stone-700 hover:dark:text-stone-300"
+        class="no-underline border-0 logo flex flex-row items-baseline hover:text-stone-700 hover:dark:text-stone-300"
     >
-        <ListBulletIcon iconClass="w-8 h-8" />
-        <div class="logoText text-3xl md:text-4xl font-bold font-cursive">Listr</div>
+        <ListrIcon klass="w-6 h-6" />
+        <div class="ml-2 logoText text-3xl md:text-4xl font-bold font-cursive">Listr</div>
     </a>
-    <!-- <div class="grow flex flex-row justify-center w-full">
-        <form class="flex gap-2 w-full md:w-3/4" on:submit|preventDefault={searchSubmit}>
+    <div class="flex flex-row justify-center w-full">
+        <form class="flex gap-2 w-full md:w-2/3" on:submit|preventDefault={searchSubmit}>
             <input
                 type="text"
                 name="search"
@@ -98,8 +98,8 @@
                 <SearchIcon />
             </button>
         </form>
-    </div> -->
-    <div class="flex flex-row gap-4 items-center">
+    </div>
+    <div class="flex flex-row gap-4 items-center shrink-0">
         <DonateButton />
         <ProfileMenu />
     </div>
