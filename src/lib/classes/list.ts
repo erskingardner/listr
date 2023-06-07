@@ -113,7 +113,7 @@ export default class List {
 
         ndk.fetchEvents(filter)
             .then((eventSet) => {
-                eventSet.forEach((event) => {
+                eventSet.forEach((event: NDKEvent) => {
                     const list = List.fromNdkEvent(event);
                     if (list.name?.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
                     listsForUser.push(list);
@@ -125,7 +125,7 @@ export default class List {
             });
 
         return liveQuery(() =>
-            browser ? db.lists.where({ authorPubkey: pubkey }).toArray() : listsForUser
+            browser ? db.lists.where('authorPubkey').equals(pubkey).toArray() : listsForUser
         ) as Observable<List[]>;
     }
 
