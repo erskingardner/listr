@@ -13,6 +13,10 @@
     import type List from '$lib/classes/list';
     import User from '$lib/classes/user';
     import Note from '$lib/classes/note';
+    import { currentUserFollows } from '$lib/stores/currentUserFollows';
+    import { NDKEvent, NDKNip07Signer, type NDKTag } from '@nostr-dev-kit/ndk';
+    import ndk from '$lib/stores/ndk';
+    import { unixTimeNow } from '$lib/utils/helpers';
 
     const dispatch = createEventDispatcher();
 
@@ -68,6 +72,57 @@
         dispatch('removeItemFromList', { addr: encodedId(itemId), action: 'delete' });
     }
 
+    function unfollow(pubkey: string | undefined) {
+        if ($currentUser && $currentUserFollows) {
+            const followerListMinusUnfollow = $currentUserFollows.filter(
+                (hexPubkey) => hexPubkey !== pubkey
+            );
+            // build tags for all new follows list
+            const tags: NDKTag[] = followerListMinusUnfollow?.map(
+                (followerPubkey) => ['p', followerPubkey] as NDKTag
+            );
+            // build the event & publish
+            let event = new NDKEvent($ndk, {
+                pubkey: $currentUser.pubkey,
+                kind: 3,
+                tags: tags,
+                content: '',
+                created_at: unixTimeNow()
+            });
+            const signer = new NDKNip07Signer();
+            $ndk.signer = signer;
+            event.publish().then(() => {
+                // update our store if the event publishes
+                currentUserFollows.set(tags.map((tag) => tag[1]));
+            });
+        }
+    }
+
+    function follow(pubkey: string | undefined) {
+        if ($currentUser && $currentUserFollows) {
+            // build tags for all current follows
+            const tags: NDKTag[] = $currentUserFollows?.map(
+                (followerPubkey) => ['p', followerPubkey] as NDKTag
+            );
+            // add the new user to follow
+            tags.push(['p', pubkey as string]);
+            // build the event & publish
+            let event = new NDKEvent($ndk, {
+                pubkey: $currentUser.pubkey,
+                kind: 3,
+                tags: tags,
+                content: '',
+                created_at: unixTimeNow()
+            });
+            const signer = new NDKNip07Signer();
+            $ndk.signer = signer;
+            event.publish().then(() => {
+                // update our store if the event publishes
+                currentUserFollows.set(tags.map((tag) => tag[1]));
+            });
+        }
+    }
+
     // This is a gross hack to get back a real User object, not a duck-typed pseudo-user.
     let realPerson: User;
     $: if ($person) realPerson = new User($person);
@@ -98,6 +153,15 @@
                     {action === 'deleted' ? 'text-orange-500 dark:text-orange-300/50' : ''}"
                         >Unpublished {action === 'added' ? 'addition' : 'removal'}</span
                     >
+                {/if}
+                {#if realPerson.pubkey && $currentUserFollows?.includes(realPerson.pubkey)}
+                    <button class="outlineButton" on:click={() => unfollow(realPerson.pubkey)}>
+                        Unfollow
+                    </button>
+                {:else}
+                    <button class="outlineButton" on:click={() => follow(realPerson.pubkey)}>
+                        Follow
+                    </button>
                 {/if}
                 <SharePopover type={itemType} id={itemId} />
                 <a
