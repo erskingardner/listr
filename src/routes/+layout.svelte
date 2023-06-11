@@ -11,6 +11,8 @@
     import { fade } from 'svelte/transition';
     import { circInOut } from 'svelte/easing';
     import { dateTomorrow } from '$lib/utils/helpers';
+    import ndk from '$lib/stores/ndk';
+    import { currentUserFollows } from '$lib/stores/currentUserFollows';
     inject({ mode: dev ? 'development' : 'production' });
 
     const flash = initFlash(page);
@@ -19,6 +21,11 @@
 
     $: if (savestore && $currentUser) {
         window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($currentUser));
+        $ndk.getUser({ npub: $currentUser.npub })
+            .follows()
+            .then((userSet) => {
+                currentUserFollows.set(Array.from(userSet).map((user) => user.hexpubkey()));
+            });
     }
 
     onMount(async () => {
