@@ -154,14 +154,16 @@
                         >Unpublished {action === 'added' ? 'addition' : 'removal'}</span
                     >
                 {/if}
-                {#if realPerson.pubkey && $currentUserFollows?.includes(realPerson.pubkey)}
-                    <button class="outlineButton" on:click={() => unfollow(realPerson.pubkey)}>
-                        Unfollow
-                    </button>
-                {:else}
-                    <button class="outlineButton" on:click={() => follow(realPerson.pubkey)}>
-                        Follow
-                    </button>
+                {#if $currentUser}
+                    {#if realPerson.pubkey && $currentUserFollows?.includes(realPerson.pubkey)}
+                        <button class="outlineButton" on:click={() => unfollow(realPerson.pubkey)}>
+                            Unfollow
+                        </button>
+                    {:else}
+                        <button class="outlineButton" on:click={() => follow(realPerson.pubkey)}>
+                            Follow
+                        </button>
+                    {/if}
                 {/if}
                 <SharePopover type={itemType} id={itemId} />
                 <a
