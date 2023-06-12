@@ -137,7 +137,6 @@ export default class User {
 
     public async save(): Promise<User | null> {
         try {
-            console.log(this);
             if (browser) await db.users.put(this);
             return this;
         } catch (e) {

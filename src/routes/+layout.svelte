@@ -32,7 +32,6 @@
     }
 
     $: console.log('Current relays:', $ndk.pool.relays.keys());
-    $: console.log($currentUser);
 
     $: if ($currentUser?.relayUrls) {
         console.log('Updating NDK relays for logged in user');
