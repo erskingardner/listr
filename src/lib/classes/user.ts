@@ -6,6 +6,7 @@ import { unixTimeNow } from '$lib/utils/helpers';
 import ndkStore from '$lib/stores/ndk';
 import { get } from 'svelte/store';
 import { truncatedBech } from '$lib/utils/helpers';
+import NDK from '@nostr-dev-kit/ndk';
 
 interface UserParams {
     pubkey: string;
@@ -126,6 +127,20 @@ export default class User {
             console.log(e);
             return false;
         }
+    }
+
+    public updateNdkRelays(): void {
+        const ndk = get(ndkStore);
+        const ndkUser = ndk.getUser({ npub: this.npub });
+        ndkUser.relayList().then((eventSet) => {
+            const sorted = Array.from(eventSet).sort((a, b) => {
+                return (b.created_at as number) - (a.created_at as number);
+            });
+            const tags = sorted[0].getMatchingTags('r');
+            const newNdk = new NDK({ explicitRelayUrls: tags.map((tag) => tag[1]) });
+            ndkStore.set(newNdk);
+            newNdk.connect();
+        });
     }
 
     public truncatedNpub(): string {

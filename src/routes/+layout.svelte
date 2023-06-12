@@ -13,6 +13,7 @@
     import { dateTomorrow } from '$lib/utils/helpers';
     import ndk from '$lib/stores/ndk';
     import { currentUserFollows } from '$lib/stores/currentUserFollows';
+    import User from '$lib/classes/user';
     inject({ mode: dev ? 'development' : 'production' });
 
     const flash = initFlash(page);
@@ -20,6 +21,7 @@
     let savestore = false;
 
     $: if (savestore && $currentUser) {
+        // Get the user
         window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($currentUser));
         $ndk.getUser({ npub: $currentUser.npub })
             .follows()
@@ -32,6 +34,9 @@
         const storedUser = window.sessionStorage.getItem('listrCurrentUser');
         if (storedUser) {
             currentUser.set(JSON.parse(storedUser));
+            let ndkUser = $ndk.getUser({ npub: $currentUser.npub });
+            const realUser = new User($currentUser);
+            realUser.updateNdkRelays();
             document.cookie = `userNpub=${
                 $currentUser?.npub
             }; expires=${dateTomorrow()}; SameSite=Lax; Secure`;

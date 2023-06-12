@@ -11,6 +11,7 @@
     import PersonIcon from '$lib/elements/icons/Person.svelte';
     import { dateTomorrow } from '$lib/utils/helpers';
     import User from '$lib/classes/user';
+    import { RelayList } from '@nostr-dev-kit/ndk-svelte-components';
 
     let user: Observable<User>;
 
@@ -55,7 +56,7 @@
         <PopoverPanel
             style="position: absolute; z-index: 10;"
             class="
-                w-48 right-0 flex flex-col
+                w-96 right-0 flex flex-col
                 bg-zinc-100 dark:bg-zinc-900
                 p-4 rounded-lg shadow-md
                 border border-zinc-200 dark:border-zinc-800
@@ -74,6 +75,9 @@
                     <LogoutIcon />
                     Log out
                 </PopoverButton>
+                <div class="border-b border-zinc-200 dark:border-zinc-800 mt-2 mb-1" />
+                <h4 class="font-semibold">Relays</h4>
+                <RelayList ndk={$ndk} />
             </div>
         </PopoverPanel>
     </Popover>
