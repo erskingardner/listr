@@ -13,6 +13,8 @@
     import { dateTomorrow } from '$lib/utils/helpers';
     import ndk from '$lib/stores/ndk';
     import { currentUserFollows } from '$lib/stores/currentUserFollows';
+    import NDK from '@nostr-dev-kit/ndk';
+    import ndkStore from '$lib/stores/ndk';
     inject({ mode: dev ? 'development' : 'production' });
 
     const flash = initFlash(page);
@@ -20,12 +22,21 @@
     let savestore = false;
 
     $: if (savestore && $currentUser) {
+        // Get the user
         window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($currentUser));
         $ndk.getUser({ npub: $currentUser.npub })
             .follows()
             .then((userSet) => {
                 currentUserFollows.set(Array.from(userSet).map((user) => user.hexpubkey()));
             });
+    }
+
+    $: console.log('Current relays:', $ndk.pool.relays.keys());
+
+    $: if ($currentUser?.relayUrls) {
+        console.log('Updating NDK relays for logged in user');
+        const newNdk = new NDK({ explicitRelayUrls: $currentUser.relayUrls });
+        ndkStore.set(newNdk);
     }
 
     onMount(async () => {

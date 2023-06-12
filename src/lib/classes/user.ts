@@ -20,6 +20,7 @@ interface UserParams {
     about?: string;
     zapService?: string;
     lastFetched?: number;
+    relayUrls?: string[];
 }
 
 /**
@@ -38,6 +39,7 @@ export default class User {
     about?: string;
     zapService?: string;
     lastFetched?: number;
+    relayUrls?: string[];
 
     constructor(userParams: UserParams) {
         this.pubkey = userParams.pubkey;
@@ -52,6 +54,7 @@ export default class User {
         this.about = userParams.about;
         this.zapService = userParams.zapService;
         this.lastFetched = userParams.lastFetched;
+        this.relayUrls = userParams.relayUrls;
     }
 
     /**
@@ -85,7 +88,7 @@ export default class User {
         const ndk = get(ndkStore);
         const ndkUser = ndk.getUser({ hexpubkey: pubkey });
         const user = new User({ pubkey: pubkey, npub: ndkUser.npub });
-        user.updateProfile(ndkUser);
+        user.updateProfileAndRelays(ndkUser);
     }
 
     /**
@@ -96,35 +99,49 @@ export default class User {
     private needsUpdate(): boolean {
         return (
             !this.lastFetched ||
+            !this.relayUrls ||
             this.lastFetched < unixTimeNow() - 3600 * 24 ||
             (!this.displayName && !this.name)
         );
     }
 
-    private updateProfile(user: NDKUser): void {
-        user.fetchProfile().then(() => {
-            this.name = user.profile?.name as string;
-            this.displayName = user.profile?.displayName as string;
-            this.image = user.profile?.image as string;
-            this.banner = user.profile?.banner as string;
-            this.bio = user.profile?.bio as string;
-            this.nip05 = user.profile?.nip05 as string;
-            this.lud16 = user.profile?.lud16 as string;
-            this.about = user.profile?.about as string;
-            this.zapService = user.profile?.zapService as string;
-            this.lastFetched = unixTimeNow();
-
-            this.save();
-        });
+    private updateProfileAndRelays(user: NDKUser): void {
+        user.fetchProfile()
+            .then(() => {
+                this.name = user.profile?.name as string;
+                this.displayName = user.profile?.displayName as string;
+                this.image = user.profile?.image as string;
+                this.banner = user.profile?.banner as string;
+                this.bio = user.profile?.bio as string;
+                this.nip05 = user.profile?.nip05 as string;
+                this.lud16 = user.profile?.lud16 as string;
+                this.about = user.profile?.about as string;
+                this.zapService = user.profile?.zapService as string;
+            })
+            .then(() => {
+                user.relayList().then((eventSet) => {
+                    const sorted = Array.from(eventSet).sort((a, b) => {
+                        return (b.created_at as number) - (a.created_at as number);
+                    });
+                    if (sorted.length) {
+                        const tags = sorted[0].getMatchingTags('r');
+                        this.relayUrls = tags.map((tag) => tag[1]);
+                    }
+                });
+            })
+            .then(() => {
+                this.lastFetched = unixTimeNow();
+                this.save();
+            });
     }
 
-    public async save(): Promise<User | false> {
+    public async save(): Promise<User | null> {
         try {
             if (browser) await db.users.put(this);
             return this;
         } catch (e) {
             console.log(e);
-            return false;
+            return null;
         }
     }
 
