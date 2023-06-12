@@ -45,7 +45,7 @@ export default class Note {
 
     static getNotesForUsers(userIds: string[], since?: number): Observable<Note[]> {
         const ndk = get(ndkStore);
-        const sinceTime = since ? since : 60 * 60 * 24; // 24 hours
+        const sinceTime = since ? since : 60 * 60 * 4; // 4 hours
 
         const notes: Note[] = [];
 

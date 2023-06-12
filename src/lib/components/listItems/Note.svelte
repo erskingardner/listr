@@ -51,7 +51,6 @@
                     <div class="flex flex-col md:flex-row gap-2 item-center">
                         <h2 class="text-lg font-semibold">
                             <Name ndk={$ndk} pubkey={note.authorPubkey} />
-                            <!-- {realUser.displayableName()} -->
                         </h2>
                         {#if realUser.nip05}
                             <div class="flex flex-row items-center gap-1 text-xs md:text-sm">
@@ -67,11 +66,6 @@
                     </div>
                 </div>
             </div>
-        {:else}
-            <Avatar
-                ndk={$ndk}
-                class="animate-pulse w-14 h-14 rounded-full border border-zinc-200 dark:border-zinc-800"
-            />
         {/if}
         <div class="break-all md:break-words text-sm md:text-base">
             <NoteContent note={note.content} tags={note.tags} />
