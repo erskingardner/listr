@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Avatar, Tooltip } from 'flowbite-svelte';
+    import { Tooltip } from 'flowbite-svelte';
     import { currentUser } from '$lib/stores/currentUser';
     import SharePopover from '$lib/components/SharePopover.svelte';
     import VerifiedCheckIcon from '$lib/elements/icons/VerifiedCheck.svelte';
@@ -14,7 +14,8 @@
     import type List from '$lib/classes/list';
     import User from '$lib/classes/user';
     import type Note from '$lib/classes/note';
-    import { nip19 } from 'nostr-tools';
+    import { Avatar, Name } from '@nostr-dev-kit/ndk-svelte-components';
+    import ndk from '$lib/stores/ndk';
 
     const dispatch = createEventDispatcher();
 
@@ -41,11 +42,15 @@
     <div class="flex flex-col gap-4">
         {#if realUser}
             <div class="flex flex-row gap-4 items-center">
-                <Avatar src={realUser.image} />
+                <Avatar
+                    ndk={$ndk}
+                    pubkey={note.authorPubkey}
+                    class="w-14 h-14 rounded-full border border-zinc-200 dark:border-zinc-800"
+                />
                 <div class="flex flex-col gap-0">
                     <div class="flex flex-col md:flex-row gap-2 item-center">
                         <h2 class="text-lg font-semibold">
-                            {realUser.displayableName()}
+                            <Name ndk={$ndk} pubkey={note.authorPubkey} />
                         </h2>
                         {#if realUser.nip05}
                             <div class="flex flex-row items-center gap-1 text-xs md:text-sm">
@@ -61,8 +66,6 @@
                     </div>
                 </div>
             </div>
-        {:else}
-            <Avatar src={undefined} class="animate-pulse" />
         {/if}
         <div class="break-all md:break-words text-sm md:text-base">
             <NoteContent note={note.content} tags={note.tags} />

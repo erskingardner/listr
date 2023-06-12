@@ -35,7 +35,7 @@
     "type": "module",
     "dependencies": {
         "@noble/secp256k1": "^1.7.1",
-        "@nostr-dev-kit/ndk": "^0.3.30",
+        "@nostr-dev-kit/ndk": "^0.4.6",
         "@nostr-dev-kit/ndk-svelte-components": "^0.2.1",
         "@popperjs/core": "^2.11.7",
         "@scure/base": "^1.1.1",

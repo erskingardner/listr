@@ -31,8 +31,6 @@
             });
     }
 
-    $: console.log('Current relays:', $ndk.pool.relays.keys());
-
     $: if ($currentUser?.relayUrls) {
         console.log('Updating NDK relays for logged in user');
         const newNdk = new NDK({ explicitRelayUrls: $currentUser.relayUrls });
