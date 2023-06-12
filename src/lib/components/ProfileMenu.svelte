@@ -42,7 +42,6 @@
     $: {
         if ($user) {
             currentUser.set($user);
-            console.log('profilemenu user', $user);
             window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($user));
         }
     }
