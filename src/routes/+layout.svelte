@@ -13,7 +13,8 @@
     import { dateTomorrow } from '$lib/utils/helpers';
     import ndk from '$lib/stores/ndk';
     import { currentUserFollows } from '$lib/stores/currentUserFollows';
-    import User from '$lib/classes/user';
+    import NDK from '@nostr-dev-kit/ndk';
+    import ndkStore from '$lib/stores/ndk';
     inject({ mode: dev ? 'development' : 'production' });
 
     const flash = initFlash(page);
@@ -30,13 +31,19 @@
             });
     }
 
+    $: console.log('Current relays:', $ndk.pool.relays.keys());
+    $: console.log($currentUser);
+
+    $: if ($currentUser?.relayUrls) {
+        console.log('Updating NDK relays for logged in user');
+        const newNdk = new NDK({ explicitRelayUrls: $currentUser.relayUrls });
+        ndkStore.set(newNdk);
+    }
+
     onMount(async () => {
         const storedUser = window.sessionStorage.getItem('listrCurrentUser');
         if (storedUser) {
             currentUser.set(JSON.parse(storedUser));
-            let ndkUser = $ndk.getUser({ npub: $currentUser.npub });
-            const realUser = new User($currentUser);
-            realUser.updateNdkRelays();
             document.cookie = `userNpub=${
                 $currentUser?.npub
             }; expires=${dateTomorrow()}; SameSite=Lax; Secure`;
