@@ -99,7 +99,7 @@ export default class User {
     private needsUpdate(): boolean {
         return (
             !this.lastFetched ||
-            !this.relayUrls ||
+            // !this.relayUrls ||
             this.lastFetched < unixTimeNow() - 3600 * 24 ||
             (!this.displayName && !this.name)
         );
@@ -118,17 +118,17 @@ export default class User {
                 this.about = user.profile?.about as string;
                 this.zapService = user.profile?.zapService as string;
             })
-            .then(() => {
-                user.relayList().then((eventSet) => {
-                    const sorted = Array.from(eventSet).sort((a, b) => {
-                        return (b.created_at as number) - (a.created_at as number);
-                    });
-                    if (sorted.length) {
-                        const tags = sorted[0].getMatchingTags('r');
-                        this.relayUrls = tags.map((tag) => tag[1]);
-                    }
-                });
-            })
+            // .then(() => {
+            //     user.relayList().then((eventSet) => {
+            //         const sorted = Array.from(eventSet).sort((a, b) => {
+            //             return (b.created_at as number) - (a.created_at as number);
+            //         });
+            //         if (sorted.length) {
+            //             const tags = sorted[0].getMatchingTags('r');
+            //             this.relayUrls = tags.map((tag) => tag[1]);
+            //         }
+            //     });
+            // })
             .then(() => {
                 this.lastFetched = unixTimeNow();
                 this.save();
