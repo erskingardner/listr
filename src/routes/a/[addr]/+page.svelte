@@ -19,12 +19,14 @@
     import ListFeed from '$lib/components/ListFeed.svelte';
     import List from '$lib/classes/list';
     import User from '$lib/classes/user';
+    import { page } from '$app/stores';
 
     export let data: PageData;
 
     let list: Observable<List>;
     let user: Observable<User>;
     const parsedData = JSON.parse(data.data);
+    const viewParam = $page.url.searchParams.get('view');
 
     let addItemFormVisible = false;
     let toBeAddedListItems: NDKTag[] = [];
@@ -213,7 +215,7 @@
                     </div>
                 </div>
                 {#if realList.hasPeople(realList.authorPubkey === $currentUser?.pubkey)}
-                    <TabGroup>
+                    <TabGroup defaultIndex={viewParam === 'feed' ? 1 : 0}>
                         <TabList
                             class="flex flex-row gap-1 w-full justify-around bg-zinc-200/40 dark:bg-zinc-900 p-1 rounded-md"
                         >
