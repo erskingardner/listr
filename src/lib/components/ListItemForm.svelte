@@ -87,7 +87,7 @@
             on:click={validateAndSubmit}
             disabled={!!errorMessage.length}
             class="w-full md:w-auto flex flex-row justify-center items-center relative border rounded-md p-2 border-green-500
-            hover:text-green-500 disabled:text-stone-600 disabled:border-stone-600"
+            hover:text-green-500 disabled:text-zinc-600 disabled:border-zinc-600"
         >
             <CheckIcon />
         </button>

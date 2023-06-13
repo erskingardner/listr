@@ -17,10 +17,10 @@
         />
         <div
             class="z-1 absolute py-6 inset-0 w-full min-h-[286px] h-full
-    bg-gradient-to-b from-transparent to-stone-50 dark:to-stone-950"
+    bg-gradient-to-b from-transparent to-zinc-50 dark:to-zinc-950"
         />
         <div class="relative profileMetadata flex flex-col gap-4 pt-10 ml-10 max-w-lg">
-            <Avatar src={user.image} class="w-40 h-40 border-stone-100 object-cover" border />
+            <Avatar src={user.image} class="w-40 h-40 border-zinc-100 object-cover" border />
             <h1 class="text-3xl font-bold">
                 {user.displayableName()}
             </h1>

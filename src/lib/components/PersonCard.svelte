@@ -13,7 +13,7 @@
 {#if realUser}
     <a
         href={`/${realUser.npub}`}
-        class="border border-stone-800/20 dark:border-stone-100/20 p-2 rounded-md
+        class="border border-zinc-800/20 dark:border-zinc-100/20 p-2 rounded-md
 flex flex-row gap-4 items-center no-underline"
     >
         <div class="hidden md:block">
@@ -26,7 +26,7 @@ flex flex-row gap-4 items-center no-underline"
     </a>
 {:else}
     <div
-        class="border border-stone-800/20 dark:border-stone-100/20
+        class="border border-zinc-800/20 dark:border-zinc-100/20
     p-2 rounded-md items-center no-underline
     animate-pulse"
     >

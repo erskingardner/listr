@@ -131,7 +131,7 @@
                     {listName}
                 </h2>
                 <InfoIcon />
-                <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
+                <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
                     Kind: {listKind}
                 </Tooltip>
             </div>
@@ -156,7 +156,7 @@
         <div class="mb-2">
             <div
                 class="flex flex-row gap-4 rounded-md p-4 justify-center
-                border border-stone-800/20 dark:border-stone-100/20"
+                border border-zinc-800/20 dark:border-zinc-100/20"
             >
                 <ListItemForm on:addItemToList={addUnsavedItem} {list} />
             </div>
@@ -194,7 +194,7 @@
                         on:blur={validateName}
                     />
                     <div class="absolute top-1/2 -translate-y-1/2 right-2"><InfoIcon /></div>
-                    <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
+                    <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
                         Custom names only supported on kind 30000 & 30001 lists
                     </Tooltip>
                 </div>
@@ -202,7 +202,7 @@
                     on:click={validateAndSubmit}
                     disabled={!!errorMessage.length}
                     class="w-full md:w-auto flex flex-row justify-center items-center relative border rounded-md p-2 border-green-500
-            hover:text-green-500 disabled:text-stone-600 disabled:border-stone-600"
+            hover:text-green-500 disabled:text-zinc-600 disabled:border-zinc-600"
                 >
                     <CheckIcon />
                 </button>

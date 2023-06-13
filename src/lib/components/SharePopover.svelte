@@ -5,14 +5,13 @@
     import type { NDKEvent } from '@nostr-dev-kit/ndk';
     import { nip19 } from 'nostr-tools';
     import type List from '$lib/classes/list';
+    import type User from '$lib/classes/user';
 
     export let list: List | undefined = undefined;
     export let event: NDKEvent | undefined = undefined;
-    export let person: App.User | undefined = undefined;
+    export let person: User | undefined = undefined;
     export let type: string | undefined = undefined;
     export let id: string | undefined = undefined;
-
-    export let klass: string = '';
 
     let naddrName: string = '';
     let naddr: string = 'naddr';
@@ -29,8 +28,8 @@
             id = event.id;
         } else if (person) {
             naddrName = 'npub';
-            naddr = nip19.npubEncode(person.hexpubkey as string);
-            id = person.hexpubkey as string;
+            naddr = nip19.npubEncode(person.pubkey as string);
+            id = person.pubkey as string;
         } else if (type) {
             if (type === 'Person' && id) {
                 naddrName = 'npub';
@@ -74,8 +73,11 @@
     fetchData();
 </script>
 
-<Popover style="position: relative;" class="sharePopoverWrapper w-4 h-4 md:h-6 md:w-6 {klass}">
-    <PopoverButton class="w-4 h-4 md:h-6 md:w-6 hover:text-stone-700 hover:dark:text-stone-400">
+<Popover
+    style="position: relative;"
+    class="sharePopoverWrapper w-4 h-4 md:h-6 md:w-6 {$$props.class}"
+>
+    <PopoverButton class="w-4 h-4 md:h-6 md:w-6 hover:text-zinc-700 hover:dark:text-zinc-400">
         <ShareIcon />
     </PopoverButton>
 
@@ -83,9 +85,9 @@
         style="position: absolute; z-index: 10;"
         class="
             w-48 right-0 flex flex-col
-            bg-stone-100 dark:bg-stone-900
+            bg-zinc-100 dark:bg-zinc-900
             p-4 rounded-lg shadow-md
-            border border-stone-200 dark:border-stone-800
+            border border-zinc-200 dark:border-zinc-800
         "
     >
         <div class="panel-contents flex flex-col gap-2">
