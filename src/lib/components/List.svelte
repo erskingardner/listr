@@ -25,8 +25,8 @@
             Kind: {list.kind}
         </Tooltip>
         <div class="ml-auto mr-0 flex flex-row gap-4">
-            <ZapPopover {list} class="opacity-20" />
-            <SharePopover {list} class="opacity-20" />
+            <ZapPopover {list} class="opacity-100" />
+            <SharePopover {list} class="opacity-100" />
         </div>
     </div>
     <div class="{list.expanded ? 'flex' : 'hidden'} flex-col gap-2">

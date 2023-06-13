@@ -49,7 +49,9 @@
 </script>
 
 <Popover style="position: relative;" class="zapPopoverWrapper {$$props.class}">
-    <PopoverButton class="flex flex-row gap-1 hover:text-zinc-700 hover:dark:text-zinc-400">
+    <PopoverButton
+        class="flex flex-row items-center gap-1 hover:text-zinc-700 hover:dark:text-zinc-400"
+    >
         <ZapIcon class="w-4 h-4 md:h-6 md:w-6" />
         {#if totalZaps}
             {totalZaps}
