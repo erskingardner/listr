@@ -53,7 +53,7 @@
     <div class="flex flex-row items-center justify-between w-full">
         <a
             href="/"
-            class="no-underline logo flex flex-row items-baseline hover:text-stone-700 hover:dark:text-stone-300 border-0"
+            class="no-underline logo flex flex-row items-baseline hover:text-zinc-700 hover:dark:text-zinc-300 border-0"
         >
             <ListrIcon klass="w-6 h-6" />
             <div class="ml-2 logoText text-4xl font-bold font-cursive">Listr</div>
@@ -80,7 +80,7 @@
 <div class="header hidden md:flex flex-row mb-10 items-center justify-between">
     <a
         href="/"
-        class="no-underline border-0 logo flex flex-row items-baseline hover:text-stone-700 hover:dark:text-stone-300"
+        class="no-underline border-0 logo flex flex-row items-baseline hover:text-zinc-700 hover:dark:text-zinc-300"
     >
         <ListrIcon klass="w-6 h-6" />
         <div class="ml-2 logoText text-3xl md:text-4xl font-bold font-cursive">Listr</div>

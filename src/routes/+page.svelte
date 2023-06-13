@@ -14,7 +14,7 @@
     />
 </svelte:head>
 
-<div class="prose-stone prose-lg dark:prose-invert mx-auto mb-10">
+<div class="prose-zinc prose-lg dark:prose-invert mx-auto mb-10">
     <p class="">Listr is a simple tool that allows you to browse and manage Nostr lists.</p>
     <h2 class="text-xl md:text-3xl mb-4 font-bold tracking-tight">
         Check out a few examples, then sign in to view your own!

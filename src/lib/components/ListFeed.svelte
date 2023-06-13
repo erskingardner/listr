@@ -24,7 +24,7 @@
         {#each $notes as note}
             <div
                 class="flex flex-row items-center justify-between py-2 px-3 rounded-md
-            border border-solid border-stone-800/20 dark:border-stone-100/20 listItemWrapper"
+            border border-solid border-zinc-800/20 dark:border-zinc-100/20 listItemWrapper"
             >
                 <NoteComponent {note} {list} saved={true} isFeed={true} />
             </div>

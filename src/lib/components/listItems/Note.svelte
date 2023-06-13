@@ -75,7 +75,7 @@
         <SharePopover type="Event" id={note.id} />
         <a
             href="https://primal.net/thread/{note.nip19}"
-            class="hover:text-stone-700 hover:dark:text-stone-400 border-0"
+            class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
             target="_blank"
         >
             <LinkOutIcon />
@@ -83,7 +83,7 @@
         {#if $currentUser?.pubkey === list.authorPubkey && saved && !isFeed && $page.url.pathname.startsWith('/a/')}
             <button on:click={submitRemove}>
                 <XMarkIcon />
-                <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
+                <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
                     Remove this item from the list
                 </Tooltip>
             </button>

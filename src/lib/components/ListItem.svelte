@@ -135,7 +135,7 @@
 <div
     class="flex flex-row items-center justify-between
     py-2 px-3 rounded-md border listItemWrapper
-    {saved ? 'border-solid border-stone-800/20 dark:border-stone-100/20' : 'border-dashed'}
+    {saved ? 'border-solid border-zinc-800/20 dark:border-zinc-100/20' : 'border-dashed'}
     {action === 'added' ? 'border-green-500 dark:border-green-300/50' : ''}
     {action === 'deleted' ? 'border-orange-500 dark:border-orange-300/50' : ''}"
 >
@@ -168,7 +168,7 @@
                 <SharePopover type={itemType} id={itemId} />
                 <a
                     href="https://primal.net/profile/{realPerson.npub}"
-                    class="hover:text-stone-700 hover:dark:text-stone-400 border-0"
+                    class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
                     target="_blank"
                 >
                     <LinkOutIcon />
@@ -176,10 +176,10 @@
                 {#if $currentUser?.pubkey === list.authorPubkey && saved && $page.url.pathname.startsWith('/a/')}
                     <button
                         on:click={submitRemove}
-                        class="hover:text-stone-700 hover:dark:text-stone-400 border-0"
+                        class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
                     >
                         <XMarkIcon />
-                        <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
+                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
                             Remove this item from the list
                         </Tooltip>
                     </button>
@@ -187,7 +187,7 @@
             </div>
         {/if}
     {:else if itemType === 'Emoji'}
-        <Emoji {item} {list} {saved} isFeed={false} on:removeItemFromList />
+        <Emoji {item} on:removeItemFromList />
     {:else if $note === undefined}
         <h2 class="animate-pulse">Loading note...</h2>
     {:else if realNote}

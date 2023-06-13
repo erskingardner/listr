@@ -29,7 +29,7 @@
         {#if $currentUser?.hexpubkey === list.authorHexPubkey && saved && !isFeed && $page.url.pathname.startsWith('/a/')}
             <button on:click={submitRemove}>
                 <XMarkIcon />
-                <Tooltip style="custom" class="dark:bg-stone-800 bg-stone-100 shadow-sm">
+                <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
                     Remove this item from the list
                 </Tooltip>
             </button>

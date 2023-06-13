@@ -30,7 +30,7 @@ a {
 }
 
 .listWrapper:hover .sharePopoverWrapper,
-.listWrapper:hover .sharePopoverWrapper {
+.listWrapper:hover .zapPopoverWrapper {
     @apply opacity-100;
 }
 
