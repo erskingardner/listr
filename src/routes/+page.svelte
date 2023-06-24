@@ -1,8 +1,36 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import PersonCard from '$lib/components/PersonCard.svelte';
+    import type { NDKEvent, NDKZapInvoice } from '@nostr-dev-kit/ndk';
+    import { zapInvoiceFromEvent } from '@nostr-dev-kit/ndk';
+    import ndk from '$lib/stores/ndk';
+    import List from '$lib/classes/list';
 
     export let data: PageData;
+
+    // Subscribe to fetch all zap invoices for lists.
+    // At the moment this doesn't happen often enough to return much data.
+    // I need to figure out a way to get the historical data.
+    const zapsSub = $ndk.subscribe({ kinds: [9735] }, { closeOnEose: false });
+
+    zapsSub.on('event', (event: NDKEvent) => {
+        // Bail out if we don't have an "a" tag
+        const listTag = event.getMatchingTags('a')[0];
+        if (!listTag) return;
+        // or the "a" tag doesn't match a supported list kind
+        const listKind = listTag[1].match(/(\d{1,5}):/);
+        if (
+            !listKind ||
+            !List.supportedKinds.includes(parseInt(listKind[1].substring(0, listKind?.length - 1)))
+        )
+            return;
+
+        // Parse the zap invoice
+        const zapInvoice = zapInvoiceFromEvent(event);
+        if (zapInvoice) {
+            console.log(zapInvoice);
+        }
+    });
 </script>
 
 <svelte:head>
@@ -16,7 +44,7 @@
 
 <div class="prose-zinc prose-lg dark:prose-invert mx-auto mb-10">
     <p class="">Listr is a simple tool that allows you to browse and manage Nostr lists.</p>
-    <h2 class="text-xl md:text-3xl mb-4 font-bold tracking-tight">
+    <h2 class="text-xl md:text-2xl mb-4 font-bold tracking-tight">
         Check out a few examples, then sign in to view your own!
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

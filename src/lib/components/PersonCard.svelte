@@ -22,7 +22,8 @@ flex flex-row gap-4 items-center no-underline"
         <div class="block md:hidden">
             <Avatar src={realUser.image} size="md" class="!m-0 object-cover" />
         </div>
-        <span class="text-lg md:text-2xl no-underline">{realUser.displayableName()}</span>
+        <span class="text-lg md:text-xl font-medium no-underline">{realUser.displayableName()}</span
+        >
     </a>
 {:else}
     <div

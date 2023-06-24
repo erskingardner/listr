@@ -6,13 +6,10 @@ A simple app for managing and discovering Nostr lists.
 
 -   Social interactions on lists
     -   likes
-    -   zaps
     -   comments
 -   private list items
 -   Add follow button to notes feed, people lists, etc. (only for logged in users)
 -   Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
--   Contact list support
-    -   `nevent1qqsg8ycyjtqu0mtlg8syu7p6uzq2lx9th2g6203pasxc8vfwjtecczgldqmkr`
 
 ### 👨🏼‍💻 In Progress
 
@@ -22,6 +19,9 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   List zaps
+-   Contact list support
+    -   `nevent1qqsg8ycyjtqu0mtlg8syu7p6uzq2lx9th2g6203pasxc8vfwjtecczgldqmkr`
 -   Emoji tag support
     -   `nevent1qqs8j4a3mfkdy9fwn32fnz5cnffyy42atyuspurdqcqw0hwccjam97cpv6xxw`
     -   https://github.com/nostr-protocol/nips/blob/master/30.md
