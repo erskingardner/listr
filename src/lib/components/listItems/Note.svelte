@@ -1,9 +1,7 @@
 <script lang="ts">
     import { Tooltip } from 'flowbite-svelte';
     import { currentUser } from '$lib/stores/currentUser';
-    import ItemOptionsPopover from '$lib/components/ItemsOptionsPopover.svelte';
     import VerifiedCheckIcon from '$lib/elements/icons/VerifiedCheck.svelte';
-    import LinkOutIcon from '$lib/elements/icons/LinkOut.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
     import { page } from '$app/stores';
     import dayjs from 'dayjs';
