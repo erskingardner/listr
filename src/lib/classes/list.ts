@@ -1,5 +1,4 @@
-import type { NDKEvent, NDKFilter } from '@nostr-dev-kit/ndk';
-import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
+import { NDKNip07Signer, type NDKEvent, type NDKFilter, type NDKTag } from '@nostr-dev-kit/ndk';
 import { db } from '$lib/interfaces/db';
 import { browser } from '$app/environment';
 import type { Observable, PromiseExtended } from 'dexie';
@@ -318,11 +317,16 @@ export default class List {
      */
     private static async privateItemsForListEvent(event: NDKEvent): Promise<NDKTag[] | undefined> {
         // If there is no content, there are no private items
-        if (!event.content || !event.content.endsWith('==')) return;
+        if (!event.content) return;
         try {
-            const decryptedContent = await event.decrypt(event.author());
+            const ndk = get(ndkStore);
+            const signer = new NDKNip07Signer();
+            ndk.signer = signer;
+            await event.decrypt(event.author);
+            const decryptedContent = JSON.parse(event.content);
             console.log('PRIVATE ITEMS', decryptedContent);
             // return decryptedContent as NDKTag[];
+            return [];
         } catch (error) {
             console.log(error);
             return undefined;

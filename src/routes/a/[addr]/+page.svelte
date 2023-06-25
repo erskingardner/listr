@@ -4,7 +4,7 @@
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import { Tooltip, Avatar } from 'flowbite-svelte';
     import ListItem from '$lib/components/ListItem.svelte';
-    import SharePopover from '$lib/components/SharePopover.svelte';
+    import ItemOptionsPopover from '$lib/components/ItemsOptionsPopover.svelte';
     import ndk from '$lib/stores/ndk';
     import { currentUser } from '$lib/stores/currentUser';
     import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
@@ -12,8 +12,7 @@
     import { slide } from 'svelte/transition';
     import { circInOut } from 'svelte/easing';
     import { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
-    import type { NDKFilter } from '@nostr-dev-kit/ndk';
-    import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
+    import type { NDKFilter, NDKTag } from '@nostr-dev-kit/ndk';
     import { browser } from '$app/environment';
     import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@rgossiaux/svelte-headlessui';
     import ListFeed from '$lib/components/ListFeed.svelte';
@@ -32,7 +31,32 @@
     let toBeAddedListItems: NDKTag[] = [];
     let toBeDeletedListItems: NDKTag[] = [];
     let publicListItems: NDKTag[] = [];
+    let privateItems: NDKTag[] = [];
     let displayItems: NDKTag[];
+
+    /**
+     * Decrypt the content of this list, where secret tags might
+     * have been stored.
+     */
+    async function decryptTags() {
+        if ($currentUser?.pubkey === $list.authorPubkey) {
+            try {
+                const signer = new NDKNip07Signer();
+                $ndk.signer = signer;
+                const listEvent = new NDKEvent($ndk, JSON.parse($list.event as string));
+                const ndkUser = $ndk.getUser({ npub: $currentUser.npub });
+                if (listEvent.content.length > 0) {
+                    await listEvent.decrypt(ndkUser);
+                    const decryptedItems = JSON.parse(listEvent.content);
+                    if (decryptedItems && decryptedItems[0]) {
+                        privateItems = decryptedItems;
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
 
     async function loadUserAndList() {
         let userOpts;
@@ -46,6 +70,7 @@
         }
         user = User.get(userOpts.hexpubkey);
         list = List.get(filterForAddrType(data.type));
+        decryptTags();
     }
 
     function filterForAddrType(type: string): NDKFilter {
@@ -164,7 +189,10 @@
                             {realList.name}
                         </h2>
                         <InfoIcon />
-                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                        <Tooltip
+                            style="custom"
+                            class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                        >
                             Kind: {realList.kind}
                         </Tooltip>
                     </div>
@@ -208,8 +236,11 @@
                                 </button>
                             </span>
                         {/if}
-                        <SharePopover list={realList} klass="mr-0 ml-auto" />
-                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                        <ItemOptionsPopover list={realList} klass="mr-0 ml-auto" />
+                        <Tooltip
+                            style="custom"
+                            class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                        >
                             Share this list
                         </Tooltip>
                     </div>

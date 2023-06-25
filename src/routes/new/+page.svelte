@@ -131,7 +131,10 @@
                     {listName}
                 </h2>
                 <InfoIcon />
-                <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                <Tooltip
+                    style="custom"
+                    class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                >
                     Kind: {listKind}
                 </Tooltip>
             </div>
@@ -194,7 +197,10 @@
                         on:blur={validateName}
                     />
                     <div class="absolute top-1/2 -translate-y-1/2 right-2"><InfoIcon /></div>
-                    <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                    <Tooltip
+                        style="custom"
+                        class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                    >
                         Custom names only supported on kind 30000 & 30001 lists
                     </Tooltip>
                 </div>

@@ -4,7 +4,7 @@
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
     import { nip19 } from 'nostr-tools';
     import type { Observable } from 'dexie';
-    import SharePopover from './SharePopover.svelte';
+    import ItemOptionsPopover from './ItemsOptionsPopover.svelte';
     import { currentUser } from '$lib/stores/currentUser';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
@@ -17,11 +17,13 @@
     import { NDKEvent, NDKNip07Signer, type NDKTag } from '@nostr-dev-kit/ndk';
     import ndk from '$lib/stores/ndk';
     import { unixTimeNow } from '$lib/utils/helpers';
+    import EyeSlash from '$lib/elements/icons/EyeSlash.svelte';
 
     const dispatch = createEventDispatcher();
 
     export let item: string[];
     export let saved: boolean;
+    export let privateItem: boolean = false;
     export let action: string | undefined = undefined;
     export let list: List;
 
@@ -133,8 +135,9 @@
 </script>
 
 <div
-    class="flex flex-row items-center justify-between
+    class="flex flex-row items-center justify-between text-sm md:text-base
     py-2 px-3 rounded-md border listItemWrapper
+    {privateItem ? 'dark:bg-zinc-900 bg-zinc-100' : ''}
     {saved ? 'border-solid border-zinc-800/20 dark:border-zinc-100/20' : 'border-dashed'}
     {action === 'added' ? 'border-green-500 dark:border-green-300/50' : ''}
     {action === 'deleted' ? 'border-orange-500 dark:border-orange-300/50' : ''}"
@@ -143,9 +146,20 @@
         {#if realPerson}
             <div class="flex flex-row gap-4 items-center">
                 <Avatar src={realPerson.image} class="object-cover border border-white/10" />
-                <a href={`/${realPerson.npub}`}>{realPerson.displayableName()}</a>
+                <a href={`/${realPerson.npub}`} class="break-words">
+                    {realPerson.displayableName()}
+                </a>
+                {#if privateItem}
+                    <span><EyeSlash class="w-4 h-4" /></span>
+                    <Tooltip
+                        style="custom"
+                        class="dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
+                    >
+                        Private item
+                    </Tooltip>
+                {/if}
             </div>
-            <div class="flex flex-col md:flex-row gap-4 items-center listIconsWrapper opacity-20">
+            <div class="flex flex-row gap-2 md:gap-4 items-center listIconsWrapper md:opacity-20">
                 {#if !saved}
                     <span
                         class="text-sm
@@ -156,30 +170,32 @@
                 {/if}
                 {#if $currentUser}
                     {#if realPerson.pubkey && $currentUserFollows?.includes(realPerson.pubkey)}
-                        <button class="outlineButton" on:click={() => unfollow(realPerson.pubkey)}>
+                        <button
+                            class="outlineButton text-sm md:text-base"
+                            on:click={() => unfollow(realPerson.pubkey)}
+                        >
                             Unfollow
                         </button>
                     {:else}
-                        <button class="outlineButton" on:click={() => follow(realPerson.pubkey)}>
+                        <button
+                            class="outlineButton text-sm md:text-base"
+                            on:click={() => follow(realPerson.pubkey)}
+                        >
                             Follow
                         </button>
                     {/if}
                 {/if}
-                <SharePopover type={itemType} id={itemId} />
-                <a
-                    href="https://primal.net/profile/{realPerson.npub}"
-                    class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
-                    target="_blank"
-                >
-                    <LinkOutIcon />
-                </a>
+                <ItemOptionsPopover type={itemType} id={itemId} />
                 {#if $currentUser?.pubkey === list.authorPubkey && saved && $page.url.pathname.startsWith('/a/')}
                     <button
                         on:click={submitRemove}
-                        class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
+                        class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0 w-4 h-4 md:h-6 md:w-6"
                     >
-                        <XMarkIcon />
-                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                        <XMarkIcon class="w-4 h-4 md:h-6 md:w-6" />
+                        <Tooltip
+                            style="custom"
+                            class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                        >
                             Remove this item from the list
                         </Tooltip>
                     </button>

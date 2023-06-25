@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Tooltip } from 'flowbite-svelte';
     import { currentUser } from '$lib/stores/currentUser';
-    import SharePopover from '$lib/components/SharePopover.svelte';
+    import ItemOptionsPopover from '$lib/components/ItemsOptionsPopover.svelte';
     import VerifiedCheckIcon from '$lib/elements/icons/VerifiedCheck.svelte';
     import LinkOutIcon from '$lib/elements/icons/LinkOut.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
@@ -16,6 +16,7 @@
     import type Note from '$lib/classes/note';
     import { Avatar, Name } from '@nostr-dev-kit/ndk-svelte-components';
     import ndk from '$lib/stores/ndk';
+    import ItemsOptionsPopover from '$lib/components/ItemsOptionsPopover.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -71,19 +72,15 @@
             <NoteContent note={note.content} tags={note.tags} />
         </div>
     </div>
-    <div class="flex flex-col md:flex-row gap-4 items-center noteIconsWrapper opacity-20">
-        <SharePopover type="Event" id={note.id} />
-        <a
-            href="https://primal.net/thread/{note.nip19}"
-            class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
-            target="_blank"
-        >
-            <LinkOutIcon />
-        </a>
+    <div class="flex flex-col md:flex-row gap-4 items-center noteIconsWrapper md:opacity-20">
+        <ItemsOptionsPopover type="Event" id={note.id} />
         {#if $currentUser?.pubkey === list.authorPubkey && saved && !isFeed && $page.url.pathname.startsWith('/a/')}
             <button on:click={submitRemove}>
                 <XMarkIcon />
-                <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                <Tooltip
+                    style="custom"
+                    class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                >
                     Remove this item from the list
                 </Tooltip>
             </button>
