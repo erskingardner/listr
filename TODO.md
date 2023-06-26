@@ -4,6 +4,7 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
+-   Don't show lists with no name
 -   Social interactions on lists
     -   likes
     -   comments

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Avatar, Tooltip } from 'flowbite-svelte';
-    import LinkOutIcon from '$lib/elements/icons/LinkOut.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
     import { nip19 } from 'nostr-tools';
     import type { Observable } from 'dexie';
@@ -17,7 +16,10 @@
     import { NDKEvent, NDKNip07Signer, type NDKTag } from '@nostr-dev-kit/ndk';
     import ndk from '$lib/stores/ndk';
     import { unixTimeNow } from '$lib/utils/helpers';
-    import EyeSlash from '$lib/elements/icons/EyeSlash.svelte';
+    import LockIcon from '$lib/elements/icons/Lock.svelte';
+    import UserMinusIcon from '$lib/elements/icons/UserMinus.svelte';
+    import UserPlusIcon from '$lib/elements/icons/UserPlus.svelte';
+    import EyeSlashIcon from '$lib/elements/icons/EyeSlash.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -137,7 +139,7 @@
 <div
     class="flex flex-row items-center justify-between text-sm md:text-base
     py-2 px-3 rounded-md border listItemWrapper
-    {privateItem ? 'dark:bg-zinc-900 bg-zinc-100' : ''}
+    {privateItem ? 'border-dotted' : ''}
     {saved ? 'border-solid border-zinc-800/20 dark:border-zinc-100/20' : 'border-dashed'}
     {action === 'added' ? 'border-green-500 dark:border-green-300/50' : ''}
     {action === 'deleted' ? 'border-orange-500 dark:border-orange-300/50' : ''}"
@@ -150,12 +152,15 @@
                     {realPerson.displayableName()}
                 </a>
                 {#if privateItem}
-                    <span><EyeSlash class="w-4 h-4" /></span>
+                    <span
+                        class="text-2xs md:text-xs border border-indigo-500 dark:border-indigo-900 px-1.5 md:px-2 md:py-0.5 bg-indigo-400 dark:bg-indigo-800 rounded-full drop-shadow-sm"
+                        >Private</span
+                    >
                     <Tooltip
                         style="custom"
                         class="dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
                     >
-                        Private item
+                        Encrypted item only visible to you.
                     </Tooltip>
                 {/if}
             </div>
@@ -171,17 +176,29 @@
                 {#if $currentUser}
                     {#if realPerson.pubkey && $currentUserFollows?.includes(realPerson.pubkey)}
                         <button
-                            class="outlineButton text-sm md:text-base"
                             on:click={() => unfollow(realPerson.pubkey)}
+                            class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0 w-4 h-4 md:h-6 md:w-6"
                         >
-                            Unfollow
+                            <UserMinusIcon class="w-4 h-4 md:w-6 md:h-6" />
+                            <Tooltip
+                                style="custom"
+                                class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                            >
+                                Unfollow
+                            </Tooltip>
                         </button>
                     {:else}
                         <button
-                            class="outlineButton text-sm md:text-base"
                             on:click={() => follow(realPerson.pubkey)}
+                            class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0 w-4 h-4 md:h-6 md:w-6"
                         >
-                            Follow
+                            <UserPlusIcon class="w-4 h-4 md:w-6 md:h-6" />
+                            <Tooltip
+                                style="custom"
+                                class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                            >
+                                Follow
+                            </Tooltip>
                         </button>
                     {/if}
                 {/if}

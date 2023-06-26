@@ -165,6 +165,8 @@
     $: if ($list) realList = new List($list);
 
     $: publicListItems = $list?.publicItems || [];
+    let itemCount: number;
+    $: itemCount = publicListItems.length + privateItems.length;
 </script>
 
 <svelte:head>
@@ -191,10 +193,18 @@
                         <InfoIcon />
                         <Tooltip
                             style="custom"
-                            class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                            class="flex flex-col gap-1 text-sm dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
                         >
-                            Kind: {realList.kind}
+                            <span><span class="font-serif text-lg">κ</span> {realList.kind}</span>
+                            <span class="flex md:hidden">
+                                {itemCount}
+                                {itemCount === 1 ? 'item' : 'items'}
+                            </span>
                         </Tooltip>
+                        <span class="hidden md:flex text-sm">
+                            {itemCount}
+                            {itemCount === 1 ? 'item' : 'items'}
+                        </span>
                     </div>
                     <div class="flex flex-row gap-4 items-center">
                         {#if $user}

@@ -40,6 +40,9 @@
     }
 
     decryptTags();
+
+    let itemCount: number;
+    $: itemCount = list.publicItems.length + privateItems.length;
 </script>
 
 <div class="listWrapper">
@@ -55,10 +58,18 @@
         <InfoIcon />
         <Tooltip
             style="custom"
-            class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+            class="flex flex-col gap-1 text-sm dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
         >
-            Kind: {list.kind}
+            <span><span class="font-serif text-lg">κ</span> {list.kind}</span>
+            <span class="flex md:hidden">
+                {itemCount}
+                {itemCount === 1 ? 'item' : 'items'}
+            </span>
         </Tooltip>
+        <span class="hidden md:flex text-sm">
+            {itemCount}
+            {itemCount === 1 ? 'item' : 'items'}
+        </span>
         <div class="ml-auto mr-0 flex flex-row gap-4">
             <ZapPopover {list} class="opacity-100" />
             <ItemsOptionsPopover {list} class="opacity-100" />
