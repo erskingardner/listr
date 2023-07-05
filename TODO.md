@@ -16,6 +16,8 @@ A simple app for managing and discovering Nostr lists.
 ### 👨🏼‍💻 In Progress
 
 -   private list items
+    -   Handle private users for List Feed
+    -   Forms and UI for adding private users/notes to lists
 
 ### ✅ Done
 

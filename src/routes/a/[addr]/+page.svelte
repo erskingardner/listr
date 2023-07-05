@@ -46,11 +46,9 @@
                 $ndk.signer = signer;
                 const listEvent = new NDKEvent($ndk, JSON.parse($list.event as string));
                 const ndkUser = $ndk.getUser({ npub: $currentUser.npub });
-                console.log(listEvent);
                 if (listEvent.content.length > 0) {
                     await listEvent.decrypt(ndkUser);
                     const decryptedItems = JSON.parse(listEvent.content);
-                    console.log(decryptedItems);
                     if (decryptedItems && decryptedItems[0]) {
                         privateListItems = decryptedItems;
                     }
@@ -407,6 +405,16 @@
                         {/each}
                     </div>
                     <div class="flex flex-col gap-2">
+                        {#if privateListItems}
+                            {#each privateListItems as privateListItem}
+                                <ListItem
+                                    item={privateListItem}
+                                    saved={true}
+                                    privateItem={true}
+                                    list={realList}
+                                />
+                            {/each}
+                        {/if}
                         {#if displayItems}
                             {#key displayItems}
                                 {#each displayItems as listItem}
