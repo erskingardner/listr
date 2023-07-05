@@ -80,18 +80,21 @@ export default class Note {
     }
 
     static fromNdkEvent(event: NDKEvent): Note {
-        const note = new Note({
-            event: JSON.stringify(event.rawEvent()),
-            id: event.id,
-            nip19: event.encode(),
-            authorPubkey: event.pubkey,
-            content: event.content,
-            createdAt: event.created_at as number,
-            kind: event.kind as number,
-            tags: event.tags
-        });
-
-        return note;
+        try {
+            const note = new Note({
+                event: JSON.stringify(event.rawEvent()),
+                id: event.id,
+                nip19: event.encode(),
+                authorPubkey: event.pubkey,
+                content: event.content,
+                createdAt: event.created_at as number,
+                kind: event.kind as number,
+                tags: event.tags
+            });
+            return note;
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     public truncatedNip19(): string {

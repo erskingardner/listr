@@ -4,7 +4,7 @@
     import InfoIcon from '$lib/elements/icons/Info.svelte';
     import { Tooltip, Avatar } from 'flowbite-svelte';
     import ListItem from '$lib/components/ListItem.svelte';
-    import SharePopover from '$lib/components/SharePopover.svelte';
+    import ItemOptionsPopover from '$lib/components/ItemsOptionsPopover.svelte';
     import ndk from '$lib/stores/ndk';
     import { currentUser } from '$lib/stores/currentUser';
     import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
@@ -12,8 +12,7 @@
     import { slide } from 'svelte/transition';
     import { circInOut } from 'svelte/easing';
     import { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
-    import type { NDKFilter } from '@nostr-dev-kit/ndk';
-    import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
+    import type { NDKFilter, NDKTag } from '@nostr-dev-kit/ndk';
     import { browser } from '$app/environment';
     import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@rgossiaux/svelte-headlessui';
     import ListFeed from '$lib/components/ListFeed.svelte';
@@ -29,10 +28,37 @@
     const viewParam = $page.url.searchParams.get('view');
 
     let addItemFormVisible = false;
+    let decryptedPrivateItems = false;
     let toBeAddedListItems: NDKTag[] = [];
     let toBeDeletedListItems: NDKTag[] = [];
     let publicListItems: NDKTag[] = [];
+    let privateListItems: NDKTag[] = [];
     let displayItems: NDKTag[];
+
+    /**
+     * Decrypt the content of this list, where secret tags might
+     * have been stored.
+     */
+    async function decryptTags() {
+        if (!decryptedPrivateItems && $currentUser?.pubkey === $list.authorPubkey) {
+            try {
+                const signer = new NDKNip07Signer();
+                $ndk.signer = signer;
+                const listEvent = new NDKEvent($ndk, JSON.parse($list.event as string));
+                const ndkUser = $ndk.getUser({ npub: $currentUser.npub });
+                if (listEvent.content.length > 0) {
+                    await listEvent.decrypt(ndkUser);
+                    const decryptedItems = JSON.parse(listEvent.content);
+                    if (decryptedItems && decryptedItems[0]) {
+                        privateListItems = decryptedItems;
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        decryptedPrivateItems = true;
+    }
 
     async function loadUserAndList() {
         let userOpts;
@@ -140,6 +166,13 @@
     $: if ($list) realList = new List($list);
 
     $: publicListItems = $list?.publicItems || [];
+    let itemCount: number;
+    $: {
+        if (!decryptedPrivateItems && $list) {
+            decryptTags();
+        }
+    }
+    $: itemCount = publicListItems.length + privateListItems.length;
 </script>
 
 <svelte:head>
@@ -164,9 +197,20 @@
                             {realList.name}
                         </h2>
                         <InfoIcon />
-                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
-                            Kind: {realList.kind}
+                        <Tooltip
+                            style="custom"
+                            class="flex flex-col gap-1 text-sm dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
+                        >
+                            <span><span class="font-serif text-lg">κ</span> {realList.kind}</span>
+                            <span class="flex md:hidden">
+                                {itemCount}
+                                {itemCount === 1 ? 'item' : 'items'}
+                            </span>
                         </Tooltip>
+                        <span class="hidden md:flex text-sm">
+                            {itemCount}
+                            {itemCount === 1 ? 'item' : 'items'}
+                        </span>
                     </div>
                     <div class="flex flex-row gap-4 items-center">
                         {#if $user}
@@ -208,8 +252,11 @@
                                 </button>
                             </span>
                         {/if}
-                        <SharePopover list={realList} klass="mr-0 ml-auto" />
-                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                        <ItemOptionsPopover list={realList} klass="mr-0 ml-auto" />
+                        <Tooltip
+                            style="custom"
+                            class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                        >
                             Share this list
                         </Tooltip>
                     </div>
@@ -276,6 +323,16 @@
                                     {/each}
                                 </div>
                                 <div class="flex flex-col gap-2">
+                                    {#if privateListItems}
+                                        {#each privateListItems as privateListItem}
+                                            <ListItem
+                                                item={privateListItem}
+                                                saved={true}
+                                                privateItem={true}
+                                                list={realList}
+                                            />
+                                        {/each}
+                                    {/if}
                                     {#if displayItems}
                                         {#key displayItems}
                                             {#each displayItems as listItem}
@@ -348,6 +405,16 @@
                         {/each}
                     </div>
                     <div class="flex flex-col gap-2">
+                        {#if privateListItems}
+                            {#each privateListItems as privateListItem}
+                                <ListItem
+                                    item={privateListItem}
+                                    saved={true}
+                                    privateItem={true}
+                                    list={realList}
+                                />
+                            {/each}
+                        {/if}
                         {#if displayItems}
                             {#key displayItems}
                                 {#each displayItems as listItem}

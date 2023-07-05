@@ -1,10 +1,9 @@
 <script lang="ts">
     import { Avatar, Tooltip } from 'flowbite-svelte';
-    import LinkOutIcon from '$lib/elements/icons/LinkOut.svelte';
     import XMarkIcon from '$lib/elements/icons/XMark.svelte';
     import { nip19 } from 'nostr-tools';
     import type { Observable } from 'dexie';
-    import SharePopover from './SharePopover.svelte';
+    import ItemOptionsPopover from './ItemsOptionsPopover.svelte';
     import { currentUser } from '$lib/stores/currentUser';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
@@ -17,11 +16,16 @@
     import { NDKEvent, NDKNip07Signer, type NDKTag } from '@nostr-dev-kit/ndk';
     import ndk from '$lib/stores/ndk';
     import { unixTimeNow } from '$lib/utils/helpers';
+    import LockIcon from '$lib/elements/icons/Lock.svelte';
+    import UserMinusIcon from '$lib/elements/icons/UserMinus.svelte';
+    import UserPlusIcon from '$lib/elements/icons/UserPlus.svelte';
+    import EyeSlashIcon from '$lib/elements/icons/EyeSlash.svelte';
 
     const dispatch = createEventDispatcher();
 
     export let item: string[];
     export let saved: boolean;
+    export let privateItem: boolean = false;
     export let action: string | undefined = undefined;
     export let list: List;
 
@@ -133,7 +137,7 @@
 </script>
 
 <div
-    class="flex flex-row items-center justify-between
+    class="flex flex-row items-center justify-between text-sm md:text-base
     py-2 px-3 rounded-md border listItemWrapper
     {saved ? 'border-solid border-zinc-800/20 dark:border-zinc-100/20' : 'border-dashed'}
     {action === 'added' ? 'border-green-500 dark:border-green-300/50' : ''}
@@ -143,9 +147,23 @@
         {#if realPerson}
             <div class="flex flex-row gap-4 items-center">
                 <Avatar src={realPerson.image} class="object-cover border border-white/10" />
-                <a href={`/${realPerson.npub}`}>{realPerson.displayableName()}</a>
+                <a href={`/${realPerson.npub}`} class="break-words">
+                    {realPerson.displayableName()}
+                </a>
+                {#if privateItem}
+                    <span
+                        class="text-2xs md:text-xs border border-indigo-500 dark:border-indigo-900 px-1.5 md:px-2 md:py-0.5 bg-indigo-400 dark:bg-indigo-800 rounded-full drop-shadow-sm"
+                        >Private</span
+                    >
+                    <Tooltip
+                        style="custom"
+                        class="dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
+                    >
+                        Encrypted item only visible to you.
+                    </Tooltip>
+                {/if}
             </div>
-            <div class="flex flex-col md:flex-row gap-4 items-center listIconsWrapper opacity-20">
+            <div class="flex flex-row gap-2 md:gap-4 items-center listIconsWrapper md:opacity-20">
                 {#if !saved}
                     <span
                         class="text-sm
@@ -156,30 +174,44 @@
                 {/if}
                 {#if $currentUser}
                     {#if realPerson.pubkey && $currentUserFollows?.includes(realPerson.pubkey)}
-                        <button class="outlineButton" on:click={() => unfollow(realPerson.pubkey)}>
-                            Unfollow
+                        <button
+                            on:click={() => unfollow(realPerson.pubkey)}
+                            class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0 w-4 h-4 md:h-6 md:w-6"
+                        >
+                            <UserMinusIcon class="w-4 h-4 md:w-6 md:h-6" />
+                            <Tooltip
+                                style="custom"
+                                class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                            >
+                                Unfollow
+                            </Tooltip>
                         </button>
                     {:else}
-                        <button class="outlineButton" on:click={() => follow(realPerson.pubkey)}>
-                            Follow
+                        <button
+                            on:click={() => follow(realPerson.pubkey)}
+                            class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0 w-4 h-4 md:h-6 md:w-6"
+                        >
+                            <UserPlusIcon class="w-4 h-4 md:w-6 md:h-6" />
+                            <Tooltip
+                                style="custom"
+                                class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                            >
+                                Follow
+                            </Tooltip>
                         </button>
                     {/if}
                 {/if}
-                <SharePopover type={itemType} id={itemId} />
-                <a
-                    href="https://primal.net/profile/{realPerson.npub}"
-                    class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
-                    target="_blank"
-                >
-                    <LinkOutIcon />
-                </a>
+                <ItemOptionsPopover type={itemType} id={itemId} />
                 {#if $currentUser?.pubkey === list.authorPubkey && saved && $page.url.pathname.startsWith('/a/')}
                     <button
                         on:click={submitRemove}
-                        class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0"
+                        class="hover:text-zinc-700 hover:dark:text-zinc-400 border-0 w-4 h-4 md:h-6 md:w-6"
                     >
-                        <XMarkIcon />
-                        <Tooltip style="custom" class="dark:bg-zinc-800 bg-zinc-100 shadow-sm">
+                        <XMarkIcon class="w-4 h-4 md:h-6 md:w-6" />
+                        <Tooltip
+                            style="custom"
+                            class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                        >
                             Remove this item from the list
                         </Tooltip>
                     </button>

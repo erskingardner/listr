@@ -56,7 +56,7 @@
         <PopoverPanel
             style="position: absolute; z-index: 10;"
             class="
-                w-96 right-0 flex flex-col
+                w-80 right-0 flex flex-col
                 bg-zinc-100 dark:bg-zinc-900
                 p-4 rounded-lg shadow-md
                 border border-zinc-200 dark:border-zinc-800
