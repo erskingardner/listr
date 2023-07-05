@@ -284,23 +284,11 @@ export default class List {
     }
 
     /**
-     * Returns an array of userIds of all people tags in a given list
-     * @param includePrivate Should we include private list items or only public list items
+     * Returns an array of userIds of all public people tags in a given list
      * @returns string[]
      */
-    public userIdsForList(includePrivate: boolean): string[] {
-        const publicUserIds = this.publicItems
-            ?.filter((item) => item[0] === 'p')
-            .map((item) => item[1]);
-        const privateUserIds = this.privateItems
-            ?.filter((item) => item[0] === 'p')
-            .map((item) => item[1]);
-
-        return (
-            includePrivate && privateUserIds?.length
-                ? publicUserIds?.concat(privateUserIds)
-                : publicUserIds
-        ) as string[];
+    public publicUserIdsForList(): string[] {
+        return this.publicItems?.filter((item) => item[0] === 'p').map((item) => item[1]);
     }
 
     /**

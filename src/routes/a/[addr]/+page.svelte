@@ -34,6 +34,7 @@
     let publicListItems: NDKTag[] = [];
     let privateListItems: NDKTag[] = [];
     let displayItems: NDKTag[];
+    let userIdsForFeed: string[];
 
     /**
      * Decrypt the content of this list, where secret tags might
@@ -166,12 +167,23 @@
     $: if ($list) realList = new List($list);
 
     $: publicListItems = $list?.publicItems || [];
-    let itemCount: number;
     $: {
         if (!decryptedPrivateItems && $list) {
             decryptTags();
         }
     }
+    $: {
+        if ($list) {
+            let privateUserIdsForList: string[] = [];
+            if (privateListItems.length > 0) {
+                privateUserIdsForList = privateListItems
+                    ?.filter((item) => item[0] === 'p')
+                    .map((item) => item[1]);
+            }
+            userIdsForFeed = privateUserIdsForList.concat(realList.publicUserIdsForList());
+        }
+    }
+    let itemCount: number;
     $: itemCount = publicListItems.length + privateListItems.length;
 </script>
 
@@ -357,7 +369,7 @@
                                 </div>
                             </TabPanel>
                             <TabPanel>
-                                <ListFeed list={realList} />
+                                <ListFeed {userIdsForFeed} list={realList} />
                             </TabPanel>
                         </TabPanels>
                     </TabGroup>

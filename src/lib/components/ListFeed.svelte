@@ -2,17 +2,15 @@
     import NoteComponent from '$lib/components/listItems/Note.svelte';
     import type { Observable } from 'dexie';
     import type List from '$lib/classes/list';
-    import { currentUser } from '$lib/stores/currentUser';
     import Note from '$lib/classes/note';
 
     export let list: List;
+    export let userIdsForFeed: string[];
     let notesFetched = false;
     let notes: Observable<Note[]>;
 
-    if (list && list.hasPeople($currentUser?.pubkey === list.authorPubkey) && !notesFetched) {
-        notes = Note.getNotesForUsers(
-            list.userIdsForList($currentUser?.pubkey === list.authorPubkey)
-        );
+    if (userIdsForFeed && !notesFetched) {
+        notes = Note.getNotesForUsers(userIdsForFeed);
         notesFetched = true;
     }
 </script>
