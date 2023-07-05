@@ -139,7 +139,6 @@
 <div
     class="flex flex-row items-center justify-between text-sm md:text-base
     py-2 px-3 rounded-md border listItemWrapper
-    {privateItem ? 'border-dotted' : ''}
     {saved ? 'border-solid border-zinc-800/20 dark:border-zinc-100/20' : 'border-dashed'}
     {action === 'added' ? 'border-green-500 dark:border-green-300/50' : ''}
     {action === 'deleted' ? 'border-orange-500 dark:border-orange-300/50' : ''}"

@@ -4,22 +4,23 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   Don't show lists with no name
+-   NsecBunker login
 -   Social interactions on lists
     -   likes
     -   comments
--   private list items
--   Add follow button to notes feed, people lists, etc. (only for logged in users)
 -   Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
-
-### 👨🏼‍💻 In Progress
-
 -   Emoji tag support
     -   Support emoji removal from lists
     -   Support emoji addition to lists
 
+### 👨🏼‍💻 In Progress
+
+-   private list items
+
 ### ✅ Done
 
+-   Don't show lists with no name
+-   Add follow button to notes feed, people lists, etc. (only for logged in users)
 -   List zaps
 -   Contact list support
     -   `nevent1qqsg8ycyjtqu0mtlg8syu7p6uzq2lx9th2g6203pasxc8vfwjtecczgldqmkr`

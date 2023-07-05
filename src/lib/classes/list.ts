@@ -115,6 +115,7 @@ export default class List {
                 eventSet.forEach((event: NDKEvent) => {
                     const list = List.fromNdkEvent(event);
                     if (list.name?.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
+                    if (list.name.length === 0) return; // Skip to the next if it's a list without a name
                     listsForUser.push(list);
                     list.save();
                 });
