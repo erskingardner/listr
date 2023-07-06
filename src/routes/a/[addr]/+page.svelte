@@ -19,6 +19,7 @@
     import List from '$lib/classes/list';
     import User from '$lib/classes/user';
     import { page } from '$app/stores';
+    import ListItemCollection from '$lib/components/ListItemCollection.svelte';
 
     export let data: PageData;
 
@@ -29,11 +30,12 @@
 
     let addItemFormVisible = false;
     let decryptedPrivateItems = false;
-    let toBeAddedListItems: NDKTag[] = [];
-    let toBeDeletedListItems: NDKTag[] = [];
+    let toBeAddedPublicListItems: NDKTag[] = [];
+    let toBeDeletedPublicListItems: NDKTag[] = [];
+    let toBeAddedPrivateListItems: NDKTag[] = [];
+    let toBeDeletedPrivateListItems: NDKTag[] = [];
     let publicListItems: NDKTag[] = [];
     let privateListItems: NDKTag[] = [];
-    let displayItems: NDKTag[];
     let userIdsForFeed: string[];
 
     /**
@@ -54,11 +56,11 @@
                         privateListItems = decryptedItems;
                     }
                 }
+                decryptedPrivateItems = true;
             } catch (error) {
                 console.error(error);
             }
         }
-        decryptedPrivateItems = true;
     }
 
     async function loadUserAndList() {
@@ -95,54 +97,78 @@
 
     function addUnsavedItem(event: any) {
         const itemTag: NDKTag = List.tagFromNip19String(event.detail.addr);
+
         switch (event.detail.action) {
             case 'add':
-                toBeAddedListItems.push(itemTag);
-                toBeAddedListItems = toBeAddedListItems;
+                if (event.detail.public === 'public') {
+                    toBeAddedPublicListItems.push(itemTag);
+                    toBeAddedPublicListItems = toBeAddedPublicListItems;
+                } else {
+                    toBeAddedPrivateListItems.push(itemTag);
+                    toBeAddedPrivateListItems = toBeAddedPrivateListItems;
+                }
                 break;
             case 'delete':
-                toBeDeletedListItems.push(itemTag);
-                toBeDeletedListItems = toBeDeletedListItems;
-                const currentList = displayItems || publicListItems;
-                // Convert array items to string... because, Javascript
-                const publicStrings = currentList.map((item) => JSON.stringify(item));
-                const indexOfItemToDelete = publicStrings.indexOf(JSON.stringify(itemTag));
-                currentList.splice(indexOfItemToDelete, 1);
-                displayItems = currentList;
+                if (event.detail.public === 'public') {
+                    toBeDeletedPublicListItems.push(itemTag);
+                    toBeDeletedPublicListItems = toBeDeletedPublicListItems;
+                    publicListItems = publicListItems.filter(
+                        (item) => JSON.stringify(item) !== JSON.stringify(itemTag)
+                    );
+                } else {
+                    toBeDeletedPrivateListItems.push(itemTag);
+                    toBeDeletedPrivateListItems = toBeDeletedPrivateListItems;
+                    privateListItems = privateListItems.filter(
+                        (item) => JSON.stringify(item) !== JSON.stringify(itemTag)
+                    );
+                }
+
             default:
                 break;
         }
     }
 
-    function publishListEvent() {
+    async function publishListEvent() {
         if (browser && $currentUser) {
             const signer = new NDKNip07Signer();
             $ndk.signer = signer;
         }
-        if ($list && (toBeAddedListItems.length || toBeDeletedListItems.length)) {
+        if ($list && (uncommittedAdditions || uncommittedDeletions)) {
             // Combine tags from old list and new unsaved changes
-            const currentList = displayItems || publicListItems;
-            let tagsForList: NDKTag[] = [...toBeAddedListItems, ...(currentList as NDKTag[])];
+            let tagsForList: NDKTag[] = [
+                ...toBeAddedPublicListItems,
+                ...(publicListItems as NDKTag[])
+            ];
             // Only add a "d" tag if needed
             if ($list.kind === 30000 || $list.kind === 30001) {
                 tagsForList.push(['d', $list?.name as string]);
             }
 
+            // Handle private items
+            toBeAddedPrivateListItems.forEach((privateListItemToAdd) => {
+                privateListItems.push(privateListItemToAdd);
+            });
+
             // Build new list event
             let listToPublish = new NDKEvent($ndk, {
-                content: $list?.content as string,
+                content: JSON.stringify(privateListItems),
                 kind: $list?.kind,
                 pubkey: $list?.authorPubkey as string,
                 created_at: Math.floor(Date.now() / 1000),
                 tags: tagsForList
             });
 
+            // Encrypt list event
+            let ndkUser = $ndk.getUser({ npub: $currentUser?.npub });
+            await listToPublish.encrypt(ndkUser);
+
             // Sign and publish new list event
             try {
                 listToPublish.publish().then(() => {
-                    toBeAddedListItems = [];
-                    toBeDeletedListItems = [];
-                    displayItems = tagsForList.filter((tag) => tag[0] !== 'd');
+                    toBeAddedPublicListItems = [];
+                    toBeAddedPrivateListItems = [];
+                    toBeDeletedPublicListItems = [];
+                    toBeDeletedPrivateListItems = [];
                     $list.delete();
                     List.create({ event: listToPublish }).then(() => {
                         loadUserAndList();
@@ -185,6 +211,11 @@
     }
     let itemCount: number;
     $: itemCount = publicListItems.length + privateListItems.length;
+    let uncommittedAdditions: number;
+    $: uncommittedAdditions = toBeAddedPublicListItems.length + toBeAddedPrivateListItems.length;
+    let uncommittedDeletions: number;
+    $: uncommittedDeletions =
+        toBeDeletedPublicListItems.length + toBeDeletedPrivateListItems.length;
 </script>
 
 <svelte:head>
@@ -235,21 +266,19 @@
                                 <a href={`/${realUser.npub}`}>{realUser.displayableName()}</a>
                             </div>
                         {/if}
-                        {#if toBeAddedListItems.length || toBeDeletedListItems.length}
+                        {#if uncommittedAdditions > 0 || uncommittedDeletions > 0}
                             <span class="flex flex-row gap-4">
                                 <div class="flex flex-col justify-center">
                                     <span class="text-green-500 dark:text-green-300/50">
-                                        {#if toBeAddedListItems.length}
-                                            {toBeAddedListItems.length}
-                                            {toBeAddedListItems.length === 1 ? 'item' : 'items'} to be
-                                            added
+                                        {#if uncommittedAdditions > 0}
+                                            {uncommittedAdditions}
+                                            {uncommittedAdditions === 1 ? 'item' : 'items'} to be added
                                         {/if}
                                     </span>
                                     <span class="text-orange-500 dark:text-orange-300/50">
-                                        {#if toBeDeletedListItems.length}
-                                            {toBeDeletedListItems.length}
-                                            {toBeDeletedListItems.length === 1 ? 'item' : 'items'} to
-                                            be removed
+                                        {#if uncommittedDeletions}
+                                            {uncommittedDeletions}
+                                            {uncommittedDeletions === 1 ? 'item' : 'items'} to be removed
                                         {/if}
                                     </span>
                                 </div>
@@ -314,59 +343,58 @@
                                         </div>
                                     {/if}
                                 </div>
-                                <div id="toBeAddedListItems" class="flex flex-col gap-2 mb-2">
-                                    {#each toBeAddedListItems as listItem}
-                                        <ListItem
-                                            item={listItem}
-                                            saved={false}
-                                            list={realList}
-                                            action="added"
-                                        />
-                                    {/each}
-                                </div>
-                                <div id="toBeDeletedListItems" class="flex flex-col gap-2 mb-2">
-                                    {#each toBeDeletedListItems as listItem}
-                                        <ListItem
-                                            item={listItem}
-                                            saved={false}
-                                            list={realList}
-                                            action="deleted"
-                                        />
-                                    {/each}
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    {#if privateListItems}
-                                        {#each privateListItems as privateListItem}
-                                            <ListItem
-                                                item={privateListItem}
-                                                saved={true}
-                                                privateItem={true}
-                                                list={realList}
-                                            />
-                                        {/each}
-                                    {/if}
-                                    {#if displayItems}
-                                        {#key displayItems}
-                                            {#each displayItems as listItem}
-                                                <ListItem
-                                                    item={listItem}
-                                                    saved={true}
-                                                    list={realList}
-                                                    on:removeItemFromList={addUnsavedItem}
-                                                />
-                                            {/each}
-                                        {/key}
-                                    {:else}
-                                        {#each publicListItems as listItem}
-                                            <ListItem
-                                                item={listItem}
-                                                saved={true}
-                                                list={realList}
-                                                on:removeItemFromList={addUnsavedItem}
-                                            />
-                                        {/each}
-                                    {/if}
-                                </div>
+                                <ListItemCollection
+                                    collection={toBeAddedPrivateListItems}
+                                    collectionName="toBeAddedPrivateListItems"
+                                    saved={false}
+                                    list={realList}
+                                    privateItem={true}
+                                    action="added"
+                                    on:removeItemFromList={addUnsavedItem}
+                                />
+                                <ListItemCollection
+                                    collection={toBeAddedPublicListItems}
+                                    collectionName="toBeAddedPublicListItems"
+                                    saved={false}
+                                    list={realList}
+                                    privateItem={false}
+                                    action="added"
+                                    on:removeItemFromList={addUnsavedItem}
+                                />
+                                <ListItemCollection
+                                    collection={toBeDeletedPrivateListItems}
+                                    collectionName="toBeDeletedPrivateListItems"
+                                    saved={false}
+                                    list={realList}
+                                    privateItem={true}
+                                    action="deleted"
+                                    on:removeItemFromList={addUnsavedItem}
+                                />
+                                <ListItemCollection
+                                    collection={toBeDeletedPublicListItems}
+                                    collectionName="toBeDeletedPublicListItems"
+                                    saved={false}
+                                    list={realList}
+                                    privateItem={false}
+                                    action="deleted"
+                                    on:removeItemFromList={addUnsavedItem}
+                                />
+                                <ListItemCollection
+                                    collection={privateListItems}
+                                    collectionName="privateListItems"
+                                    saved={true}
+                                    list={realList}
+                                    privateItem={true}
+                                    on:removeItemFromList={addUnsavedItem}
+                                />
+                                <ListItemCollection
+                                    collection={publicListItems}
+                                    collectionName="publicListItems"
+                                    saved={true}
+                                    list={realList}
+                                    privateItem={false}
+                                    on:removeItemFromList={addUnsavedItem}
+                                />
                             </TabPanel>
                             <TabPanel>
                                 <ListFeed {userIdsForFeed} list={realList} />
@@ -396,59 +424,58 @@
                             </div>
                         {/if}
                     </div>
-                    <div id="toBeAddedListItems" class="flex flex-col gap-2 mb-2">
-                        {#each toBeAddedListItems as listItem}
-                            <ListItem
-                                item={listItem}
-                                saved={false}
-                                list={realList}
-                                action="added"
-                            />
-                        {/each}
-                    </div>
-                    <div id="toBeDeletedListItems" class="flex flex-col gap-2 mb-2">
-                        {#each toBeDeletedListItems as listItem}
-                            <ListItem
-                                item={listItem}
-                                saved={false}
-                                list={realList}
-                                action="deleted"
-                            />
-                        {/each}
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        {#if privateListItems}
-                            {#each privateListItems as privateListItem}
-                                <ListItem
-                                    item={privateListItem}
-                                    saved={true}
-                                    privateItem={true}
-                                    list={realList}
-                                />
-                            {/each}
-                        {/if}
-                        {#if displayItems}
-                            {#key displayItems}
-                                {#each displayItems as listItem}
-                                    <ListItem
-                                        item={listItem}
-                                        saved={true}
-                                        list={realList}
-                                        on:removeItemFromList={addUnsavedItem}
-                                    />
-                                {/each}
-                            {/key}
-                        {:else}
-                            {#each publicListItems as listItem}
-                                <ListItem
-                                    item={listItem}
-                                    saved={true}
-                                    list={realList}
-                                    on:removeItemFromList={addUnsavedItem}
-                                />
-                            {/each}
-                        {/if}
-                    </div>
+                    <ListItemCollection
+                        collection={toBeAddedPrivateListItems}
+                        collectionName="toBeAddedPrivateListItems"
+                        saved={false}
+                        list={realList}
+                        privateItem={true}
+                        action="added"
+                        on:removeItemFromList={addUnsavedItem}
+                    />
+                    <ListItemCollection
+                        collection={toBeAddedPublicListItems}
+                        collectionName="toBeAddedPublicListItems"
+                        saved={false}
+                        list={realList}
+                        privateItem={false}
+                        action="added"
+                        on:removeItemFromList={addUnsavedItem}
+                    />
+                    <ListItemCollection
+                        collection={toBeDeletedPrivateListItems}
+                        collectionName="toBeDeletedPrivateListItems"
+                        saved={false}
+                        list={realList}
+                        privateItem={true}
+                        action="deleted"
+                        on:removeItemFromList={addUnsavedItem}
+                    />
+                    <ListItemCollection
+                        collection={toBeDeletedPublicListItems}
+                        collectionName="toBeDeletedPublicListItems"
+                        saved={false}
+                        list={realList}
+                        privateItem={false}
+                        action="deleted"
+                        on:removeItemFromList={addUnsavedItem}
+                    />
+                    <ListItemCollection
+                        collection={privateListItems}
+                        collectionName="privateListItems"
+                        saved={true}
+                        list={realList}
+                        privateItem={true}
+                        on:removeItemFromList={addUnsavedItem}
+                    />
+                    <ListItemCollection
+                        collection={publicListItems}
+                        collectionName="publicListItems"
+                        saved={true}
+                        list={realList}
+                        privateItem={false}
+                        on:removeItemFromList={addUnsavedItem}
+                    />
                 {/if}
             </div>
         {/key}

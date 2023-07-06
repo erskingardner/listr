@@ -12,15 +12,15 @@ A simple app for managing and discovering Nostr lists.
 -   Emoji tag support
     -   Support emoji removal from lists
     -   Support emoji addition to lists
+-   List deletion NIP-09
 
 ### 👨🏼‍💻 In Progress
+
+### ✅ Done
 
 -   private list items
     -   Handle private users for List Feed
     -   Forms and UI for adding private users/notes to lists
-
-### ✅ Done
-
 -   Don't show lists with no name
 -   Add follow button to notes feed, people lists, etc. (only for logged in users)
 -   List zaps

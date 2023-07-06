@@ -73,7 +73,11 @@
     }
 
     function submitRemove() {
-        dispatch('removeItemFromList', { addr: encodedId(itemId), action: 'delete' });
+        dispatch('removeItemFromList', {
+            addr: encodedId(itemId),
+            public: privateItem ? 'private' : 'public',
+            action: 'delete'
+        });
     }
 
     function unfollow(pubkey: string | undefined) {
