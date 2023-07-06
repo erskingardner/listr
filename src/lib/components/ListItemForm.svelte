@@ -11,6 +11,7 @@
     export let list: List;
 
     let itemAddr: string = '';
+    let itemPublic: string = 'public';
     let errorMessage: string = '';
     let tagsForEvent: NDKTag[] = [];
 
@@ -64,9 +65,10 @@
     function validateAndSubmit() {
         validate();
         if (errorMessage === '') {
-            dispatch('addItemToList', { addr: itemAddr, action: 'add' });
+            dispatch('addItemToList', { addr: itemAddr, public: itemPublic, action: 'add' });
             tagsForEvent = [];
             itemAddr = '';
+            itemPublic = 'public';
             errorMessage = '';
         }
     }
@@ -83,6 +85,15 @@
             bind:value={itemAddr}
             on:blur={validate}
         />
+        <select
+            name="itemPublic"
+            id="itemPublic"
+            bind:value={itemPublic}
+            class="border rounded-md bg-transparent"
+        >
+            <option value="public" selected>Public</option>
+            <option value="private">Private</option>
+        </select>
         <button
             on:click={validateAndSubmit}
             disabled={!!errorMessage.length}
