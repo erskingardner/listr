@@ -2,9 +2,6 @@
     import type List from '$lib/classes/list';
     import ListItem from './ListItem.svelte';
     import type { NDKTag } from '@nostr-dev-kit/ndk';
-    import { createEventDispatcher } from 'svelte';
-
-    const dispatch = createEventDispatcher();
 
     export let collection: NDKTag[];
     export let list: List;
