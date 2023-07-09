@@ -5,9 +5,7 @@ A simple app for managing and discovering Nostr lists.
 ### 📥 Todo
 
 -   NsecBunker login
--   Social interactions on lists
-    -   likes
-    -   comments
+-   Commenting on lists
 -   Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
 -   Emoji tag support
     -   Support emoji removal from lists
@@ -17,6 +15,7 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   Ability to add likes to lists
 -   Query and handle delete events so we don't show deleted events
 -   List deletion NIP-09
 -   private list items
