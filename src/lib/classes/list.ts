@@ -106,7 +106,7 @@ export default class List {
         const ndk = get(ndkStore);
 
         const listsForUser: List[] = [];
-        let deleteRequestEventIds: string[];
+        const deleteRequestEventIds: string[] = [];
 
         const deleteFilter: NDKFilter = {
             kinds: [5],
