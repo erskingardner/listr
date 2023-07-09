@@ -104,21 +104,42 @@ export default class List {
      */
     static forUser(pubkey: string): Observable<List[]> {
         const ndk = get(ndkStore);
-        const filter: NDKFilter = {
+
+        const listsForUser: List[] = [];
+        const deleteRequestEventIds: string[] = [];
+
+        const deleteFilter: NDKFilter = {
+            kinds: [5],
+            authors: [pubkey]
+        };
+
+        const listsFilter: NDKFilter = {
             kinds: List.supportedKinds,
             authors: [pubkey]
         };
-        const listsForUser: List[] = [];
 
-        ndk.fetchEvents(filter)
+        ndk.fetchEvents(deleteFilter)
             .then((eventSet) => {
                 eventSet.forEach((event: NDKEvent) => {
-                    const list = List.fromNdkEvent(event);
-                    if (list.name?.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
-                    if (list.name.length === 0) return; // Skip to the next if it's a list without a name
-                    listsForUser.push(list);
-                    list.save();
+                    const tag = event.getMatchingTags('a')[0];
+                    if (tag) deleteRequestEventIds.push(tag[1]);
                 });
+            })
+            .then(() => {
+                ndk.fetchEvents(listsFilter)
+                    .then((eventSet) => {
+                        eventSet.forEach((event: NDKEvent) => {
+                            const list = List.fromNdkEvent(event);
+                            if (list.name?.endsWith('/lastOpened')) return; // Skip to next if it's a client marker list
+                            if (list.name.length === 0) return; // Skip to the next if it's a list without a name
+                            if (deleteRequestEventIds.includes(list.id as string)) return; // Skip if we have a delete request for a given list event
+                            listsForUser.push(list);
+                            list.save();
+                        });
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                    });
             })
             .catch((e) => {
                 console.error(e);

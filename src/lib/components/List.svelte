@@ -8,11 +8,14 @@
     import { currentUser } from '$lib/stores/currentUser';
     import ndk from '$lib/stores/ndk';
     import { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
-    import type { NDKTag } from '@nostr-dev-kit/ndk';
+    import type { NDKFilter, NDKTag } from '@nostr-dev-kit/ndk';
     import ItemsOptionsPopover from '$lib/components/ItemsOptionsPopover.svelte';
+    import { unixTimeNow } from '$lib/utils/helpers';
+    import HeartIcon from '$lib/elements/icons/Heart.svelte';
 
     export let list: List;
 
+    let liked: boolean = false;
     let privateItems: NDKTag[] = [];
 
     /**
@@ -39,7 +42,69 @@
         }
     }
 
+    function checkForLikes() {
+        if ($currentUser) {
+            const likeFilter: NDKFilter = {
+                kinds: [7],
+                authors: [$currentUser.pubkey as string],
+                '#a': [list.id as string]
+            };
+            $ndk.fetchEvent(likeFilter).then((likeEvent) => {
+                if (likeEvent) {
+                    liked = true;
+                }
+            });
+        }
+    }
+
     decryptTags();
+    checkForLikes();
+
+    function handleDeleteList(event: any) {
+        // Create & publish list deletion event (kind 5)
+        const deleteEvent = new NDKEvent($ndk, {
+            kind: 5,
+            pubkey: list.authorPubkey,
+            content: 'List deleted by owner',
+            tags: [['a', list.id as string]],
+            created_at: unixTimeNow()
+        });
+        deleteEvent
+            .publish()
+            .then(() => {
+                // Delete the list from the cache
+                list.delete();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    function likeList() {
+        // For now, don't worry about "unliking" a list.
+        if (!liked) {
+            // Create and publish a reaction event (kind )
+            const likeEvent = new NDKEvent($ndk, {
+                kind: 7,
+                content: '+',
+                pubkey: $currentUser?.pubkey as string,
+                created_at: unixTimeNow(),
+                tags: [
+                    ['e', list.id as string],
+                    ['a', list.id as string],
+                    ['p', $currentUser?.pubkey as string]
+                ]
+            });
+            likeEvent
+                .publish()
+                .then(() => {
+                    liked = true;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+    }
 
     let itemCount: number;
     $: itemCount = list.publicItems.length + privateItems.length;
@@ -71,8 +136,15 @@
             {itemCount === 1 ? 'item' : 'items'}
         </span>
         <div class="ml-auto mr-0 flex flex-row gap-4">
+            {#if $currentUser}
+                <button on:click={likeList}
+                    ><HeartIcon
+                        class="opacity-100 w-6 h-6 {liked ? 'fill-red-500 stroke-red-500' : ''}"
+                    />
+                </button>
+            {/if}
             <ZapPopover {list} class="opacity-100" />
-            <ItemsOptionsPopover {list} class="opacity-100" />
+            <ItemsOptionsPopover {list} class="opacity-100" on:deleteList={handleDeleteList} />
         </div>
     </div>
     <div class="{list.expanded ? 'flex' : 'hidden'} flex-col gap-2">

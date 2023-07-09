@@ -8,8 +8,7 @@ const ndk = new NDK({
         'wss://nos.lol',
         'wss://relay.snort.social',
         'wss://relay.damus.io'
-    ],
-    debug: false
+    ]
 });
 
 // Create a singleton instance that is the default export
