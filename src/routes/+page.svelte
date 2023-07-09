@@ -28,7 +28,7 @@
         // Parse the zap invoice
         const zapInvoice = zapInvoiceFromEvent(event);
         if (zapInvoice) {
-            console.log(zapInvoice);
+            // console.log(zapInvoice);
         }
     });
 </script>

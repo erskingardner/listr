@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Popover, PopoverButton, PopoverPanel } from '@rgossiaux/svelte-headlessui';
-    import ShareIcon from '$lib/elements/icons/Share.svelte';
     import { copyToClipboard } from '$lib/utils/helpers';
     import type { NDKEvent } from '@nostr-dev-kit/ndk';
     import { nip19 } from 'nostr-tools';
@@ -10,7 +9,11 @@
     import LinkOutIcon from '$lib/elements/icons/LinkOut.svelte';
     import LinkIcon from '$lib/elements/icons/Link.svelte';
     import FingerprintIcon from '$lib/elements/icons/Fingerprint.svelte';
-    import Fingerprint from '$lib/elements/icons/Fingerprint.svelte';
+    import XMarkIcon from '$lib/elements/icons/XMark.svelte';
+    import { createEventDispatcher } from 'svelte';
+    import { currentUser } from '$lib/stores/currentUser';
+
+    const dispatch = createEventDispatcher();
 
     export let list: List | undefined = undefined;
     export let event: NDKEvent | undefined = undefined;
@@ -67,13 +70,6 @@
         console.log(naddr);
         copyToClipboard(naddr);
     }
-    async function copyId() {
-        await fetchData().catch((e) => {
-            console.error(e);
-        });
-        console.log(id);
-        copyToClipboard(id as string);
-    }
 
     fetchData();
 </script>
@@ -110,6 +106,15 @@
                 <FingerprintIcon class="w-4 h-4" />
                 Copy {naddrName} ID
             </PopoverButton>
+            {#if naddrName === 'naddr' && list?.authorPubkey === $currentUser?.pubkey}
+                <PopoverButton
+                    on:click={() => dispatch('deleteList')}
+                    class="popoverPanelLink text-left flex flex-row gap-2 items-center"
+                >
+                    <XMarkIcon class="w-4 h-4" />
+                    Delete List
+                </PopoverButton>
+            {/if}
             {#if naddrName !== 'naddr'}
                 <PopoverButton
                     as="a"
