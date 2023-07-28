@@ -1,12 +1,11 @@
 <script lang="ts">
-    import type { PageData } from './$types';
     import type { Observable } from 'dexie';
     import ListComponent from '$lib/components/List.svelte';
     import UserProfileHeader from '$lib/components/UserProfileHeader.svelte';
     import User from '$lib/classes/user';
     import List from '$lib/classes/list';
 
-    export let data: PageData;
+    export let data;
 
     let user: Observable<User>;
     let lists: Observable<List[]>;

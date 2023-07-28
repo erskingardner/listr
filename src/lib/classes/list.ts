@@ -334,7 +334,6 @@ export default class List {
             ndk.signer = signer;
             await event.decrypt(event.author);
             const decryptedContent = JSON.parse(event.content);
-            console.log('PRIVATE ITEMS', decryptedContent);
             // return decryptedContent as NDKTag[];
             return [];
         } catch (error) {

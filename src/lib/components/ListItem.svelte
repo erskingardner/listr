@@ -16,10 +16,8 @@
     import { NDKEvent, NDKNip07Signer, type NDKTag } from '@nostr-dev-kit/ndk';
     import ndk from '$lib/stores/ndk';
     import { unixTimeNow } from '$lib/utils/helpers';
-    import LockIcon from '$lib/elements/icons/Lock.svelte';
     import UserMinusIcon from '$lib/elements/icons/UserMinus.svelte';
     import UserPlusIcon from '$lib/elements/icons/UserPlus.svelte';
-    import EyeSlashIcon from '$lib/elements/icons/EyeSlash.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -222,6 +220,8 @@
                 {/if}
             </div>
         {/if}
+    <!-- {:else if itemType === 'FileMetadata'}
+        <Kind1063 {item} on:removeItemFromList /> -->
     {:else if itemType === 'Emoji'}
         <Emoji {item} on:removeItemFromList />
     {:else if $note === undefined}
