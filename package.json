@@ -34,6 +34,7 @@
     },
     "type": "module",
     "dependencies": {
+        "@floating-ui/dom": "^1.4.5",
         "@noble/secp256k1": "^2.0.0",
         "@nostr-dev-kit/ndk": "^0.7.7",
         "@nostr-dev-kit/ndk-svelte-components": "0.7.7-2",
@@ -46,7 +47,7 @@
         "dexie": "4.0.1-alpha.24",
         "eventemitter3": "^5.0.1",
         "flowbite": "^1.7.0",
-        "flowbite-svelte": "^0.40.2",
+        "flowbite-svelte": "^0.39.2",
         "light-bolt11-decoder": "^3.0.0",
         "nostr-tools": "^1.13.1",
         "sveltekit-flash-message": "^2.1.0",

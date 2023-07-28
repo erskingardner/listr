@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@floating-ui/dom':
+    specifier: ^1.4.5
+    version: 1.4.5
   '@noble/secp256k1':
     specifier: ^2.0.0
     version: 2.0.0
@@ -42,8 +45,8 @@ dependencies:
     specifier: ^1.7.0
     version: 1.7.0
   flowbite-svelte:
-    specifier: ^0.40.2
-    version: 0.40.2(svelte@4.1.1)
+    specifier: ^0.39.2
+    version: 0.39.2(svelte@4.1.1)
   light-bolt11-decoder:
     specifier: ^3.0.0
     version: 3.0.0
@@ -2282,13 +2285,13 @@ packages:
   /flatted@3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
 
-  /flowbite-svelte@0.40.2(svelte@4.1.1):
-    resolution: {integrity: sha512-dRiBOCCxm3nkABlmdyngMhrDnFl5FrhWDJhMChTTirsLd/j1tdelzUAeIeGZUK8H2dvnjW2/K1XZDoFP4Fxn4Q==}
+  /flowbite-svelte@0.39.2(svelte@4.1.1):
+    resolution: {integrity: sha512-wNv5f4ZbXBQgOiqMCSzbdCdUas+DuWVrOCYZQFMGc2m+GNbEk5q6V+WCfN9Uiw15DaJp2Y3GC/iA945TiQYMFA==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     peerDependencies:
       svelte: ^3.55.1 || ^4.0.0
     dependencies:
-      '@floating-ui/dom': 1.4.5
+      '@popperjs/core': 2.11.8
       flowbite: 1.7.0
       svelte: 4.1.1
       tailwind-merge: 1.14.0
