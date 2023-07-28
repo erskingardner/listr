@@ -222,6 +222,8 @@
                 {/if}
             </div>
         {/if}
+    {:else if itemType === 'FileMetadata'}
+        <Kind1063 {item} on:removeItemFromList />
     {:else if itemType === 'Emoji'}
         <Emoji {item} on:removeItemFromList />
     {:else if $note === undefined}

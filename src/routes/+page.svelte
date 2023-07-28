@@ -11,7 +11,7 @@
     // Subscribe to fetch all zap invoices for lists.
     // At the moment this doesn't happen often enough to return much data.
     // I need to figure out a way to get the historical data.
-    const zapsSub = $ndk.subscribe({ kinds: [9735] }, { closeOnEose: false });
+    const zapsSub = $ndk.subscribe({ kinds: [9735] }, { closeOnEose: true });
 
     zapsSub.on('event', (event: NDKEvent) => {
         // Bail out if we don't have an "a" tag

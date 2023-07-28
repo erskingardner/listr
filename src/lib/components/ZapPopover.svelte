@@ -16,7 +16,7 @@
 
     const zapsSub = $ndk.subscribe(
         { kinds: [9735], '#a': [list.id as string] },
-        { closeOnEose: false }
+        { closeOnEose: true }
     );
 
     zapsSub.on('event', (event) => {
