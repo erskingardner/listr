@@ -10,7 +10,7 @@ const ndk = new NDK({
         'wss://relay.damus.io'
     ]
 });
-console.log('ABOUT TO CONNECT');
+
 await ndk.connect().then(() => console.log('NDK Connected'));
 
 // Create a singleton instance that is the default export
