@@ -6,8 +6,6 @@
     import { currentUser } from '$lib/stores/currentUser';
     import { getFlash } from 'sveltekit-flash-message/client';
     import { page } from '$app/stores';
-    import { dev } from '$app/environment';
-    import { inject } from '@vercel/analytics';
     import { fade } from 'svelte/transition';
     import { circInOut } from 'svelte/easing';
     import { dateTomorrow } from '$lib/utils/helpers';
@@ -15,7 +13,6 @@
     import { currentUserFollows } from '$lib/stores/currentUserFollows';
     import NDK from '@nostr-dev-kit/ndk';
     import ndkStore from '$lib/stores/ndk';
-    inject({ mode: dev ? 'development' : 'production' });
 
     const flash = getFlash(page);
 

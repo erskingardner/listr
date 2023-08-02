@@ -41,7 +41,6 @@
         "@popperjs/core": "^2.11.8",
         "@scure/base": "^1.1.1",
         "@sveltejs/adapter-vercel": "^3.0.3",
-        "@vercel/analytics": "^1.0.1",
         "classnames": "^2.3.2",
         "dayjs": "^1.11.9",
         "dexie": "4.0.1-alpha.24",
