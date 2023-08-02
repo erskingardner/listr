@@ -4,7 +4,7 @@
     import { goto } from '$app/navigation';
     import { Popover, PopoverButton, PopoverPanel } from '@rgossiaux/svelte-headlessui';
     import { NDKNip07Signer } from '@nostr-dev-kit/ndk';
-    import { Avatar } from 'flowbite-svelte';
+    import { Avatar, Modal } from 'flowbite-svelte';
     import type { Observable } from 'dexie';
     import CirclePlusIcon from '$lib/elements/icons/CirclePlus.svelte';
     import LogoutIcon from '$lib/elements/icons/Logout.svelte';
@@ -15,20 +15,27 @@
 
     let user: Observable<User>;
 
+    let signerModal = false;
+
     async function login() {
-        const signer = new NDKNip07Signer();
-        $ndk.signer = signer;
-        ndk.set($ndk);
-        signer.user().then(async (ndkUser) => {
-            if (!!ndkUser.npub) {
-                ndkUser.ndk = $ndk;
-                user = User.get(ndkUser.hexpubkey());
-                currentUser.set($user);
-                window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($user));
-                document.cookie = `userNpub=${ndkUser.npub};
-                expires=${dateTomorrow()}; SameSite=Lax; Secure`;
-            }
-        });
+        try {
+            const signer = new NDKNip07Signer();
+            $ndk.signer = signer;
+            ndk.set($ndk);
+            signer.user().then(async (ndkUser) => {
+                if (!!ndkUser.npub) {
+                    ndkUser.ndk = $ndk;
+                    user = User.get(ndkUser.hexpubkey());
+                    currentUser.set($user);
+                    window.sessionStorage.setItem('listrCurrentUser', JSON.stringify($user));
+                    document.cookie = `userNpub=${ndkUser.npub};
+                    expires=${dateTomorrow()}; SameSite=Lax; Secure`;
+                }
+            });
+        } catch (error: any) {
+            console.log(error.message);
+            signerModal = true;
+        }
     }
 
     function logout(e: Event) {
@@ -46,6 +53,46 @@
         }
     }
 </script>
+
+<Modal title="Nostr Signing Extension Not Found" bind:open={signerModal} autoclose>
+    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+        Listr is an app built on <span class="font-bold">Nostr</span>. To log in and manage your
+        lists you need to sign events with your Nostr keys using a browser extension like Alby or
+        nos2x in Chrome or Brave.
+    </p>
+    <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+        If you're unsure what Nostr is and want to learn more please check out <a
+            href="https://nostr.how?utm_source=listr&utm_medium=signerModal">Nostr.how</a
+        >
+    </p>
+    <svelte:fragment slot="footer">
+        <div
+            class="flex flex-col gap-8 md:flex-row items-center justify-center md:justify-around w-full"
+        >
+            <a
+                href="https://getalby.com?utm_source=listr&utm_medium=signerModal"
+                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0"
+                target="_blank"
+            >
+                <span class="">Get Alby</span>
+            </a>
+            <a
+                href="https://github.com/fiatjaf/nos2x"
+                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0"
+                target="_blank"
+            >
+                <span class="">Get nos2x</span>
+            </a>
+            <a
+                href="https://nostr.how?utm_source=listr&utm_medium=signerModal"
+                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0"
+                target="_blank"
+            >
+                <span class="">Learn more</span>
+            </a>
+        </div>
+    </svelte:fragment>
+</Modal>
 
 {#if $currentUser}
     <Popover style="position: relative;" class="h-10 w-10">

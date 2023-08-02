@@ -4,7 +4,7 @@
     import Footer from '$lib/components/Footer.svelte';
     import { onMount } from 'svelte';
     import { currentUser } from '$lib/stores/currentUser';
-    import { initFlash } from 'sveltekit-flash-message/client';
+    import { getFlash } from 'sveltekit-flash-message/client';
     import { page } from '$app/stores';
     import { dev } from '$app/environment';
     import { inject } from '@vercel/analytics';
@@ -17,7 +17,7 @@
     import ndkStore from '$lib/stores/ndk';
     inject({ mode: dev ? 'development' : 'production' });
 
-    const flash = initFlash(page);
+    const flash = getFlash(page);
 
     let savestore = false;
 
