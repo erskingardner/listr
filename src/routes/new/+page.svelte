@@ -1,19 +1,19 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
+    import { goto } from '$app/navigation';
+    import List from '$lib/classes/list';
+    import ListItem from '$lib/components/ListItem.svelte';
+    import ListItemForm from '$lib/components/ListItemForm.svelte';
     import CheckIcon from '$lib/elements/icons/Check.svelte';
     import HashIcon from '$lib/elements/icons/Hash.svelte';
     import InfoIcon from '$lib/elements/icons/Info.svelte';
-    import ListItem from '$lib/components/ListItem.svelte';
-    import ListItemForm from '$lib/components/ListItemForm.svelte';
-    import { Tooltip } from 'flowbite-svelte';
-    import { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
-    import type { NDKTag } from '@nostr-dev-kit/ndk/lib/src/events';
-    import { unixTimeNow } from '$lib/utils/helpers';
+    import { db } from '$lib/interfaces/db';
     import { currentUser } from '$lib/stores/currentUser';
     import ndk from '$lib/stores/ndk';
-    import { db } from '$lib/interfaces/db';
-    import { goto } from '$app/navigation';
-    import { browser } from '$app/environment';
-    import List from '$lib/classes/list';
+    import { unixTimeNow } from '$lib/utils/helpers';
+    import type { NDKTag } from '@nostr-dev-kit/ndk';
+    import { NDKEvent, NDKNip07Signer } from '@nostr-dev-kit/ndk';
+    import { Tooltip } from 'flowbite-svelte';
 
     let list: List;
     let listName: string;
@@ -22,6 +22,8 @@
     let errorMessage: string = '';
     let nameSet: boolean = false;
     let unsavedListItems: NDKTag[] = [];
+
+    let publishSubmitted: boolean = false;
 
     function buildListObject() {
         list = new List({
@@ -84,6 +86,7 @@
     }
 
     function publishListEvent() {
+        publishSubmitted = true;
         if (browser && $currentUser) {
             const signer = new NDKNip07Signer();
             $ndk.signer = signer;
@@ -108,6 +111,7 @@
             try {
                 listToPublish.publish().then(() => {
                     unsavedListItems = [];
+                    publishSubmitted = false;
                     List.create({ event: listToPublish }).then(async (pk) => {
                         let newList = await db.lists.get(pk);
                         goto(`/a/${newList?.nip19}`);
@@ -132,7 +136,7 @@
                 </h2>
                 <InfoIcon />
                 <Tooltip
-                    style="custom"
+                    type="custom"
                     class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
                 >
                     Kind: {listKind}
@@ -149,6 +153,7 @@
                         text-orange-500 dark:text-orange-300/80 ml-2
                         hover:bg-orange-500/20 dark:hover:bg-orange-300/20"
                             on:click={publishListEvent}
+                            disabled={publishSubmitted}
                         >
                             Publish Now
                         </button>
@@ -198,8 +203,8 @@
                     />
                     <div class="absolute top-1/2 -translate-y-1/2 right-2"><InfoIcon /></div>
                     <Tooltip
-                        style="custom"
-                        class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
+                        type="custom"
+                        class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl w-64"
                     >
                         Custom names only supported on kind 30000 & 30001 lists
                     </Tooltip>

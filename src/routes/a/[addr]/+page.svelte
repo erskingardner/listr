@@ -241,7 +241,7 @@
                         </h2>
                         <InfoIcon />
                         <Tooltip
-                            style="custom"
+                            type="custom"
                             class="flex flex-col gap-1 text-sm dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
                         >
                             <span><span class="font-serif text-lg">κ</span> {realList.kind}</span>
@@ -295,7 +295,7 @@
                         {/if}
                         <ItemOptionsPopover list={realList} klass="mr-0 ml-auto" />
                         <Tooltip
-                            style="custom"
+                            type="custom"
                             class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
                         >
                             Share this list
