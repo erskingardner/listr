@@ -13,6 +13,7 @@
     import { currentUserFollows } from '$lib/stores/currentUserFollows';
     import NDK from '@nostr-dev-kit/ndk';
     import ndkStore from '$lib/stores/ndk';
+    import { dev } from '$app/environment';
 
     const flash = getFlash(page);
 
@@ -54,6 +55,16 @@
         }
     }
 </script>
+
+<svelte:head>
+    {#if !dev}
+        <script
+            src="/stats/js/script.js"
+            data-api="/stats/api/event"
+            data-domain="listr.lol"
+        ></script>
+    {/if}
+</svelte:head>
 
 <main class="p-8 max-w-5xl mx-auto relative">
     {#if $flash}

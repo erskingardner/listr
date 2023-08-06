@@ -76,7 +76,7 @@
             <button on:click={submitRemove}>
                 <XMarkIcon />
                 <Tooltip
-                    style="custom"
+                    type="custom"
                     class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
                 >
                     Remove this item from the list

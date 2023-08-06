@@ -158,7 +158,7 @@
                         >Private</span
                     >
                     <Tooltip
-                        style="custom"
+                        type="custom"
                         class="dark:bg-zinc-800 bg-zinc-100 border border-black/20 shadow-xl"
                     >
                         Encrypted item only visible to you.
@@ -182,7 +182,7 @@
                         >
                             <UserMinusIcon class="w-4 h-4 md:w-6 md:h-6" />
                             <Tooltip
-                                style="custom"
+                                type="custom"
                                 class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
                             >
                                 Unfollow
@@ -195,7 +195,7 @@
                         >
                             <UserPlusIcon class="w-4 h-4 md:w-6 md:h-6" />
                             <Tooltip
-                                style="custom"
+                                type="custom"
                                 class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
                             >
                                 Follow
@@ -211,7 +211,7 @@
                     >
                         <XMarkIcon class="w-4 h-4 md:h-6 md:w-6" />
                         <Tooltip
-                            style="custom"
+                            type="custom"
                             class="dark:bg-zinc-800 bg-zinc-100  border border-black/20 shadow-xl"
                         >
                             Remove this item from the list
@@ -220,7 +220,7 @@
                 {/if}
             </div>
         {/if}
-    <!-- {:else if itemType === 'FileMetadata'}
+        <!-- {:else if itemType === 'FileMetadata'}
         <Kind1063 {item} on:removeItemFromList /> -->
     {:else if itemType === 'Emoji'}
         <Emoji {item} on:removeItemFromList />
