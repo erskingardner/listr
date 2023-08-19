@@ -1,14 +1,21 @@
 {
     "useTabs": false,
-    "singleQuote": true,
+    "singleQuote": false,
     "tabWidth": 4,
-    "trailingComma": "none",
+    "trailingComma": "es5",
     "printWidth": 100,
-    "plugins": [
-        "prettier-plugin-svelte"
+    "semi": true,
+    "importOrder": [
+        "^@core/(.*)$",
+        "^@server/(.*)$",
+        "^@ui/(.*)$",
+        "^[./]"
     ],
-    "pluginSearchDirs": [
-        "."
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "plugins": [
+        "prettier-plugin-svelte",
+        "@trivago/prettier-plugin-sort-imports"
     ],
     "overrides": [
         {

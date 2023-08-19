@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="h-full bg-white">
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <link
@@ -33,7 +33,12 @@
         Nostr lists and find great content in other people's lists."
         />
     </head>
-    <body id="body" data-sveltekit-preload-data="hover" class="h-full w-full antialiased">
+    <body
+        id="body"
+        data-sveltekit-preload-data="hover"
+        class="h-full w-full antialiased text-zinc-950 dark:text-zinc-100 bg-zinc-50 dark:bg-zinc-950"
+    >
         <div style="display: contents">%sveltekit.body%</div>
+        <script src="https://cdn.jsdelivr.net/npm/nostr-zap@0.5.0"></script>
     </body>
 </html>

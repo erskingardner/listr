@@ -1,4 +1,6 @@
-import { writable } from 'svelte/store';
-import type User from '$lib/classes/user';
+import type { NDKUser } from "@nostr-dev-kit/ndk";
+import { writable } from "svelte/store";
 
-export const currentUser = writable<User | undefined>(undefined);
+const currentUser = writable<NDKUser | undefined>(undefined);
+
+export default currentUser;
