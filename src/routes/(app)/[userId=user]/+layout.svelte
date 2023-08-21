@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { LayoutServerLoad } from "./$types";
     import ndk from "$lib/stores/ndk";
     import type { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
@@ -8,7 +7,7 @@
     import { beforeUpdate, onMount } from "svelte";
     import currentUser from "$lib/stores/currentUser";
 
-    export let data: LayoutServerLoad;
+    export let data;
 
     let user: NDKUser = $ndk.getUser({ hexpubkey: data.pubkey });
 
@@ -37,25 +36,35 @@
                 {:then value}
                     <div class="flex flex-col gap-2">
                         <div class="flex flex-row gap-2 items-start">
-                            <Avatar
-                                ndk={$ndk}
-                                userProfile={user.profile}
-                                class="w-12 h-12 rounded-full border border-gray-300 shadow-sm"
-                            />
-                            <div class="flex flex-col gap-1">
-                                <Name ndk={$ndk} userProfile={user.profile} class="font-bold" />
+                            <div
+                                class="w-12 h-12 rounded-full border border-gray-300 shadow-sm overflow-hidden shrink-0"
+                            >
+                                <img src={user.profile?.image} alt="user avatar" />
+                            </div>
+                            <div class="flex flex-col gap-1 shrink min-w-0">
+                                <Name
+                                    ndk={$ndk}
+                                    userProfile={user.profile}
+                                    npubMaxLength={9}
+                                    class="font-bold"
+                                />
                                 {#if user.profile?.nip05}
-                                    <span class="flex flex-row gap-1 items-center"
-                                        ><BadgeCheck size="16" strokeWidth="1.5" />{prettifyNip05(
-                                            user.profile?.nip05
-                                        )}</span
+                                    <span
+                                        class="flex flex-row gap-1 items-center text-xs whitespace-nowrap min-w-0 overflow-hidden text-ellipsis"
                                     >
+                                        <BadgeCheck
+                                            size="16"
+                                            strokeWidth="1.5"
+                                            class="fill-purple-200 stroke-purple-800"
+                                        />
+                                        {prettifyNip05(user.profile?.nip05)}
+                                    </span>
                                 {/if}
                             </div>
                         </div>
                         <hr />
                         {#if user.profile?.bio || user.profile?.about}
-                            <p>{user.profile?.bio || user.profile?.about}</p>
+                            <p class="break-words">{user.profile?.bio || user.profile?.about}</p>
                         {/if}
                     </div>
                 {:catch error}
@@ -79,6 +88,6 @@
     }
 
     * > :global(.userCard--details) {
-        @apply w-full truncate;
+        @apply w-full;
     }
 </style>

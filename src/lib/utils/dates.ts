@@ -20,3 +20,7 @@ export function formattedDate(unixTimestampInSeconds: number): string {
     const date = new Date(unixTimestampInSeconds * 1000);
     return date.toLocaleDateString("en-US", options);
 }
+
+export function timeAgo(unixTimestampInSeconds: number): string {
+    return dayjs().to(dayjs.unix(unixTimestampInSeconds));
+}

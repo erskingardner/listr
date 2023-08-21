@@ -12,12 +12,12 @@ if (browser) {
 
 export const ndkStore = new NDKSvelte({
     explicitRelayUrls: [
-        // 'ws://localhost:8080'
+        "ws://localhost:8080",
         "wss://purplepag.es",
-        "wss://relay.nostr.band",
-        "wss://nos.lol",
-        "wss://relay.snort.social",
-        "wss://relay.damus.io",
+        // "wss://relay.nostr.band",
+        // "wss://nos.lol",
+        // "wss://relay.snort.social",
+        // "wss://relay.damus.io",
     ],
     cacheAdapter: cacheAdapter,
 });

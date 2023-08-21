@@ -6,14 +6,15 @@ import ndk from "./ndk";
 const listsStore = get(ndk).storeSubscribe(
     {
         kinds: [
-            NDKKind.PinList,
-            NDKKind.CategorizedPeopleList,
-            NDKKind.CategorizedBookmarkList,
-            NDKKind.RelayList,
+            NDKKind.PinList as number,
+            NDKKind.CategorizedPeopleList as number,
+            NDKKind.CategorizedBookmarkList as number,
+            NDKKind.RelayList as number,
+            NDKKind.Contacts as number,
         ],
-        limit: 50,
+        limit: 100,
     },
-    { autoStart: false },
+    { autoStart: false, closeOnEose: false },
     NDKList
 );
 

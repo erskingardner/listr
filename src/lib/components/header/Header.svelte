@@ -1,18 +1,23 @@
 <script lang="ts">
-    import { Search, Bell, Menu } from "lucide-svelte";
+    import { Search, Bell, Menu, Server } from "lucide-svelte";
     import { createEventDispatcher } from "svelte";
     import { scale } from "svelte/transition";
     import { expoInOut } from "svelte/easing";
     import currentUser from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
-    import { Avatar, Name } from "@nostr-dev-kit/ndk-svelte-components";
+    import { Avatar, Name, RelayList } from "@nostr-dev-kit/ndk-svelte-components";
 
     const dispatch = createEventDispatcher();
 
     let profileMenuVisible: boolean = false;
+    let relayMenuVisible: boolean = false;
 
     function toggleProfileMenu() {
         profileMenuVisible = !profileMenuVisible;
+    }
+
+    function toggleRelayMenu() {
+        relayMenuVisible = !relayMenuVisible;
     }
 </script>
 
@@ -36,27 +41,55 @@
             <label for="search-field" class="sr-only">Search</label>
             <Search
                 strokeWidth="1.5"
-                class="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                class="pointer-events-none absolute inset-y-0 left-2 h-full w-5 text-gray-400"
             />
             <input
                 id="search-field"
-                class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                class="block h-full w-full border-0 py-0 pl-8 pr-2 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                 placeholder="Search..."
                 type="search"
                 name="search"
             />
         </form>
         <div class="flex items-center gap-x-4 lg:gap-x-6">
-            {#if $currentUser}
-                <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
-                    <span class="sr-only">View notifications</span>
-                    <Bell />
-                </button>
-            {/if}
-
             <!-- Separator -->
             <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true"></div>
 
+            {#if $currentUser}
+                <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+                    <span class="sr-only">View notifications</span>
+                    <Bell strokeWidth="1.5" />
+                </button>
+            {/if}
+
+            <!-- Relay dropdown -->
+            <div class="relative">
+                <button
+                    on:click={toggleRelayMenu}
+                    type="button"
+                    class="-m-1.5 flex items-center p-1.5 text-gray-400 hover:text-gray-500"
+                    id="user-menu-button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                >
+                    <Server strokeWidth="1.5" />
+                </button>
+                {#if relayMenuVisible}
+                    <!-- Dropdown relay menu -->
+                    <div
+                        on:pointerleave={toggleRelayMenu}
+                        in:scale={{ duration: 100, easing: expoInOut, start: 0.95 }}
+                        out:scale={{ duration: 75, easing: expoInOut, start: 0.95 }}
+                        class="absolute text-sm right-0 z-10 mt-2.5 w-72 p-4 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                        role="menu"
+                        aria-orientation="vertical"
+                        aria-labelledby="user-menu-button"
+                        tabindex="-1"
+                    >
+                        <RelayList ndk={$ndk} />
+                    </div>
+                {/if}
+            </div>
             <!-- Profile dropdown -->
             {#if $currentUser}
                 <div class="relative">
@@ -78,6 +111,7 @@
                                 <Name
                                     ndk={$ndk}
                                     npub={$currentUser.npub}
+                                    npubMaxLength={9}
                                     on:click={toggleProfileMenu}
                                 />
                             </span>
@@ -109,7 +143,7 @@
                             tabindex="-1"
                         >
                             <a
-                                href="#"
+                                href={`/${$currentUser.npub}`}
                                 class="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
                                 role="menuitem"
                                 tabindex="-1"

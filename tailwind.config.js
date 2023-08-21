@@ -19,7 +19,16 @@ module.exports = {
                 ],
                 cursive: ["Unica One"],
             },
+            colors: {
+                ltngWhite: "#FFF0D6",
+                ltngYellow: "#EEC47A",
+                btcOrange: "#f7931a",
+                btcGray: "#4d4d4d",
+                btcBlue: "#0d579b",
+                btcGreen: "#329239",
+                gitOrange: "rgb(227, 90, 56)",
+            },
         },
     },
-    plugins: [require("@tailwindcss/typography")],
+    plugins: [require("@tailwindcss/typography"), require("@tailwindcss/forms")],
 };

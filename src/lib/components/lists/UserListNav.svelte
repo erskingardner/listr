@@ -16,6 +16,8 @@
                 NDKKind.PinList as number,
                 NDKKind.CategorizedBookmarkList as number,
                 NDKKind.CategorizedPeopleList as number,
+                NDKKind.RelayList as number,
+                NDKKind.Contacts as number,
             ],
             authors: [userPubkey],
         },
@@ -33,9 +35,9 @@
 <div class="flex flex-col gap-0.5">
     {#each $lists as list}
         <a
-            href="/p/{nip19.npubEncode(userPubkey)}/{list.kind}/{list.encode()}"
+            href="/{nip19.npubEncode(userPubkey)}/{list.kind}/{list.encode()}"
             class="p-2 hover:bg-gray-100 {$page.url.pathname ===
-            `/p/${nip19.npubEncode(userPubkey)}/${list.kind}/${list.encode()}`
+            `/${nip19.npubEncode(userPubkey)}/${list.kind}/${list.encode()}`
                 ? 'bg-gray-100'
                 : ''} w-full block rounded-md text-left"
         >

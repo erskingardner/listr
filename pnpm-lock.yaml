@@ -85,6 +85,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.5.0
     version: 3.5.0(postcss@8.4.28)(svelte@4.2.0)
+  sveltekit-superforms:
+    specifier: ^1.6.0
+    version: 1.6.0(@sveltejs/kit@1.22.6)(svelte@4.2.0)(zod@3.22.2)
   tailwindcss:
     specifier: ^3.3.3
     version: 3.3.3
@@ -97,6 +100,9 @@ devDependencies:
   vite:
     specifier: ^4.4.9
     version: 4.4.9
+  zod:
+    specifier: ^3.22.2
+    version: 3.22.2
 
 packages:
 
@@ -4232,6 +4238,18 @@ packages:
       magic-string: 0.30.2
       periscopic: 3.1.0
 
+  /sveltekit-superforms@1.6.0(@sveltejs/kit@1.22.6)(svelte@4.2.0)(zod@3.22.2):
+    resolution: {integrity: sha512-Ob3vbgPuVMFuebD8R7qWHDyMVmHvbU6HYqa/ozuV9HbETkkkX7XhyDz/yMxW4q8T2kRiO50CASskiB3l6yKiqA==}
+    peerDependencies:
+      '@sveltejs/kit': 1.x
+      svelte: 3.x || 4.x
+      zod: 3.x
+    dependencies:
+      '@sveltejs/kit': 1.22.6(svelte@4.2.0)(vite@4.4.9)
+      svelte: 4.2.0
+      zod: 3.22.2
+    dev: true
+
   /svg.draggable.js@2.2.2:
     resolution: {integrity: sha512-JzNHBc2fLQMzYCZ90KZHN2ohXL0BQJGQimK1kGk6AvSeibuKcIdDX9Kr0dT9+UJ5O8nYA0RB839Lhvk4CY4MZw==}
     engines: {node: '>= 0.8.0'}
@@ -4843,6 +4861,10 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  /zod@3.22.2:
+    resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
+    dev: true
 
   github.com/ConsignCloud/hurdak/91a8e9364123876715a1986c1d2dfc07eece20bf:
     resolution: {tarball: https://codeload.github.com/ConsignCloud/hurdak/tar.gz/91a8e9364123876715a1986c1d2dfc07eece20bf}

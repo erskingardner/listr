@@ -3,7 +3,6 @@
     import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
     import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
     import Header from "$lib/components/header/Header.svelte";
-    import { browser } from "$app/environment";
     import toast, { Toaster } from "svelte-french-toast";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
     import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
@@ -13,7 +12,9 @@
     import currentUser from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
     import { goto } from "$app/navigation";
-    import { dateTomorrow } from "$lib/utils";
+    import type { LayoutServerData } from "./$types";
+
+    export let data: LayoutServerData;
 
     let mobileMenuVisible: boolean = false;
 
@@ -21,34 +22,25 @@
         mobileMenuVisible = !mobileMenuVisible;
     }
 
-    let userStored = false;
     let signerModal = false;
 
-    if (browser) {
-        const storedUser = window.sessionStorage.getItem("listrCurrentUser");
-        if (storedUser) {
-            currentUser.set(JSON.parse(storedUser));
-            document.cookie = `userNpub=${
-                $currentUser?.npub
-            }; expires=${dateTomorrow()}; SameSite=Lax; Secure`;
-        }
-        userStored = true;
+    if (data.listrCookie) {
+        $currentUser = $ndk.getUser({ npub: data.listrCookie });
+        $currentUser.ndk = $ndk;
     }
 
     async function signin(domEvent: any) {
         try {
             const signer = new NDKNip07Signer();
             $ndk.signer = signer;
-            ndk.set($ndk);
             signer.user().then(async (ndkUser: NDKUser) => {
-                if (!!ndkUser.npub) {
-                    ndkUser.ndk = $ndk;
-                    currentUser.set(ndkUser);
-                    window.sessionStorage.setItem("listrCurrentUser", JSON.stringify(ndkUser));
-                    document.cookie = `userNpub=${ndkUser.npub};
-                expires=${dateTomorrow()}; SameSite=Lax; Secure`;
+                if (ndkUser.npub) {
+                    $currentUser = ndkUser;
+                    $currentUser.ndk = $ndk;
+                    document.cookie = `listrUserNpub=${ndkUser.npub};
+                    max-age=max-age-in-seconds=1209600; SameSite=Lax; Secure`;
                     if (window.plausible) pa.addEvent("Log in");
-                    toast.success("Logged in");
+                    toast.success("Signed in");
                 }
             });
             if (domEvent?.detail?.redirect) goto(domEvent.detail.redirect);
@@ -60,9 +52,9 @@
 
     function signout(e: Event) {
         currentUser.set(undefined);
-        window.sessionStorage.removeItem("listrCurrentUser");
-        document.cookie = "userNpub=";
+        document.cookie = "listrUserNpub=";
         if (window.plausible) pa.addEvent("Log out");
+        toast.success("Signed out");
         goto("/");
     }
 </script>
@@ -75,7 +67,7 @@
 <DesktopMenu on:signin={signin} />
 <div class="lg:pl-72">
     <Header on:openMobileMenu={toggleMobileMenu} on:signout={signout} on:signin={signin} />
-    <main class="py-10">
+    <main class="py-4 sm:py-6 lg:py-10">
         <div class="px-4 sm:px-6 lg:px-8">
             <slot />
         </div>
