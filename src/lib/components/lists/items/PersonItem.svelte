@@ -4,6 +4,7 @@
     import { BadgeCheck } from "lucide-svelte";
     import { Tooltip } from "flowbite-svelte";
     import { prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
+    import PrivateItemPill from "./PrivateItemPill.svelte";
 
     export let pubkey: string;
     export let privateItem: boolean;
@@ -35,12 +36,7 @@
             {/await}
         </div>
         {#if privateItem}
-            <span
-                class="text-2xs text-white md:text-xs px-1.5 md:px-2 md:py-0.5 bg-indigo-600 rounded-full"
-            >
-                Private
-            </span>
-            <Tooltip type="light">Encrypted item only visible to you.</Tooltip>
+            <PrivateItemPill />
         {/if}
     </a>
 {/key}

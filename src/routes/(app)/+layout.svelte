@@ -51,7 +51,7 @@
     }
 
     function signout(e: Event) {
-        currentUser.set(undefined);
+        currentUser.set(null);
         document.cookie = "listrUserNpub=";
         if (window.plausible) pa.addEvent("Log out");
         toast.success("Signed out");

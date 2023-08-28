@@ -56,13 +56,15 @@
 
         // Only add a "d" tag if needed
         if (list.kind! >= 30000 && list.kind! <= 40000) {
-            list.tags.push(["d", `${list.kind}:${list.pubkey}:${list.name}`]);
+            list.tags.push(["d", list.name]);
         }
 
         // Encrypt if we need to
         if (list.content) await list.encrypt($currentUser!);
         // Publish
         await list.publish();
+        console.log(list);
+
         return list.encode();
     }
 

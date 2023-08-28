@@ -7,7 +7,6 @@
     import { page } from "$app/stores";
 
     export let userPubkey: string;
-    export let currentListId: string | undefined;
 
     const lists = $ndk.storeSubscribe(
         {

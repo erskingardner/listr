@@ -1,5 +1,4 @@
 <script lang="ts">
-    import listsStore from "$lib/stores/lists";
     import ndk from "$lib/stores/ndk";
     import { Avatar, Name } from "@nostr-dev-kit/ndk-svelte-components";
     import { timeAgo } from "$lib/utils";

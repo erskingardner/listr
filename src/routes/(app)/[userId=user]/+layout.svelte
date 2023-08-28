@@ -2,7 +2,7 @@
     import ndk from "$lib/stores/ndk";
     import type { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
-    import { Avatar, Name, prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
+    import { Name, prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import { BadgeCheck } from "lucide-svelte";
     import { beforeUpdate, onMount } from "svelte";
     import currentUser from "$lib/stores/currentUser";

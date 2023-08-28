@@ -8,8 +8,8 @@
     import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import { timeAgo } from "$lib/utils";
-    import { afterUpdate } from "svelte";
     import { BadgeCheck } from "lucide-svelte";
+    import PrivateItemPill from "./PrivateItemPill.svelte";
 
     export let id: string;
     export let privateItem: boolean;
@@ -54,6 +54,9 @@
                         {/await}
                     </div>
                 </a>
+                {#if privateItem}
+                    <PrivateItemPill />
+                {/if}
                 <div class="ml-auto text-sm">{timeAgo(event.created_at)}</div>
             </div>
             <div class="break-words">

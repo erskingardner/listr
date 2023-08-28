@@ -1,9 +1,10 @@
 <script lang="ts">
     import { Newspaper, PlusCircle, LogIn } from "lucide-svelte";
-    import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+    import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
-    import { onDestroy } from "svelte";
+    import { beforeUpdate, onMount, onDestroy } from "svelte";
+    import { afterNavigate } from "$app/navigation";
     import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { filterAndSort } from "$lib/utils";
     import { createEventDispatcher } from "svelte";
@@ -12,28 +13,66 @@
     const dispatch = createEventDispatcher();
 
     let currentUserLists: NDKEventStore<NDKList>;
-    if ($currentUser) {
-        currentUserLists = $ndk.storeSubscribe(
-            {
-                kinds: [
-                    NDKKind.MuteList as number,
-                    NDKKind.PinList as number,
-                    NDKKind.CategorizedBookmarkList as number,
-                    NDKKind.CategorizedPeopleList as number,
-                ],
+    let deletedEvents: NDKEventStore<NDKEvent>;
+
+    onMount(() => {
+        if ($currentUser) {
+            currentUserLists = $ndk.storeSubscribe(
+                {
+                    kinds: [
+                        NDKKind.MuteList as number,
+                        NDKKind.PinList as number,
+                        NDKKind.CategorizedBookmarkList as number,
+                        NDKKind.CategorizedPeopleList as number,
+                    ],
+                    authors: [$currentUser.hexpubkey()],
+                },
+                { closeOnEose: false },
+                NDKList
+            );
+
+            deletedEvents = $ndk.storeSubscribe({
+                kinds: [NDKKind.EventDeletion],
                 authors: [$currentUser.hexpubkey()],
-            },
-            { closeOnEose: false },
-            NDKList
-        );
-    }
+            });
+        }
+    });
+
+    beforeUpdate(() => {
+        currentUserLists?.unsubscribe();
+        deletedEvents?.unsubscribe();
+    });
 
     onDestroy(() => {
-        if (currentUserLists) currentUserLists.unsubscribe();
+        currentUserLists?.unsubscribe();
+        deletedEvents?.unsubscribe();
+    });
+
+    afterNavigate(() => {
+        if ($currentUser) {
+            currentUserLists = $ndk.storeSubscribe(
+                {
+                    kinds: [
+                        NDKKind.MuteList as number,
+                        NDKKind.PinList as number,
+                        NDKKind.CategorizedBookmarkList as number,
+                        NDKKind.CategorizedPeopleList as number,
+                    ],
+                    authors: [$currentUser.hexpubkey()],
+                },
+                { closeOnEose: false },
+                NDKList
+            );
+
+            deletedEvents = $ndk.storeSubscribe({
+                kinds: [NDKKind.EventDeletion],
+                authors: [$currentUser.hexpubkey()],
+            });
+        }
     });
 
     $: if ($currentUserLists) {
-        $currentUserLists = filterAndSort($currentUserLists);
+        $currentUserLists = filterAndSort($currentUserLists, $deletedEvents);
     }
 </script>
 

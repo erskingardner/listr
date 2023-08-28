@@ -1,7 +1,7 @@
 <script lang="ts">
     import Item from "$lib/components/lists/Item.svelte";
     import { Info } from "lucide-svelte";
-    import ListActions from "$lib/components/lists/ListActions.svelte";
+    import ListActions from "$lib/components/lists/actions/ListActions.svelte";
     import { Tooltip } from "flowbite-svelte";
 
     export let data;
@@ -13,7 +13,7 @@
         <Info strokeWidth="1.5" size="20" />
         <Tooltip type="light">Kind: {data.kind}</Tooltip>
     </div>
-    <ListActions nip19={data.nip19} pubkey={data.pubkey} listId={data.listId} />
+    <ListActions nip19={data.nip19} pubkey={data.pubkey} listId={data.listId} on:listDeleted />
 </div>
 <hr />
 <div class="flex flex-col">

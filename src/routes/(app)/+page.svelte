@@ -1,6 +1,6 @@
 <script lang="ts">
     import ListSummary from "$lib/components/lists/ListSummary.svelte";
-    import listsStore from "$lib/stores/lists";
+    import listsStore from "$lib/stores/allLists";
     import { onDestroy } from "svelte";
     import { LIST_FILTER_REGEXP } from "$lib/utils";
 
