@@ -1,6 +1,5 @@
 {
     "$schema": "https://turbo.build/schema.json",
-    "extends": [],
     "pipeline": {
         "build": {
             "dependsOn": [
@@ -13,6 +12,10 @@
         },
         "lint": {},
         "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "storybook": {
             "cache": false,
             "persistent": true
         }
