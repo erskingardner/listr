@@ -1,0 +1,9 @@
+packages:
+    - "apps/*"
+    - "packages/*"
+    - "packages/ndk/ndk"
+    - "packages/ndk/ndk-cache-redis"
+    - "packages/ndk/ndk-cache-dexie"
+    - "packages/ndk/ndk-svelte"
+    - "packages/ndk/ndk-svelte-components"
+    - "packages/ndk/packages/*"

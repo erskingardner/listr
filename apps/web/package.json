@@ -1,0 +1,49 @@
+{
+    "name": "Listr",
+    "version": "0.2.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite dev",
+        "build": "vite build",
+        "preview": "vite preview",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+        "lint": "prettier --check . && eslint .",
+        "format": "prettier --write ."
+    },
+    "devDependencies": {
+        "@sveltejs/adapter-auto": "^2.1.0",
+        "@sveltejs/kit": "^1.23.0",
+        "@tailwindcss/forms": "^0.5.6",
+        "@tailwindcss/typography": "^0.5.9",
+        "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+        "eslint-config-custom": "workspace:*",
+        "autoprefixer": "^10.4.15",
+        "postcss": "^8.4.28",
+        "svelte": "^4.2.0",
+        "svelte-check": "^3.5.1",
+        "svelte-dnd-action": "^0.9.26",
+        "sveltekit-superforms": "^1.6.1",
+        "tailwindcss": "^3.3.3",
+        "tslib": "^2.6.2",
+        "typescript": "^5.2.2",
+        "vite": "^4.4.9",
+        "zod": "^3.22.2"
+    },
+    "type": "module",
+    "dependencies": {
+        "@accuser/svelte-plausible-analytics": "^0.5.0",
+        "@nostr-dev-kit/ndk": "workspace:*",
+        "@nostr-dev-kit/ndk-cache-dexie": "workspace:*",
+        "@nostr-dev-kit/ndk-cache-redis": "workspace:*",
+        "@nostr-dev-kit/ndk-svelte": "workspace:*",
+        "@nostr-dev-kit/ndk-svelte-components": "workspace:*",
+        "dayjs": "^1.11.9",
+        "flowbite-svelte": "^0.44.4",
+        "lucide-svelte": "^0.269.0",
+        "nostr-tools": "^1.14.2",
+        "svelte-french-toast": "^1.2.0",
+        "webln": "^0.3.2",
+        "websocket-polyfill": "^0.0.3"
+    }
+}
