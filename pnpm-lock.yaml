@@ -245,11 +245,11 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(typescript@5.2.2)
       typedoc:
-        specifier: ^0.24.8
-        version: 0.24.8(typescript@5.2.2)
+        specifier: ^0.25.0
+        version: 0.25.0(typescript@5.2.2)
       typedoc-plugin-rename-defaults:
         specifier: ^0.6.5
-        version: 0.6.5(typedoc@0.24.8)
+        version: 0.6.5(typedoc@0.25.0)
       typescript:
         specifier: ^5.1.6
         version: 5.2.2
@@ -12605,20 +12605,20 @@ packages:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
     dev: true
 
-  /typedoc-plugin-rename-defaults@0.6.5(typedoc@0.24.8):
+  /typedoc-plugin-rename-defaults@0.6.5(typedoc@0.25.0):
     resolution: {integrity: sha512-DwkgwRMxgu3UrDR3VUAdnF9jYzM6p7rw6UcVIh4MD7yjEmFDR8WWyOlk6oYgELmRYHxTDx0f0GK6iSgoxSh/Qw==}
     peerDependencies:
       typedoc: 0.22.x || 0.23.x || 0.24.x
     dependencies:
-      typedoc: 0.24.8(typescript@5.2.2)
+      typedoc: 0.25.0(typescript@5.2.2)
     dev: true
 
-  /typedoc@0.24.8(typescript@5.2.2):
-    resolution: {integrity: sha512-ahJ6Cpcvxwaxfu4KtjA8qZNqS43wYt6JL27wYiIgl1vd38WW/KWX11YuAeZhuz9v+ttrutSsgK+XO1CjL1kA3w==}
-    engines: {node: '>= 14.14'}
+  /typedoc@0.25.0(typescript@5.2.2):
+    resolution: {integrity: sha512-FvCYWhO1n5jACE0C32qg6b3dSfQ8f2VzExnnRboowHtqUD6ARzM2r8YJeZFYXhcm2hI4C2oCRDgNPk/yaQUN9g==}
+    engines: {node: '>= 16'}
     hasBin: true
     peerDependencies:
-      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x
+      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x || 5.2.x
     dependencies:
       lunr: 2.3.9
       marked: 4.3.0
