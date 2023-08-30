@@ -5,7 +5,6 @@ export const NOSTR_BECH32_REGEXP =
 
 export function nip19ToTag(nip19Id: string): string[] {
     const decoded = nip19.decode(nip19Id);
-    console.log(decoded);
 
     let tag: string[];
     switch (decoded.type) {

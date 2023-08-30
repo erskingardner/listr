@@ -37,30 +37,30 @@
     <div class="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true"></div>
 
     <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-        <form class="relative flex flex-1" action="#" method="GET">
-            <label for="search-field" class="sr-only">Search</label>
+        <form class="relative flex flex-1" action="/api/search" method="GET">
+            <label for="q" class="sr-only">Search</label>
             <Search
                 strokeWidth="1.5"
                 class="pointer-events-none absolute inset-y-0 left-2 h-full w-5 text-gray-400"
             />
             <input
-                id="search-field"
+                id="q"
                 class="block h-full w-full border-0 py-0 pl-8 pr-2 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                placeholder="Search..."
+                placeholder="Search for a user or list using an ID (npub..., naddr...)"
                 type="search"
-                name="search"
+                name="q"
             />
         </form>
         <div class="flex items-center gap-x-4 lg:gap-x-6">
             <!-- Separator -->
             <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true"></div>
 
-            {#if $currentUser}
+            <!-- {#if $currentUser}
                 <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
                     <span class="sr-only">View notifications</span>
                     <Bell strokeWidth="1.5" />
                 </button>
-            {/if}
+            {/if} -->
 
             <!-- Relay dropdown -->
             <div class="relative">
@@ -102,7 +102,7 @@
                         aria-haspopup="true"
                     >
                         <span class="sr-only">Open user menu</span>
-                        <Avatar ndk={$ndk} npub={$currentUser.npub} class="w-8 h-8 rounded-full" />
+                        <Avatar ndk={$ndk} user={$currentUser} class="w-8 h-8 rounded-full" />
                         <span class="hidden lg:flex lg:items-center">
                             <span
                                 class="ml-4 text-sm font-semibold leading-6 text-gray-900"
@@ -110,7 +110,7 @@
                             >
                                 <Name
                                     ndk={$ndk}
-                                    npub={$currentUser.npub}
+                                    user={$currentUser}
                                     npubMaxLength={9}
                                     on:click={toggleProfileMenu}
                                 />

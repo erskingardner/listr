@@ -5,26 +5,22 @@
     import currentUser from "$lib/stores/currentUser";
     import { beforeUpdate, onMount, onDestroy } from "svelte";
     import { afterNavigate } from "$app/navigation";
-    import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-    import { filterAndSort } from "$lib/utils";
+    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
+    import { SUPPORTED_LIST_KINDS, filterAndSort } from "$lib/utils";
     import { createEventDispatcher } from "svelte";
     import { page } from "$app/stores";
+    import { Tooltip } from "flowbite-svelte";
 
     const dispatch = createEventDispatcher();
 
-    let currentUserLists: NDKEventStore<NDKList>;
-    let deletedEvents: NDKEventStore<NDKEvent>;
+    let currentUserLists: NDKEventStore<ExtendedBaseType<NDKList>>;
+    let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
 
     onMount(() => {
         if ($currentUser) {
             currentUserLists = $ndk.storeSubscribe(
                 {
-                    kinds: [
-                        NDKKind.MuteList as number,
-                        NDKKind.PinList as number,
-                        NDKKind.CategorizedBookmarkList as number,
-                        NDKKind.CategorizedPeopleList as number,
-                    ],
+                    kinds: SUPPORTED_LIST_KINDS,
                     authors: [$currentUser.hexpubkey()],
                 },
                 { closeOnEose: false },
@@ -52,12 +48,7 @@
         if ($currentUser) {
             currentUserLists = $ndk.storeSubscribe(
                 {
-                    kinds: [
-                        NDKKind.MuteList as number,
-                        NDKKind.PinList as number,
-                        NDKKind.CategorizedBookmarkList as number,
-                        NDKKind.CategorizedPeopleList as number,
-                    ],
+                    kinds: SUPPORTED_LIST_KINDS,
                     authors: [$currentUser.hexpubkey()],
                 },
                 { closeOnEose: false },
@@ -146,13 +137,16 @@
                                     class="{$page.url.pathname ===
                                     `/${$currentUser.npub}/${list.kind}/${list.encode()}`
                                         ? 'bg-gray-800 text-white'
-                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'} hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'} hover:bg-gray-800 group flex flex-row items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                 >
                                     <span
                                         class="flex font-mono h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white"
                                         >{list.name?.slice(0, 1).toUpperCase()}</span
                                     >
                                     <span class="truncate">{list.name}</span>
+                                    <Tooltip type="custom" placement="right" class="text-xs">
+                                        k: {list.kind}
+                                    </Tooltip>
                                 </a>
                             </li>
                         {/each}

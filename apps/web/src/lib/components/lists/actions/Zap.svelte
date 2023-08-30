@@ -31,6 +31,7 @@
     onDestroy(() => zaps?.unsubscribe());
 
     afterNavigate(() => {
+        alreadyZapped = false;
         zaps = $ndk.storeSubscribe(
             { kinds: [9735], "#a": [listId as string] },
             { closeOnEose: true }
@@ -61,14 +62,10 @@
             .map((event) => {
                 const zapInvoice = zapInvoiceFromEvent(event as unknown as NDKEvent);
                 alreadyZapped = zapInvoice?.zappee === $currentUser?.hexpubkey();
-                console.log(zapInvoice);
-
                 return (zapInvoice?.amount || 0) / 1000;
             })
             .reduce((subTotal, value) => subTotal + value, 0);
     }
-
-    $: console.log(alreadyZapped);
 </script>
 
 <button id="zapButton" class="flex flex-row gap-1 items-center">

@@ -2,10 +2,11 @@
     import ndk from "$lib/stores/ndk";
     import type { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
-    import { Name, prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
+    import { Avatar, Name, prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import { BadgeCheck } from "lucide-svelte";
-    import { beforeUpdate, onMount } from "svelte";
+    import { afterUpdate, onMount } from "svelte";
     import currentUser from "$lib/stores/currentUser";
+    import { afterNavigate } from "$app/navigation";
 
     export let data;
 
@@ -15,7 +16,11 @@
         user = $ndk.getUser({ hexpubkey: data.pubkey });
     });
 
-    beforeUpdate(() => {
+    afterUpdate(() => {
+        user = $ndk.getUser({ hexpubkey: data.pubkey });
+    });
+
+    afterNavigate(() => {
         user = $ndk.getUser({ hexpubkey: data.pubkey });
     });
 
@@ -24,7 +29,7 @@
 
 <div class="flex flex-row gap-6">
     {#if $currentUser?.npub === user.npub}
-        <!-- Don't render inside user list nav -->
+        <!-- Don't render inside user list nav if it's a current user's list -->
     {:else}
         <!-- User profile and list of lists -->
         <div
@@ -39,12 +44,12 @@
                             <div
                                 class="w-12 h-12 rounded-full border border-gray-300 shadow-sm overflow-hidden shrink-0"
                             >
-                                <img src={user.profile?.image} alt="user avatar" />
+                                <Avatar ndk={$ndk} pubkey={data.pubkey} />
                             </div>
                             <div class="flex flex-col gap-1 shrink min-w-0">
                                 <Name
                                     ndk={$ndk}
-                                    userProfile={user.profile}
+                                    pubkey={data.pubkey}
                                     npubMaxLength={9}
                                     class="font-bold"
                                 />
@@ -71,7 +76,7 @@
                     <span class="text-red-500">Error loading user</span>
                 {/await}
                 <hr />
-                <UserListNav userPubkey={data.pubkey} currentListId={list?.id} />
+                <UserListNav userPubkey={data.pubkey} />
             {/key}
         </div>
     {/if}

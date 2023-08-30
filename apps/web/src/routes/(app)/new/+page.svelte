@@ -63,7 +63,6 @@
         if (list.content) await list.encrypt($currentUser!);
         // Publish
         await list.publish();
-        console.log(list);
 
         return list.encode();
     }
@@ -93,8 +92,6 @@
     }
 
     function handleListRemoval(item: string[], privateItem: boolean) {
-        console.log("removal");
-
         if (privateItem) {
             $form.privateItems = $form.privateItems?.filter((listItem) => listItem !== item);
         } else {
