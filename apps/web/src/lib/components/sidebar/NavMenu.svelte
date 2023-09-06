@@ -34,33 +34,33 @@
         }
     });
 
-    beforeUpdate(() => {
-        currentUserLists?.unsubscribe();
-        deletedEvents?.unsubscribe();
-    });
+    // beforeUpdate(() => {
+    //     currentUserLists?.unsubscribe();
+    //     deletedEvents?.unsubscribe();
+    // });
 
     onDestroy(() => {
         currentUserLists?.unsubscribe();
         deletedEvents?.unsubscribe();
     });
 
-    afterNavigate(() => {
-        if ($currentUser) {
-            currentUserLists = $ndk.storeSubscribe(
-                {
-                    kinds: SUPPORTED_LIST_KINDS,
-                    authors: [$currentUser.hexpubkey()],
-                },
-                { closeOnEose: false },
-                NDKList
-            );
+    // afterNavigate(() => {
+    //     if ($currentUser) {
+    //         currentUserLists = $ndk.storeSubscribe(
+    //             {
+    //                 kinds: SUPPORTED_LIST_KINDS,
+    //                 authors: [$currentUser.hexpubkey()],
+    //             },
+    //             { closeOnEose: false },
+    //             NDKList
+    //         );
 
-            deletedEvents = $ndk.storeSubscribe({
-                kinds: [NDKKind.EventDeletion],
-                authors: [$currentUser.hexpubkey()],
-            });
-        }
-    });
+    //         deletedEvents = $ndk.storeSubscribe({
+    //             kinds: [NDKKind.EventDeletion],
+    //             authors: [$currentUser.hexpubkey()],
+    //         });
+    //     }
+    // });
 
     $: if ($currentUserLists) {
         $currentUserLists = filterAndSort($currentUserLists, $deletedEvents);

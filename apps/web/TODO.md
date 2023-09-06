@@ -6,15 +6,13 @@ A simple app for managing and discovering Nostr lists.
 
 #### To Launch V2
 
--   Adding items
--   Removing items
 -   publishing new changes
--   Fork/Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
--   Search
+-   list feeds
+-   feed should default to your followers lists with option for global
+-   display list a tags
 
 #### Other stuff
 
--   Handle relay set events
 -   handle showing all types of events
 -   NsecBunker login
 -   Commenting on lists
@@ -28,6 +26,13 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   Handle relay set events
+-   community a tags (kind 34550)
+
 #### To Launch V2
 
 -   Fix inside user list nav to handle deleted events
+-   Search
+-   Fork/Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
+-   Adding items
+-   Removing items

@@ -4,9 +4,8 @@
     import { AlertTriangle, Check, Info, X } from "lucide-svelte";
     import { Tooltip } from "flowbite-svelte";
     import { browser } from "$app/environment";
-    import { NOSTR_BECH32_REGEXP, unixTimeNowInSeconds } from "$lib/utils";
+    import { NOSTR_BECH32_REGEXP, unixTimeNowInSeconds, nip19ToTag } from "$lib/utils";
     import Item from "$lib/components/lists/Item.svelte";
-    import { nip19ToTag } from "$lib/utils";
     import { z } from "zod";
     import ndk from "$lib/stores/ndk";
     import { NDKList, NDKNip07Signer, type NDKTag } from "@nostr-dev-kit/ndk";

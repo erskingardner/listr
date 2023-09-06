@@ -5,10 +5,18 @@ export const SUPPORTED_LIST_KINDS = [
     NDKKind.Contacts,
     NDKKind.MuteList,
     NDKKind.PinList,
+    NDKKind.RelayList,
     NDKKind.CategorizedBookmarkList,
     NDKKind.CategorizedPeopleList,
     NDKKind.CategorizedRelayList,
 ];
+
+export const FORKABLE_LIST_KINDS = [
+    NDKKind.CategorizedBookmarkList,
+    NDKKind.CategorizedPeopleList,
+    NDKKind.CategorizedRelayList,
+];
+
 export const LIST_FILTER_REGEXP = /^(chats|notifications)/;
 
 export const filterAndSort = (lists: NDKList[], deletions: NDKEvent[]) => {

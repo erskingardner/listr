@@ -3,10 +3,10 @@
     import type { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
     import { Avatar, Name, prettifyNip05 } from "@nostr-dev-kit/ndk-svelte-components";
-    import { BadgeCheck } from "lucide-svelte";
     import { afterUpdate, onMount } from "svelte";
     import currentUser from "$lib/stores/currentUser";
     import { afterNavigate } from "$app/navigation";
+    import Nip05 from "$lib/components/users/Nip05.svelte";
 
     export let data;
 
@@ -17,11 +17,11 @@
     });
 
     afterUpdate(() => {
-        user = $ndk.getUser({ hexpubkey: data.pubkey });
+        if (user.hexpubkey() !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
     });
 
     afterNavigate(() => {
-        user = $ndk.getUser({ hexpubkey: data.pubkey });
+        if (user.hexpubkey() !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
     });
 
     let list: NDKList;
@@ -54,16 +54,7 @@
                                     class="font-bold"
                                 />
                                 {#if user.profile?.nip05}
-                                    <span
-                                        class="flex flex-row gap-1 items-center text-xs whitespace-nowrap min-w-0 overflow-hidden text-ellipsis"
-                                    >
-                                        <BadgeCheck
-                                            size="16"
-                                            strokeWidth="1.5"
-                                            class="fill-purple-200 stroke-purple-800"
-                                        />
-                                        {prettifyNip05(user.profile?.nip05)}
-                                    </span>
+                                    <Nip05 pubkey={user.hexpubkey()} nip05={user.profile.nip05} />
                                 {/if}
                             </div>
                         </div>
