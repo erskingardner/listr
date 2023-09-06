@@ -27,7 +27,7 @@
                 <Name ndk={$ndk} {pubkey} npubMaxLength={9} class="font-medium hover:underline" />
                 {#await user.fetchProfile() then value}
                     {#if user.profile?.nip05}
-                        <Nip05 pubkey={user.hexpubkey()} nip05={user.profile.nip05} />
+                        <Nip05 pubkey={user.hexpubkey} nip05={user.profile.nip05} />
                     {/if}
                 {/await}
             </div>

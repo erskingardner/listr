@@ -44,7 +44,7 @@
 
         const list = new NDKList($ndk, {
             kind: parseInt($form.kind),
-            pubkey: $currentUser!.hexpubkey(),
+            pubkey: $currentUser!.hexpubkey,
             created_at: unixTimeNowInSeconds(),
             content: JSON.stringify($form.privateItems),
             tags: $form.publicItems as NDKTag[],

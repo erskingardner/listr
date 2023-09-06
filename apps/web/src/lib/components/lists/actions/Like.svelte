@@ -30,7 +30,7 @@
         );
     });
 
-    $: alreadyLiked = $likes?.map((like) => like.pubkey).includes($currentUser?.hexpubkey()!);
+    $: alreadyLiked = $likes?.map((like) => like.pubkey).includes($currentUser?.hexpubkey!);
 
     function likeList() {
         if (!$ndk.signer) {
@@ -44,12 +44,12 @@
             const likeEvent = new NDKEvent($ndk, {
                 kind: 7,
                 content: "+",
-                pubkey: $currentUser?.hexpubkey() as string,
+                pubkey: $currentUser?.hexpubkey as string,
                 created_at: unixTimeNowInSeconds(),
                 tags: [
                     ["e", listId as string],
                     ["a", listId as string],
-                    ["p", $currentUser?.hexpubkey() as string],
+                    ["p", $currentUser?.hexpubkey as string],
                 ],
             });
             likeEvent

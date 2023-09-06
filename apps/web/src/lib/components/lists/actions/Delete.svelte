@@ -23,7 +23,7 @@
         // Create & publish list deletion event (kind 5)
         const deleteEvent = new NDKEvent($ndk, {
             kind: 5,
-            pubkey: $currentUser?.hexpubkey() as string,
+            pubkey: $currentUser?.hexpubkey as string,
             content: "List deleted by owner",
             tags: [["a", listId as string]],
             created_at: unixTimeNowInSeconds(),
@@ -41,7 +41,7 @@
     }
 </script>
 
-{#if $currentUser?.hexpubkey() === pubkey}
+{#if $currentUser?.hexpubkey === pubkey}
     <button on:click={deleteList}>
         <Trash2 strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
     </button>

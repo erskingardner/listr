@@ -19,6 +19,6 @@ export const load: LayoutServerLoad = async ({ params }) => {
     const user = ndkStore.getUser(ndkUserOpts);
 
     return {
-        pubkey: user.hexpubkey(),
+        pubkey: user.hexpubkey,
     };
 };

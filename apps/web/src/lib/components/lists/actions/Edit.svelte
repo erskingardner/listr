@@ -10,7 +10,7 @@
     export let pubkey: string;
 </script>
 
-{#if $currentUser?.hexpubkey() === pubkey}
+{#if $currentUser?.hexpubkey === pubkey}
     <button on:click={() => dispatch("toggleEditForm")}>
         <FilePlus strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
     </button>

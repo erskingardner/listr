@@ -21,7 +21,7 @@
             currentUserLists = $ndk.storeSubscribe(
                 {
                     kinds: SUPPORTED_LIST_KINDS,
-                    authors: [$currentUser.hexpubkey()],
+                    authors: [$currentUser.hexpubkey],
                 },
                 { closeOnEose: false },
                 NDKList
@@ -29,7 +29,7 @@
 
             deletedEvents = $ndk.storeSubscribe({
                 kinds: [NDKKind.EventDeletion],
-                authors: [$currentUser.hexpubkey()],
+                authors: [$currentUser.hexpubkey],
             });
         }
     });
@@ -49,7 +49,7 @@
     //         currentUserLists = $ndk.storeSubscribe(
     //             {
     //                 kinds: SUPPORTED_LIST_KINDS,
-    //                 authors: [$currentUser.hexpubkey()],
+    //                 authors: [$currentUser.hexpubkey],
     //             },
     //             { closeOnEose: false },
     //             NDKList
@@ -57,7 +57,7 @@
 
     //         deletedEvents = $ndk.storeSubscribe({
     //             kinds: [NDKKind.EventDeletion],
-    //             authors: [$currentUser.hexpubkey()],
+    //             authors: [$currentUser.hexpubkey],
     //         });
     //     }
     // });

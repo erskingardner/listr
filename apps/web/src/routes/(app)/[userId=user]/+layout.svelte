@@ -17,11 +17,11 @@
     });
 
     afterUpdate(() => {
-        if (user.hexpubkey() !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
+        if (user.hexpubkey !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
     });
 
     afterNavigate(() => {
-        if (user.hexpubkey() !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
+        if (user.hexpubkey !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
     });
 
     let list: NDKList;
@@ -54,7 +54,7 @@
                                     class="font-bold"
                                 />
                                 {#if user.profile?.nip05}
-                                    <Nip05 pubkey={user.hexpubkey()} nip05={user.profile.nip05} />
+                                    <Nip05 pubkey={user.hexpubkey} nip05={user.profile.nip05} />
                                 {/if}
                             </div>
                         </div>

@@ -22,7 +22,7 @@
         <Zap {nip19} {listId} />
         <Like {listId} />
         <CopyId {nip19} />
-        {#if $currentUser && pubkey !== $currentUser.hexpubkey() && FORKABLE_LIST_KINDS.includes(listKind)}
+        {#if $currentUser && pubkey !== $currentUser.hexpubkey && FORKABLE_LIST_KINDS.includes(listKind)}
             <Fork {rawList} />
         {/if}
         <Edit {listId} {pubkey} on:toggleEditForm />

@@ -26,7 +26,7 @@ export const load: PageLoad = async ({ params }) => {
         browser &&
         !privateItems &&
         list.content.length > 0 &&
-        currentUserStore?.hexpubkey() === list.pubkey
+        currentUserStore?.hexpubkey === list.pubkey
     ) {
         const signer = new NDKNip07Signer();
         ndkStore.signer = signer;

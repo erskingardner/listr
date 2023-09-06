@@ -22,7 +22,7 @@
         tags.push(["d", name]);
 
         const forkedList = new NDKList($ndk, {
-            pubkey: $currentUser!.hexpubkey(),
+            pubkey: $currentUser!.hexpubkey,
             kind: rawList.kind,
             content: "",
             created_at: unixTimeNowInSeconds(),
