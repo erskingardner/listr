@@ -13,6 +13,7 @@
     import ndk from "$lib/stores/ndk";
     import { goto } from "$app/navigation";
     import type { LayoutServerData } from "./$types";
+    import { page } from "$app/stores";
 
     export let data: LayoutServerData;
 
@@ -43,7 +44,11 @@
                     toast.success("Signed in");
                 }
             });
-            if (domEvent?.detail?.redirect) goto(domEvent.detail.redirect);
+            if (domEvent?.detail?.redirect) {
+                goto(domEvent.detail.redirect);
+            } else {
+                goto($page.url.pathname);
+            }
         } catch (error: any) {
             console.error(error.message);
             signerModal = true;

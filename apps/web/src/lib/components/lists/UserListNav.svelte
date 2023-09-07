@@ -1,8 +1,7 @@
 <script lang="ts">
     import ndk from "$lib/stores/ndk";
-    import { beforeUpdate, onMount, onDestroy } from "svelte";
-    import { afterNavigate } from "$app/navigation";
-    import { SUPPORTED_LIST_KINDS, filterAndSort } from "$lib/utils";
+    import { onMount, onDestroy } from "svelte";
+    import { SUPPORTED_LIST_KINDS, filterAndSortByName } from "$lib/utils";
     import type { ExtendedBaseType, NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { NDKList, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
     import { nip19 } from "nostr-tools";
@@ -29,34 +28,13 @@
         });
     });
 
-    // beforeUpdate(() => {
-    //     lists?.unsubscribe();
-    //     deletedEvents?.unsubscribe();
-    // });
-
     onDestroy(() => {
         lists?.unsubscribe();
         deletedEvents?.unsubscribe();
     });
 
-    // afterNavigate(() => {
-    //     lists = $ndk.storeSubscribe(
-    //         {
-    //             kinds: SUPPORTED_LIST_KINDS,
-    //             authors: [userPubkey],
-    //         },
-    //         { closeOnEose: false },
-    //         NDKList
-    //     );
-
-    //     deletedEvents = $ndk.storeSubscribe({
-    //         kinds: [NDKKind.EventDeletion],
-    //         authors: [userPubkey],
-    //     });
-    // });
-
     $: if ($lists) {
-        $lists = filterAndSort($lists, $deletedEvents);
+        $lists = filterAndSortByName($lists, $deletedEvents);
     }
 </script>
 

@@ -9,6 +9,7 @@
     export let listNip19: string;
     export let authorPubkey: string;
 
+    const timeInPast = timeAgo(date as number);
     const user = $ndk.getUser({ hexpubkey: authorPubkey });
 </script>
 
@@ -23,6 +24,6 @@
             <Name ndk={$ndk} pubkey={authorPubkey} npubMaxLength={9} class="break-all" />
         </a>
     </div>
-    updated their<span class="font-medium">{name}</span> list (kind {kind}).
-    <div class="text-sm ml-auto">{timeAgo(date)}</div>
+    updated their<span class="font-medium">{name}</span> list (k: {kind})
+    <div class="text-sm ml-auto">{timeInPast}</div>
 </div>

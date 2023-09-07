@@ -11,6 +11,7 @@
     import { NDKList, NDKNip07Signer, type NDKTag } from "@nostr-dev-kit/ndk";
     import { goto } from "$app/navigation";
     import toast from "svelte-french-toast";
+    import { v4 as uuidv4 } from "uuid";
 
     let nameInputDisabled: boolean = true;
     let addItemSubmitting: boolean = false;
@@ -55,7 +56,8 @@
 
         // Only add a "d" tag if needed
         if (list.kind! >= 30000 && list.kind! <= 40000) {
-            list.tags.push(["d", list.name]);
+            const uuid = uuidv4();
+            list.tags.push(["d", `listr-${uuid}`]);
         }
 
         // Encrypt if we need to
@@ -192,9 +194,10 @@
                                 <div class="flex flex-row gap-8 items-start">
                                     <div class="grow w-full">
                                         <Item
-                                            type={privateItem[0]}
+                                            tag={privateItem}
                                             id={privateItem[1]}
                                             privateItem={true}
+                                            unsaved={true}
                                         />
                                     </div>
                                     <button
@@ -212,9 +215,10 @@
                                 <div class="flex flex-row gap-8 items-start">
                                     <div class="grow w-full">
                                         <Item
-                                            type={publicItem[0]}
+                                            tag={publicItem}
                                             id={publicItem[1]}
                                             privateItem={false}
+                                            unsaved={true}
                                         />
                                     </div>
                                     <button

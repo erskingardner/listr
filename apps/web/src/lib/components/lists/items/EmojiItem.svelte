@@ -18,7 +18,7 @@
             : ''}"
     >
         <div class="flex flex-row gap-2 w-full items-center">
-            <img src={otherTagValues[0]} class="w-12 h-12" />
+            <img src={otherTagValues[0]} class="w-12 h-12" alt={id} />
             <span class="break-all text-sm lg:text-base">:{id}:</span>
             {#if privateItem}
                 <PrivateItemPill />

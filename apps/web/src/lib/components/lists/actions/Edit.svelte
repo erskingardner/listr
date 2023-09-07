@@ -6,7 +6,6 @@
 
     const dispatch = createEventDispatcher();
 
-    export let listId: string;
     export let pubkey: string;
 </script>
 

@@ -14,7 +14,7 @@ const listsStore = get(ndk).storeSubscribe(
         ],
         limit: 100,
     },
-    { autoStart: false, closeOnEose: false },
+    { autoStart: false },
     NDKList
 );
 

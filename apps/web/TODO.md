@@ -8,7 +8,6 @@ A simple app for managing and discovering Nostr lists.
 
 -   publishing new changes
 -   list feeds
--   feed should default to your followers lists with option for global
 -   display list a tags
 
 #### Other stuff
@@ -31,6 +30,7 @@ A simple app for managing and discovering Nostr lists.
 
 #### To Launch V2
 
+-   feed should default to your followers lists with option for global
 -   Fix inside user list nav to handle deleted events
 -   Search
 -   Fork/Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`

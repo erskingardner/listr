@@ -3,10 +3,9 @@
     import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
-    import { beforeUpdate, onMount, onDestroy } from "svelte";
-    import { afterNavigate } from "$app/navigation";
+    import { onMount, onDestroy } from "svelte";
     import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { SUPPORTED_LIST_KINDS, filterAndSort } from "$lib/utils";
+    import { SUPPORTED_LIST_KINDS, filterAndSortByName } from "$lib/utils";
     import { createEventDispatcher } from "svelte";
     import { page } from "$app/stores";
     import { Tooltip } from "flowbite-svelte";
@@ -34,36 +33,13 @@
         }
     });
 
-    // beforeUpdate(() => {
-    //     currentUserLists?.unsubscribe();
-    //     deletedEvents?.unsubscribe();
-    // });
-
     onDestroy(() => {
         currentUserLists?.unsubscribe();
         deletedEvents?.unsubscribe();
     });
 
-    // afterNavigate(() => {
-    //     if ($currentUser) {
-    //         currentUserLists = $ndk.storeSubscribe(
-    //             {
-    //                 kinds: SUPPORTED_LIST_KINDS,
-    //                 authors: [$currentUser.hexpubkey],
-    //             },
-    //             { closeOnEose: false },
-    //             NDKList
-    //         );
-
-    //         deletedEvents = $ndk.storeSubscribe({
-    //             kinds: [NDKKind.EventDeletion],
-    //             authors: [$currentUser.hexpubkey],
-    //         });
-    //     }
-    // });
-
     $: if ($currentUserLists) {
-        $currentUserLists = filterAndSort($currentUserLists, $deletedEvents);
+        $currentUserLists = filterAndSortByName($currentUserLists, $deletedEvents);
     }
 </script>
 
@@ -163,10 +139,10 @@
                 </a>
             </li>
         {:else}
-            <li class="mb-10">
+            <li class="mb-10 -mx-2">
                 <button
                     on:click={() => dispatch("signin")}
-                    class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
+                    class="group flex gap-x-3 w-full rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
                 >
                     <LogIn strokeWidth="1.5" />
                     Sign in to manage your lists
