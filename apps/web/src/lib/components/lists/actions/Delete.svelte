@@ -2,7 +2,6 @@
     import { Trash2 } from "lucide-svelte";
     import currentUser from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
-    import { Tooltip } from "flowbite-svelte";
     import { unixTimeNowInSeconds } from "$lib/utils";
     import { NDKNip07Signer, NDKEvent } from "@nostr-dev-kit/ndk";
     import { createEventDispatcher } from "svelte";
@@ -42,8 +41,8 @@
 </script>
 
 {#if $currentUser?.hexpubkey === pubkey}
-    <button on:click={deleteList}>
+    <button on:click={deleteList} class="popoverActionButton">
         <Trash2 strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
+        Delete list
     </button>
-    <Tooltip type="light">Delete this list</Tooltip>
 {/if}

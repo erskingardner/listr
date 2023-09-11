@@ -2,7 +2,7 @@
     import { Heart } from "lucide-svelte";
     import { onMount, beforeUpdate, onDestroy } from "svelte";
     import { afterNavigate } from "$app/navigation";
-    import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
     import { NDKEvent, NDKNip07Signer, NDKKind } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
@@ -64,13 +64,12 @@
     }
 </script>
 
-<button on:click={likeList} class="flex flex-row gap-1 items-center">
+<button on:click={likeList} class="flex flex-row gap-1 items-center text-sm lg:text-base">
     <Heart
         strokeWidth="1.5"
-        size="20"
         class="{alreadyLiked
             ? 'fill-red-500 stroke-red-500'
-            : 'stroke-gray-500'} hover:fill-red-500 hover:stroke-black"
+            : 'stroke-gray-500'} hover:fill-red-500 hover:stroke-black w-4 lg:w-5 h-4 lg:h-5"
     />
     {$likes?.length > 0 ? $likes.length : 0}
 </button>

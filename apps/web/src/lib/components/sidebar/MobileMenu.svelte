@@ -13,7 +13,7 @@
 
 {#if mobileMenuVisible}
     <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
-    <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
+    <div class="relative z-40 lg:hidden" role="dialog" aria-modal="true">
         <!-- Off-canvas menu backdrop -->
         <div
             transition:fade={{ duration: 300, easing: expoInOut }}

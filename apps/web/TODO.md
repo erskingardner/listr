@@ -4,6 +4,10 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
+-   Fix bug with duplicate items in lists
+-   Allow renaming of lists
+-   Follow / Unfollow users in lists
+
 #### To Launch V2
 
 -   publishing new changes

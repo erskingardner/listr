@@ -4,7 +4,14 @@
     import PrivateItemPill from "./PrivateItemPill.svelte";
     import ItemActions from "./ItemActions.svelte";
     import RemovalItemPill from "./RemovalItemPill.svelte";
-    import Nip05 from "$lib/components/users/Nip05.svelte";
+    import { X } from "lucide-svelte";
+    import UserDetails from "$lib/components/users/UserDetails.svelte";
+    import FollowButton from "../actions/FollowButton.svelte";
+    import AddToListButton from "../actions/AddToListButton.svelte";
+    import { createEventDispatcher } from "svelte";
+    import AdditionItemPill from "./AdditionItemPill.svelte";
+
+    const dispatch = createEventDispatcher();
 
     export let type: string;
     export let pubkey: string;
@@ -22,22 +29,37 @@
             : ''}"
     >
         <a href="/{user.npub}" class="grow flex flex-row gap-2 items-center">
-            <Avatar ndk={$ndk} {pubkey} class="w-12 h-12 rounded-full" />
-            <div class="flex flex-col gap-1">
-                <Name ndk={$ndk} {pubkey} npubMaxLength={9} class="font-medium hover:underline" />
-                {#await user.fetchProfile() then value}
-                    {#if user.profile?.nip05}
-                        <Nip05 pubkey={user.hexpubkey} nip05={user.profile.nip05} />
-                    {/if}
-                {/await}
-            </div>
+            <UserDetails {user} />
             {#if privateItem}
                 <PrivateItemPill />
             {/if}
-            {#if removal}
+            {#if removal && unsaved}
                 <RemovalItemPill />
+            {:else if unsaved}
+                <AdditionItemPill />
             {/if}
         </a>
-        <ItemActions {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeItem />
+        {#if unsaved}
+            <button
+                class="primaryActionButton !bg-orange-50 !border-orange-300 hover:!bg-orange-100"
+                on:click={() =>
+                    dispatch("removeUnsavedItem", {
+                        type,
+                        id: pubkey,
+                        privateItem,
+                        unsaved,
+                        removal,
+                    })}
+            >
+                <X strokeWidth="1.5" size="20" />
+                Unstage
+            </button>
+        {:else}
+            <div class="ml-auto flex flex-row gap-2 items-center">
+                <FollowButton {user} />
+                <AddToListButton {user} />
+                <ItemActions {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeItem />
+            </div>
+        {/if}
     </div>
 {/key}

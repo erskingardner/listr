@@ -3,3 +3,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.popoverActionButton {
+    @apply flex flex-row gap-2 items-center hover:bg-gray-100 rounded-md py-1 px-2 text-sm w-full;
+}
+
+.primaryActionButton {
+    @apply flex flex-row gap-2 items-center border border-indigo-200  bg-indigo-50 hover:bg-indigo-100 rounded-md text-sm px-2 py-0.5;
+}

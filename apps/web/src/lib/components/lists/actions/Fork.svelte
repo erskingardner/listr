@@ -4,8 +4,9 @@
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
     import { unixTimeNowInSeconds } from "$lib/utils";
-    import { Popover, Tooltip } from "flowbite-svelte";
+    import { Popover } from "flowbite-svelte";
     import toast from "svelte-french-toast";
+    import { v4 as uuidv4 } from "uuid";
 
     export let rawList: NostrEvent;
 
@@ -19,7 +20,9 @@
         }
 
         const tags = rawList.tags.filter((tag) => !["d", "name", "description"].includes(tag[0]));
-        tags.push(["d", name]);
+        // Only add a "d" tag if needed
+        const uuid = uuidv4();
+        tags.push(["d", `listr-${uuid}`]);
 
         const forkedList = new NDKList($ndk, {
             pubkey: $currentUser!.hexpubkey,
@@ -38,10 +41,11 @@
     }
 </script>
 
-<button id="forkButton">
-    <GitFork strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
+<button id="forkButton" class="primaryActionButton">
+    <GitFork strokeWidth="1.5" size="20" />
+    Fork
 </button>
-<Tooltip type="light">Fork this list (create a personal copy)</Tooltip>
+
 <Popover
     title="Fork this list (create a personal copy)"
     triggeredBy="#forkButton"

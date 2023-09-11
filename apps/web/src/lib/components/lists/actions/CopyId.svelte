@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Copy, CopyCheck } from "lucide-svelte";
     import { copyToClipboard } from "$lib/utils";
-    import { Tooltip } from "flowbite-svelte";
 
     export let nip19: string;
 
@@ -17,11 +16,11 @@
     }
 </script>
 
-<button on:click={copyListId}>
+<button on:click={copyListId} class="popoverActionButton">
     {#if copySuccess}
         <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500" />
     {:else}
         <Copy strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
     {/if}
+    Copy ID
 </button>
-<Tooltip type="light">Copy list ID</Tooltip>

@@ -81,16 +81,13 @@
                 <button
                     on:click={() =>
                         dispatch("removeItem", { type, id, privateItem, unsaved, removal })}
-                    class="flex flex-row gap-2 items-center hover:bg-gray-100 rounded-md py-1 px-2 text-sm w-full"
+                    class="popoverActionButton"
                 >
                     <X strokeWidth="1.5" size="20" class="stroke-gray-500" />
                     Remove item
                 </button>
             {/if}
-            <button
-                on:click={() => copyItemId(itemCopyString)}
-                class="flex flex-row gap-2 items-center hover:bg-gray-100 rounded-md py-1 px-2 text-sm w-full"
-            >
+            <button on:click={() => copyItemId(itemCopyString)} class="popoverActionButton">
                 {#if copySuccess}
                     <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500" />
                 {:else}
@@ -99,11 +96,7 @@
                 Copy {itemCopyName}
             </button>
             {#if primalUrl}
-                <a
-                    href={primalUrl}
-                    target="_blank"
-                    class="flex flex-row gap-2 items-center hover:bg-gray-100 rounded-md py-1 px-2 text-sm w-full"
-                >
+                <a href={primalUrl} target="_blank" class="popoverActionButton">
                     <ExternalLink strokeWidth="1.5" size="20" class="stroke-gray-500" />
                     Open in Primal
                 </a>

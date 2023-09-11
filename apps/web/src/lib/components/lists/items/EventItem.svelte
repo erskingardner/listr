@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Avatar, Name, EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+    import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
     import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import { timeAgo } from "$lib/utils";
     import PrivateItemPill from "./PrivateItemPill.svelte";
     import ItemActions from "./ItemActions.svelte";
     import RemovalItemPill from "./RemovalItemPill.svelte";
-    import Nip05 from "$lib/components/users/Nip05.svelte";
+    import UserDetails from "$lib/components/users/UserDetails.svelte";
 
     export let type: string;
     export let id: string;
@@ -37,20 +37,7 @@
         >
             <div class="flex flex-row gap-2 items-center">
                 <a href="/{user?.npub}" class="flex flex-row gap-2 items-center">
-                    <Avatar ndk={$ndk} pubkey={event.pubkey} class="w-12 h-12 rounded-full block" />
-                    <div class="flex flex-col gap-1">
-                        <Name
-                            ndk={$ndk}
-                            pubkey={event.pubkey}
-                            npubMaxLength={9}
-                            class="font-medium"
-                        />
-                        {#await user.fetchProfile() then value}
-                            {#if user.profile?.nip05}
-                                <Nip05 pubkey={user.hexpubkey} nip05={user.profile.nip05} />
-                            {/if}
-                        {/await}
-                    </div>
+                    <UserDetails {user} />
                 </a>
                 {#if privateItem}
                     <PrivateItemPill />

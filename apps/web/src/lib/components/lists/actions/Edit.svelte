@@ -1,6 +1,5 @@
 <script lang="ts">
     import { FilePlus } from "lucide-svelte";
-    import { Tooltip } from "flowbite-svelte";
     import currentUser from "$lib/stores/currentUser";
     import { createEventDispatcher } from "svelte";
 
@@ -10,8 +9,8 @@
 </script>
 
 {#if $currentUser?.hexpubkey === pubkey}
-    <button on:click={() => dispatch("toggleEditForm")}>
-        <FilePlus strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
+    <button on:click={() => dispatch("toggleEditForm")} class="primaryActionButton">
+        <FilePlus strokeWidth="1.5" size="20" />
+        Add items
     </button>
-    <Tooltip type="light">Add items to this list</Tooltip>
 {/if}

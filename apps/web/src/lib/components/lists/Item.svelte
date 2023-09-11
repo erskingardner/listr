@@ -20,7 +20,15 @@
 <!-- TODO: Support "client" tags (coracle) with icons -->
 <div>
     {#if type === "p"}
-        <PersonItem {type} pubkey={id} {privateItem} {unsaved} {removal} on:removeItem />
+        <PersonItem
+            {type}
+            pubkey={id}
+            {privateItem}
+            {unsaved}
+            {removal}
+            on:removeItem
+            on:removeUnsavedItem
+        />
     {:else if type === "e"}
         <EventItem {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
     {:else if type === "r"}

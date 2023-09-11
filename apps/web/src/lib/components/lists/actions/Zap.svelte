@@ -68,13 +68,12 @@
     }
 </script>
 
-<button id="zapButton" class="flex flex-row gap-1 items-center">
+<button id="zapButton" class="flex flex-row gap-1 items-center text-sm lg:text-base">
     <Zap
         strokeWidth="1.5"
-        size="20"
         class="hover:fill-yellow-500 {alreadyZapped
             ? 'fill-yellow-500 stroke-yellow-500'
-            : 'stroke-gray-500'} hover:stroke-black"
+            : 'stroke-gray-500'} hover:stroke-black w-4 lg:w-5 h-4 lg:h-5"
     />
     {totalZaps || 0}
 </button>

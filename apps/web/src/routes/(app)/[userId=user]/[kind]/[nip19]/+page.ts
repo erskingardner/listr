@@ -39,6 +39,7 @@ export const load: PageLoad = async ({ params }) => {
         kind: parseInt(params.kind),
         nip19: nip19,
         name: list.name,
+        description: list.description,
         rawList,
         listId: list.tagId(),
         items: list.items,
