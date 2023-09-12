@@ -179,13 +179,16 @@
     }
 
     function toggleEditMode() {
+        let confirmLeaveEdit: boolean = true;
         if (editMode && unpublishedChanges) {
-            confirm(
+            confirmLeaveEdit = confirm(
                 "You have unpublished changes that will be discarded. Are you sure you want to stop editing?"
             );
         }
-        editMode = !editMode;
-        clearTempStores();
+        if (confirmLeaveEdit) {
+            editMode = !editMode;
+            clearTempStores();
+        }
     }
 </script>
 
