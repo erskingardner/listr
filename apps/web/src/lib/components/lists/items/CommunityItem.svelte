@@ -5,10 +5,6 @@
 
     export let name: string;
     export let creator: NDKUser;
-
-    function followLink(event: any) {
-        console.log(event.target);
-    }
 </script>
 
 {#key name}

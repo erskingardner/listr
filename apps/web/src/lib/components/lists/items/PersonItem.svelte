@@ -1,19 +1,14 @@
 <script lang="ts">
-    import { Avatar, Name } from "@nostr-dev-kit/ndk-svelte-components";
     import ndk from "$lib/stores/ndk";
     import PrivateItemPill from "./PrivateItemPill.svelte";
     import ItemActions from "./ItemActions.svelte";
     import RemovalItemPill from "./RemovalItemPill.svelte";
-    import { X } from "lucide-svelte";
     import UserDetails from "$lib/components/users/UserDetails.svelte";
     import FollowButton from "../actions/FollowButton.svelte";
     import AddToListButton from "../actions/AddToListButton.svelte";
-    import { createEventDispatcher } from "svelte";
     import AdditionItemPill from "./AdditionItemPill.svelte";
-    import { fly } from "svelte/transition";
-    import { expoInOut } from "svelte/easing";
-
-    const dispatch = createEventDispatcher();
+    import RemoveItem from "../actions/RemoveItem.svelte";
+    import Unstage from "../actions/Unstage.svelte";
 
     export let type: string;
     export let pubkey: string;
@@ -43,39 +38,18 @@
             {/if}
         </div>
         {#if unsaved}
-            <button
-                class="primaryActionButton !bg-orange-50 !border-orange-300 hover:!bg-orange-100"
-                on:click={() =>
-                    dispatch("removeUnsavedItem", {
-                        type,
-                        id: pubkey,
-                        privateItem,
-                        unsaved,
-                        removal,
-                    })}
-            >
-                <X strokeWidth="1.5" size="20" />
-                Unstage
-            </button>
+            <Unstage {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeUnsavedItem />
         {:else}
             <div class="ml-auto flex flex-row gap-2 items-center">
-                {#if editMode}
-                    <button
-                        transition:fly={{ x: -200, duration: 300, easing: expoInOut }}
-                        class="primaryActionButton"
-                        on:click={() =>
-                            dispatch("removeItem", {
-                                type,
-                                id: pubkey,
-                                privateItem,
-                                unsaved,
-                                removal,
-                            })}
-                    >
-                        <X strokeWidth="1.5" size="20" />
-                        Remove item
-                    </button>
-                {/if}
+                <RemoveItem
+                    {type}
+                    id={pubkey}
+                    {privateItem}
+                    {unsaved}
+                    {removal}
+                    {editMode}
+                    on:removeItem
+                />
                 <FollowButton {user} />
                 <!-- <AddToListButton {user} /> -->
                 <ItemActions {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeItem />

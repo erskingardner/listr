@@ -70,7 +70,9 @@
     }
 
     function handleListRemoval(event: any) {
-        const removedTag = [event.detail.type, event.detail.id];
+        let removedTag = [event.detail.type, event.detail.id];
+        if (event.detail.otherTagValues)
+            removedTag = [...removedTag, ...event.detail.otherTagValues];
 
         if (event.detail.privateItem) {
             unsavedPrivateRemovals.push(removedTag);
@@ -88,14 +90,14 @@
     }
 
     function handleRemoveUnsavedItem(event: any) {
-        const replacedTag = [event.detail.type, event.detail.id];
-        console.log(event.detail);
+        let replacedTag = [event.detail.type, event.detail.id];
+        if (event.detail.otherTagValues)
+            replacedTag = [...replacedTag, ...event.detail.otherTagValues];
 
         if (event.detail.privateItem) {
             // Only put it back if it was a removal to start with
             if (event.detail.removal) {
-                privateItems?.push(replacedTag);
-                privateItems = privateItems;
+                privateItems = [replacedTag, ...privateItems];
                 unsavedPrivateRemovals = unsavedPrivateRemovals.filter(
                     (tag) => !(tag[0] === replacedTag[0] && tag[1] === replacedTag[1])
                 );
@@ -107,8 +109,7 @@
         } else {
             // Only put it back if it was a removal to start with
             if (event.detail.removal) {
-                publicItems.push(replacedTag);
-                publicItems = publicItems;
+                publicItems = [replacedTag, ...publicItems];
                 unsavedPublicRemovals = unsavedPublicRemovals.filter(
                     (tag) => !(tag[0] === replacedTag[0] && tag[1] === replacedTag[1])
                 );

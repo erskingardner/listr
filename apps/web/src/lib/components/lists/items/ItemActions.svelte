@@ -77,16 +77,6 @@
     </button>
     <Popover triggeredBy="#actions-{hashedId ? hashedId : itemCopyString}" placement="left-start">
         <div class="flex flex-col gap-2 items-start">
-            {#if $currentUser?.hexpubkey === $page.data.rawList.pubkey}
-                <button
-                    on:click={() =>
-                        dispatch("removeItem", { type, id, privateItem, unsaved, removal })}
-                    class="popoverActionButton"
-                >
-                    <X strokeWidth="1.5" size="20" class="stroke-gray-500" />
-                    Remove item
-                </button>
-            {/if}
             <button on:click={() => copyItemId(itemCopyString)} class="popoverActionButton">
                 {#if copySuccess}
                     <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500" />

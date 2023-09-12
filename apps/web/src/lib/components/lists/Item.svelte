@@ -32,13 +32,51 @@
             on:removeUnsavedItem
         />
     {:else if type === "e"}
-        <EventItem {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
+        <EventItem
+            {type}
+            {id}
+            {privateItem}
+            {unsaved}
+            {removal}
+            {editMode}
+            on:removeItem
+            on:removeUnsavedItem
+        />
     {:else if type === "r"}
-        <UrlItem {type} {id} {otherTagValues} {privateItem} {unsaved} {removal} on:removeItem />
+        <UrlItem
+            {type}
+            {id}
+            {otherTagValues}
+            {privateItem}
+            {unsaved}
+            {removal}
+            {editMode}
+            on:removeItem
+            on:removeUnsavedItem
+        />
     {:else if type === "a"}
-        <PreItem {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
+        <PreItem
+            {type}
+            {id}
+            {privateItem}
+            {unsaved}
+            {removal}
+            {editMode}
+            on:removeItem
+            on:removeUnsavedItem
+        />
     {:else if type === "emoji"}
-        <EmojiItem {type} {id} {otherTagValues} {privateItem} {unsaved} {removal} on:removeItem />
+        <EmojiItem
+            {type}
+            {id}
+            {otherTagValues}
+            {privateItem}
+            {unsaved}
+            {removal}
+            {editMode}
+            on:removeItem
+            on:removeUnsavedItem
+        />
     {:else}
         <pre class="py-2">Unsupported item: <code>{JSON.stringify(tag)}</code></pre>
     {/if}
