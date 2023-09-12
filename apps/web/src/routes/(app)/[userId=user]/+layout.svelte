@@ -37,7 +37,7 @@
         >
             {#key data.pubkey}
                 <div class="flex flex-col gap-2">
-                    <UserDetails {user} />
+                    <UserDetails {user} npubCopy={true} avatarSize="16" />
                     <hr />
                     <UserBio {user} />
                 </div>

@@ -2,8 +2,6 @@
     import UserDetails from "./UserDetails.svelte";
     import UserBio from "./UserBio.svelte";
     import FollowButton from "../lists/actions/FollowButton.svelte";
-    import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
 
     export let user: NDKUser;
@@ -14,7 +12,13 @@
         <p class="animate-pulse">Loading user...</p>
     {:then value}
         <div class="flex flex-row justify-between items-start">
-            <UserDetails {user} userProfile={user.profile} noPopover={true} />
+            <UserDetails
+                {user}
+                userProfile={user.profile}
+                noPopover={true}
+                npubCopy={true}
+                avatarSize="16"
+            />
             <FollowButton {user} />
         </div>
         <hr />

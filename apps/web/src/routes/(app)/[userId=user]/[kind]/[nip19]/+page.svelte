@@ -12,10 +12,10 @@
     import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
     import { unixTimeNowInSeconds } from "$lib/utils/dates.js";
     import ndk from "$lib/stores/ndk.js";
-    import listsStore from "$lib/stores/allLists.js";
+    import { v4 as uuidv4 } from "uuid";
 
     export let data;
-    console.log(data);
+
     let privateItems: NDKTag[] = data.privateItems || [];
     let publicItems: NDKTag[] = data.items;
     let unsavedPublicItems: NDKTag[] = [];
@@ -39,14 +39,16 @@
         }
     });
 
-    afterNavigate(() => {
+    afterNavigate(() => clearTempStores());
+
+    function clearTempStores() {
         privateItems = data.privateItems || [];
         publicItems = data.items;
         unsavedPublicItems = [];
         unsavedPrivateItems = [];
         unsavedPublicRemovals = [];
         unsavedPrivateRemovals = [];
-    });
+    }
 
     function handleListAddition(event: any) {
         if (event.detail.type === "public") {
@@ -131,12 +133,26 @@
         list.name = data.name;
         list.description = data.description;
 
+        const listTags = data.rawList.tags;
+        const dTag = listTags.filter((tag) => tag[0] === "d")[0];
+
+        // This will create a new list for older style lists with a name the same as the d tag.
+        if (list.kind! >= 30000 && list.kind! <= 40000 && dTag[1] === list.name) {
+            const uuid = uuidv4();
+            list.tags.push(["d", `listr-${uuid}`]);
+        }
+
+        if (list.kind! >= 30000 && list.kind! <= 40000 && dTag[1] !== list.name) {
+            list.tags.push(dTag);
+        }
+
         // Encrypt if we need to
         if (newPrivateItems.length > 0) await list.encrypt($currentUser!);
 
         // Publish
         await list.publish();
         publishingChanges = false;
+        clearTempStores();
         return list.encode();
     }
 </script>
@@ -168,8 +184,8 @@
     {/if}
 
     {#if unpublishedChanges}
-        <fieldset class="border border-orange-300 rounded-md p-2">
-            <legend class="text-orange-500">Unpublished changes</legend>
+        <fieldset class="border border-orange-800 rounded-md p-2">
+            <legend class="text-orange-800">Unpublished changes</legend>
             <div class="flex flex-row gap-4 items-center justify-end">
                 <ChangesCount
                     additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
@@ -177,7 +193,8 @@
                 />
                 <button
                     on:click={publishList}
-                    class="flex flex-row gap-2 items-center border border-orange-600 bg-orange-100 hover:bg-orange-200 p-2 px-3 rounded-md text-sm lg:text-base"
+                    disabled={publishingChanges}
+                    class="flex flex-row gap-2 items-center border border-orange-500 bg-orange-100 hover:bg-orange-200 p-2 px-3 rounded-md text-sm lg:text-base disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
                 >
                     <HardDriveUpload strokeWidth="1.5" size="20" />
                     Publish now

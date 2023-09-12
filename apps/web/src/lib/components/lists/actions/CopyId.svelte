@@ -3,6 +3,8 @@
     import { copyToClipboard } from "$lib/utils";
 
     export let nip19: string;
+    export let size: string = "20";
+    export let showText: boolean = true;
 
     let copySuccess: boolean = false;
 
@@ -18,9 +20,11 @@
 
 <button on:click={copyListId} class="popoverActionButton">
     {#if copySuccess}
-        <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500" />
+        <CopyCheck strokeWidth="1.5" {size} class="stroke-green-500" />
     {:else}
-        <Copy strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
+        <Copy strokeWidth="1.5" {size} class="stroke-gray-500 hover:stroke-black" />
     {/if}
-    Copy ID
+    {#if showText}
+        Copy ID
+    {/if}
 </button>

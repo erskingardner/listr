@@ -28,7 +28,7 @@
             ? 'border-orange-500 border-dashed'
             : ''}"
     >
-        <a href="/{user.npub}" class="grow flex flex-row gap-2 items-center">
+        <div class="grow flex flex-row gap-2 items-center">
             <UserDetails {user} />
             {#if privateItem}
                 <PrivateItemPill />
@@ -38,7 +38,7 @@
             {:else if unsaved}
                 <AdditionItemPill />
             {/if}
-        </a>
+        </div>
         {#if unsaved}
             <button
                 class="primaryActionButton !bg-orange-50 !border-orange-300 hover:!bg-orange-100"
@@ -57,7 +57,7 @@
         {:else}
             <div class="ml-auto flex flex-row gap-2 items-center">
                 <FollowButton {user} />
-                <AddToListButton {user} />
+                <!-- <AddToListButton {user} /> -->
                 <ItemActions {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeItem />
             </div>
         {/if}

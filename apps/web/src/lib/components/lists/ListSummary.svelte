@@ -2,6 +2,7 @@
     import ndk from "$lib/stores/ndk";
     import { Avatar, Name } from "@nostr-dev-kit/ndk-svelte-components";
     import { timeAgo } from "$lib/utils";
+    import UserDetails from "../users/UserDetails.svelte";
 
     export let name: string | undefined;
     export let kind: number | undefined;
@@ -13,17 +14,14 @@
     const user = $ndk.getUser({ hexpubkey: authorPubkey });
 </script>
 
-<div class="flex flex-row gap-1 items-center p-2 border-b border-gray-200">
-    <div class="flex flex-row gap-2 items-center">
-        <Avatar
-            ndk={$ndk}
-            pubkey={authorPubkey}
-            class="w-8 h-8 rounded-full border border-gray-300 shadow-sm shrink-0"
-        />
-        <a href="/{user.npub}/{kind}/{listNip19}" class="font-medium">
-            <Name ndk={$ndk} pubkey={authorPubkey} npubMaxLength={9} class="break-all" />
-        </a>
+<div class="grid grid-cols-5 gap-2 items-center p-2 border-b border-gray-200">
+    <div class="col-span-2">
+        <UserDetails {user} />
     </div>
-    updated their<span class="font-medium">{name}</span> list (k: {kind})
+    <div class="col-span-2">
+        updated their <a href="/{user.npub}/{kind}/{listNip19}" class="font-medium hover:underline"
+            >{name}</a
+        > list
+    </div>
     <div class="text-sm ml-auto">{timeInPast}</div>
 </div>

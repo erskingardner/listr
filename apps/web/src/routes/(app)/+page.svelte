@@ -12,7 +12,7 @@
     const globalLists = $ndk.storeSubscribe(
         {
             kinds: SUPPORTED_LIST_KINDS,
-            limit: 150,
+            limit: 50,
         },
         { closeOnEose: false },
         NDKList
@@ -28,7 +28,7 @@
                 {
                     kinds: SUPPORTED_LIST_KINDS,
                     authors: Array.from(followers).map((user: NDKUser) => user.hexpubkey),
-                    limit: 150,
+                    limit: 50,
                 },
                 { closeOnEose: false },
                 NDKList

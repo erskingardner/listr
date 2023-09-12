@@ -10,6 +10,7 @@
     import { PlausibleAnalytics } from "@accuser/svelte-plausible-analytics";
     import { pa } from "@accuser/svelte-plausible-analytics";
     import currentUser from "$lib/stores/currentUser";
+    import currentUserFollows from "$lib/stores/currentUserFollows";
     import ndk from "$lib/stores/ndk";
     import { goto } from "$app/navigation";
     import type { LayoutServerData } from "./$types";
@@ -38,6 +39,9 @@
                 if (ndkUser.npub) {
                     $currentUser = ndkUser;
                     $currentUser.ndk = $ndk;
+                    $currentUser.follows().then((followsSet) => {
+                        $currentUserFollows = Array.from(followsSet).map((user) => user.hexpubkey);
+                    });
                     document.cookie = `listrUserNpub=${ndkUser.npub};
                     max-age=max-age-in-seconds=1209600; SameSite=Lax; Secure`;
                     if (window.plausible) pa.addEvent("Log in");
@@ -57,10 +61,19 @@
 
     function signout(e: Event) {
         currentUser.set(null);
+        currentUserFollows.set([]);
         document.cookie = "listrUserNpub=";
         if (window.plausible) pa.addEvent("Log out");
         toast.success("Signed out");
         goto("/");
+    }
+
+    $: {
+        if ($currentUser && $currentUserFollows.length === 0) {
+            $currentUser.follows().then((followsSet) => {
+                $currentUserFollows = Array.from(followsSet).map((user) => user.hexpubkey);
+            });
+        }
     }
 </script>
 

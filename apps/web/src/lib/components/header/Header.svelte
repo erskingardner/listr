@@ -62,34 +62,6 @@
                 </button>
             {/if} -->
 
-            <!-- Relay dropdown -->
-            <div class="relative">
-                <button
-                    on:click={toggleRelayMenu}
-                    type="button"
-                    class="-m-1.5 flex items-center p-1.5 text-gray-400 hover:text-gray-500"
-                    id="user-menu-button"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                >
-                    <Server strokeWidth="1.5" />
-                </button>
-                {#if relayMenuVisible}
-                    <!-- Dropdown relay menu -->
-                    <div
-                        on:pointerleave={toggleRelayMenu}
-                        in:scale={{ duration: 100, easing: expoInOut, start: 0.95 }}
-                        out:scale={{ duration: 75, easing: expoInOut, start: 0.95 }}
-                        class="absolute text-sm right-0 z-10 mt-2.5 w-72 p-4 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
-                        role="menu"
-                        aria-orientation="vertical"
-                        aria-labelledby="user-menu-button"
-                        tabindex="-1"
-                    >
-                        <RelayList ndk={$ndk} />
-                    </div>
-                {/if}
-            </div>
             <!-- Profile dropdown -->
             {#if $currentUser}
                 <div class="relative">

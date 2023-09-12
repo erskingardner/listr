@@ -12,13 +12,14 @@ if (browser) {
 
 export const ndkStore = new NDKSvelte({
     explicitRelayUrls: [
-        "ws://localhost:8080",
         "wss://purplepag.es",
         "wss://relay.nostr.band",
         "wss://nos.lol",
         "wss://relay.snort.social",
         "wss://relay.damus.io",
     ],
+    outboxRelayUrls: ["wss://purplepag.es"],
+    enableOutboxModel: false,
     cacheAdapter: cacheAdapter,
 });
 
