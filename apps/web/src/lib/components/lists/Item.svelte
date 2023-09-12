@@ -11,6 +11,7 @@
     export let privateItem: boolean;
     export let unsaved: boolean;
     export let removal: boolean = false;
+    export let editMode: boolean = false;
 
     const type: string = tag[0];
     const otherTagValues: string[] | undefined = tag.slice(2);
@@ -26,6 +27,7 @@
             {privateItem}
             {unsaved}
             {removal}
+            {editMode}
             on:removeItem
             on:removeUnsavedItem
         />

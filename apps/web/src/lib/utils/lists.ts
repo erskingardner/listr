@@ -25,11 +25,11 @@ export const filterAndSortByName = (lists: NDKList[], deletions?: NDKEvent[]) =>
     if (deletions) {
         deleteFiltered = nameFiltered.filter(
             (list) =>
-                !deletions.map((event) => event.tagValue("a")).includes(list.tagId()) ||
-                !deletions.map((event) => event.tagValue("e")).includes(list.id)
+                !deletions
+                    .map((event) => event.tagValue("a") || event.tagValue("e"))
+                    .includes(list.tagId())
         );
     }
-
     const sorted = (deleteFiltered || nameFiltered).sort((a, b) => a.name!.localeCompare(b.name!));
     return sorted;
 };

@@ -33,7 +33,6 @@
         deletedEvents?.unsubscribe();
     });
 
-    $: console.log($deletedEvents);
     $: if ($lists) {
         $lists = filterAndSortByName($lists, $deletedEvents);
     }

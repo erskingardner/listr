@@ -10,6 +10,8 @@
     import AddToListButton from "../actions/AddToListButton.svelte";
     import { createEventDispatcher } from "svelte";
     import AdditionItemPill from "./AdditionItemPill.svelte";
+    import { fly } from "svelte/transition";
+    import { expoInOut } from "svelte/easing";
 
     const dispatch = createEventDispatcher();
 
@@ -18,6 +20,7 @@
     export let privateItem: boolean;
     export let unsaved: boolean;
     export let removal: boolean;
+    export let editMode: boolean;
 
     const user = $ndk.getUser({ hexpubkey: pubkey });
 </script>
@@ -56,6 +59,23 @@
             </button>
         {:else}
             <div class="ml-auto flex flex-row gap-2 items-center">
+                {#if editMode}
+                    <button
+                        transition:fly={{ x: -200, duration: 300, easing: expoInOut }}
+                        class="primaryActionButton"
+                        on:click={() =>
+                            dispatch("removeItem", {
+                                type,
+                                id: pubkey,
+                                privateItem,
+                                unsaved,
+                                removal,
+                            })}
+                    >
+                        <X strokeWidth="1.5" size="20" />
+                        Remove item
+                    </button>
+                {/if}
                 <FollowButton {user} />
                 <!-- <AddToListButton {user} /> -->
                 <ItemActions {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeItem />

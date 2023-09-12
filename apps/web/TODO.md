@@ -4,12 +4,7 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   Allow renaming of lists
 -   Add item to another list
-
-#### To Launch V2
-
--   publishing new changes
 -   list feeds
 -   display list a tags
 
@@ -24,16 +19,14 @@ A simple app for managing and discovering Nostr lists.
 
 ### 👨🏼‍💻 In Progress
 
--   Total rebuild of the app
-
 ### ✅ Done
 
+-   Allow renaming of lists
+-   fix bug with deleted items
+-   publishing new changes
 -   Fix bug with duplicate items in lists
 -   Handle relay set events
 -   community a tags (kind 34550)
-
-#### To Launch V2
-
 -   Follow / Unfollow users in lists
 -   feed should default to your followers lists with option for global
 -   Fix inside user list nav to handle deleted events

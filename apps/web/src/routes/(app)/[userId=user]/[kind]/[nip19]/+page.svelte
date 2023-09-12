@@ -8,9 +8,9 @@
     import { slide } from "svelte/transition";
     import { expoInOut } from "svelte/easing";
     import { afterNavigate, beforeNavigate } from "$app/navigation";
-    import currentUser from "$lib/stores/currentUser.js";
+    import currentUser from "$lib/stores/currentUser";
     import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
-    import { unixTimeNowInSeconds } from "$lib/utils/dates.js";
+    import { unixTimeNowInSeconds } from "$lib/utils";
     import ndk from "$lib/stores/ndk.js";
     import { v4 as uuidv4 } from "uuid";
 
@@ -27,11 +27,18 @@
 
     let publishingChanges: boolean = false;
 
+    let editMode: boolean = false;
+
+    let listName = data.name;
+    let listDescription = data.description;
+
     $: unpublishedChanges =
         unsavedPrivateItems.length > 0 ||
         unsavedPrivateRemovals.length > 0 ||
         unsavedPublicItems.length > 0 ||
-        unsavedPublicRemovals.length > 0;
+        unsavedPublicRemovals.length > 0 ||
+        listName !== data.name ||
+        listDescription !== data.description;
 
     beforeNavigate(() => {
         if (unpublishedChanges) {
@@ -48,6 +55,8 @@
         unsavedPrivateItems = [];
         unsavedPublicRemovals = [];
         unsavedPrivateRemovals = [];
+        listName = data.name;
+        listDescription = data.description;
     }
 
     function handleListAddition(event: any) {
@@ -111,7 +120,7 @@
         }
     }
 
-    async function publishList(): Promise<string> {
+    async function publishList(): Promise<string | void> {
         publishingChanges = true;
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
@@ -130,55 +139,98 @@
             tags: [...publicItems, ...unsavedPublicItems],
         });
 
-        list.name = data.name;
-        list.description = data.description;
+        list.name = listName;
+        list.description = listDescription;
 
-        const listTags = data.rawList.tags;
-        const dTag = listTags.filter((tag) => tag[0] === "d")[0];
-
+        let newListConfirmation: boolean = true;
         // This will create a new list for older style lists with a name the same as the d tag.
-        if (list.kind! >= 30000 && list.kind! <= 40000 && dTag[1] === list.name) {
-            const uuid = uuidv4();
-            list.tags.push(["d", `listr-${uuid}`]);
-        }
+        if (list.kind! >= 30000 && list.kind! <= 40000) {
+            const listTags = data.rawList.tags;
+            const dTagValue = listTags.filter((tag) => tag[0] === "d")[0][1];
 
-        if (list.kind! >= 30000 && list.kind! <= 40000 && dTag[1] !== list.name) {
-            list.tags.push(dTag);
+            if (dTagValue === list.name) {
+                newListConfirmation = confirm(
+                    "Updating this list will upgrade the format of the list to allow editing the list name going forward. Do you want to proceed?\n\nWe suggest deleting the original list after the new list is created."
+                );
+                const uuid = uuidv4();
+                list.tags.push(["d", `listr-${uuid}`]);
+            } else {
+                list.tags.push(["d", dTagValue]);
+            }
         }
 
         // Encrypt if we need to
         if (newPrivateItems.length > 0) await list.encrypt($currentUser!);
 
-        // Publish
-        await list.publish();
-        publishingChanges = false;
+        if (newListConfirmation) {
+            // Publish
+            await list.publish().catch((error) => {
+                if (error === "User rejected") {
+                    console.log("Rejected");
+                    publishingChanges = false;
+                }
+            });
+            publishingChanges = false;
+            clearTempStores();
+            return list.encode();
+        } else {
+            publishingChanges = false;
+        }
+    }
+
+    function toggleEditMode() {
+        if (editMode && unpublishedChanges) {
+            confirm(
+                "You have unpublished changes that will be discarded. Are you sure you want to stop editing?"
+            );
+        }
+        editMode = !editMode;
         clearTempStores();
-        return list.encode();
     }
 </script>
 
 <div class="flex flex-row items-center justify-between">
     <div class="flex flex-col gap-1">
         <div class="text-base lg:text-lg font-bold flex flex-row items-center gap-2">
-            {data.name}
+            {listName}
             <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
             <Tooltip type="light">Kind: {data.kind}</Tooltip>
             <span class="text-sm font-normal">{data.itemCount} items</span>
         </div>
-        <span class="italic text-sm">{data.description ? data.description : ""}</span>
+        <span class="italic text-sm">
+            {listDescription ? listDescription : ""}
+        </span>
     </div>
     <ListActions
         nip19={data.nip19}
         pubkey={data.pubkey}
         listId={data.listId}
         rawList={data.rawList}
+        {editMode}
         on:listDeleted
+        on:toggleEditMode={toggleEditMode}
     />
 </div>
 <hr />
 <div class="flex flex-col">
-    {#if $currentUser?.hexpubkey === data.rawList.pubkey}
+    {#if $currentUser?.hexpubkey === data.rawList.pubkey && editMode}
         <div transition:slide={{ easing: expoInOut }}>
+            <form class="flex flex-col gap-2">
+                <label for="listName" class="font-medium">Name</label>
+                <input
+                    type="text"
+                    name="listName"
+                    bind:value={listName}
+                    class="border-gray-400 col-span-2 rounded-md disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                />
+                <label for="listDescription" class="font-medium">Description</label>
+                <input
+                    type="text"
+                    name="listDescription"
+                    bind:value={listDescription}
+                    class="border-gray-400 col-span-2 rounded-md disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                />
+            </form>
             <AddItemForm on:addListItem={handleListAddition} />
         </div>
     {/if}
@@ -188,6 +240,8 @@
             <legend class="text-orange-800">Unpublished changes</legend>
             <div class="flex flex-row gap-4 items-center justify-end">
                 <ChangesCount
+                    nameChanged={listName !== data.name}
+                    descriptionChanged={listDescription !== data.description}
                     additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
                     removals={[...unsavedPublicRemovals, ...unsavedPrivateRemovals]}
                 />
@@ -200,6 +254,8 @@
                     Publish now
                 </button>
             </div>
+
+            <div class="flex flex-col gap-1"></div>
 
             {#each unsavedPrivateItems as item (item[1])}
                 <Item
@@ -248,6 +304,7 @@
             tag={item}
             privateItem={true}
             unsaved={false}
+            {editMode}
             on:removeItem={handleListRemoval}
         />
     {/each}
@@ -257,6 +314,7 @@
             tag={item}
             privateItem={false}
             unsaved={false}
+            {editMode}
             on:removeItem={handleListRemoval}
         />
     {/each}

@@ -1,16 +1,24 @@
 <script lang="ts">
-    import { FilePlus } from "lucide-svelte";
+    import { FileEdit, FileX } from "lucide-svelte";
     import currentUser from "$lib/stores/currentUser";
     import { createEventDispatcher } from "svelte";
 
     const dispatch = createEventDispatcher();
 
     export let pubkey: string;
+    export let editMode: boolean;
 </script>
 
 {#if $currentUser?.hexpubkey === pubkey}
-    <button on:click={() => dispatch("toggleEditForm")} class="primaryActionButton">
-        <FilePlus strokeWidth="1.5" size="20" />
-        Add items
-    </button>
+    {#if editMode}
+        <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
+            <FileX strokeWidth="1.5" size="20" />
+            Stop editing
+        </button>
+    {:else}
+        <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
+            <FileEdit strokeWidth="1.5" size="20" />
+            Edit list
+        </button>
+    {/if}
 {/if}
