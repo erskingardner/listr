@@ -56,7 +56,7 @@
         <button
             on:click|preventDefault={handleListAddition}
             tabindex="0"
-            class="w-auto flex flex-row gap-1 items-center border border-green-600 bg-green-50 hover:bg-green-100 rounded-md p-2 px-3 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
+            class="w-auto flex flex-row gap-1 items-center border border-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md p-2 px-3 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
             disabled={addItemSubmitting}
         >
             <Check strokeWidth="1.5" size="20" />

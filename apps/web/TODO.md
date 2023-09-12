@@ -10,17 +10,16 @@ A simple app for managing and discovering Nostr lists.
 
 #### Other stuff
 
--   handle showing all types of events
 -   NsecBunker login
 -   Commenting on lists
--   Emoji tag support
-    -   Support emoji removal from lists
-    -   Support emoji addition to lists
 
 ### 👨🏼‍💻 In Progress
 
 ### ✅ Done
 
+-   Emoji tag support
+    -   Support emoji removal from lists
+    -   Support emoji addition to lists
 -   Allow renaming of lists
 -   fix bug with deleted items
 -   publishing new changes
