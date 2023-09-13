@@ -49,7 +49,7 @@
             <li>
                 <a
                     href="/new"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
+                    class="group flex gap-x-3 rounded-md items-center p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
                 >
                     <PlusCircle strokeWidth="1.5" size="20" class="w-5 h-5" />
                     Create a new list
@@ -163,7 +163,7 @@
             </li>
         {/if}
         <li class="text-gray-400 text-sm mb-10">
-            Built with ⚡ & 💜 by <a
+            Built with ⚡ and 💜 by <a
                 href="https://primal.net/jeffg"
                 class="underline hover:no-underline font-medium">JeffG</a
             >
