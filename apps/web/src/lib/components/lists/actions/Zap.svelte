@@ -108,7 +108,11 @@
                     type="submit"
                     class="w-full flex flex-row items-center mt-2 gap-1 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
                 >
-                    <Zap strokeWidth="1.5" class="stroke-yellow-500 fill-yellow-500" size="20" />
+                    <Zap
+                        strokeWidth="1.5"
+                        class="stroke-yellow-500 fill-yellow-500 w-5 h-5"
+                        size="20"
+                    />
                     Zap this list
                 </button>
             </form>

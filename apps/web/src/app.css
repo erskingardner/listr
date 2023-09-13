@@ -11,3 +11,17 @@
 .primaryActionButton {
     @apply flex flex-row gap-2 items-center border border-indigo-200  bg-indigo-50 hover:bg-indigo-100 rounded-md text-sm px-2 py-0.5;
 }
+
+code::before {
+    content: "" !important;
+}
+
+code::after {
+    content: "" !important;
+}
+
+.listTable tr {
+}
+.listTable thead td {
+    @apply px-2;
+}

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Newspaper, PlusCircle, LogIn } from "lucide-svelte";
+    import { Newspaper, PlusCircle, LogIn, HelpCircle } from "lucide-svelte";
     import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
@@ -45,6 +45,17 @@
 
 <nav class="flex flex-1 flex-col">
     <ul role="list" class="flex flex-1 flex-col gap-y-7">
+        {#if $currentUser}
+            <li>
+                <a
+                    href="/new"
+                    class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
+                >
+                    <PlusCircle strokeWidth="1.5" size="20" class="w-5 h-5" />
+                    Create a new list
+                </a>
+            </li>
+        {/if}
         <li>
             <ul role="list" class="-mx-2 space-y-1">
                 <li>
@@ -54,8 +65,19 @@
                             ? 'bg-gray-800 text-white'
                             : 'text-gray-400 hover:text-white hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     >
-                        <Newspaper strokeWidth="1.5" />
+                        <Newspaper strokeWidth="1.5" size="20" class="w-5 h-5" />
                         Feed
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="/about"
+                        class="{$page.url.pathname === '/about'
+                            ? 'bg-gray-800 text-white'
+                            : 'text-gray-400 hover:text-white hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                    >
+                        <HelpCircle strokeWidth="1.5" size="20" class="w-5 h-5" />
+                        About Listr
                     </a>
                 </li>
             </ul>
@@ -102,7 +124,7 @@
                     </li>
                 </ul>
             </li> -->
-            <li>
+            <li class="mb-10">
                 <div class="text-xs font-semibold leading-6 text-gray-400">Your lists</div>
                 <ul role="list" class="-mx-2 mt-2 space-y-1">
                     {#if $currentUserLists}
@@ -129,25 +151,22 @@
                     {/if}
                 </ul>
             </li>
-            <li class="mb-10">
-                <a
-                    href="/new"
-                    class="group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
-                >
-                    <PlusCircle strokeWidth="1.5" />
-                    Create a new list
-                </a>
-            </li>
         {:else}
             <li class="mb-10 -mx-2">
                 <button
                     on:click={() => dispatch("signin")}
                     class="group flex gap-x-3 w-full rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
                 >
-                    <LogIn strokeWidth="1.5" />
+                    <LogIn strokeWidth="1.5" size="20" class="w-5 h-5" />
                     Sign in to manage your lists
                 </button>
             </li>
         {/if}
+        <li class="text-gray-400 text-sm mb-10">
+            Built with ⚡ & 💜 by <a
+                href="https://primal.net/jeffg"
+                class="underline hover:no-underline font-medium">JeffG</a
+            >
+        </li>
     </ul>
 </nav>

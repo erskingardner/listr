@@ -22,11 +22,11 @@
 
 {#key pubkey}
     <div
-        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200 {unsaved
+        class="flex flex-col w-full lg:w-auto lg:flex-row gap-4 lg:gap-2 rounded-md p-2 my-2 lg:items-center border border-gray-200 {unsaved
             ? 'border-orange-500 border-dashed'
             : ''}"
     >
-        <div class="grow flex flex-row gap-2 items-center">
+        <div class="grow flex flex-col lg:flex-row gap-2 items-start lg:items-center">
             <UserDetails {user} />
             {#if privateItem}
                 <PrivateItemPill />
@@ -40,7 +40,7 @@
         {#if unsaved}
             <Unstage {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeUnsavedItem />
         {:else}
-            <div class="ml-auto flex flex-row gap-2 items-center">
+            <div class="w-full lg:w-auto lg:ml-auto flex flex-row gap-2 lg:items-center">
                 <RemoveItem
                     {type}
                     id={pubkey}
@@ -50,9 +50,18 @@
                     {editMode}
                     on:removeItem
                 />
-                <FollowButton {user} />
-                <!-- <AddToListButton {user} /> -->
-                <ItemActions {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeItem />
+                {#if !editMode}
+                    <FollowButton {user} />
+                    <AddToListButton {user} />
+                    <ItemActions
+                        {type}
+                        id={pubkey}
+                        {privateItem}
+                        {unsaved}
+                        {removal}
+                        on:removeItem
+                    />
+                {/if}
             </div>
         {/if}
     </div>

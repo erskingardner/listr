@@ -7,6 +7,8 @@
     import { afterNavigate } from "$app/navigation";
     import UserDetails from "$lib/components/users/UserDetails.svelte";
     import UserBio from "$lib/components/users/UserBio.svelte";
+    import FollowButton from "$lib/components/lists/actions/FollowButton.svelte";
+    import AddToListButton from "$lib/components/lists/actions/AddToListButton.svelte";
 
     export let data;
 
@@ -38,6 +40,11 @@
             {#key data.pubkey}
                 <div class="flex flex-col gap-2">
                     <UserDetails {user} npubCopy={true} avatarSize="16" />
+                    <hr />
+                    <div class="flex flex-row gap-2 justify-between items-stretch">
+                        <FollowButton {user} />
+                        <AddToListButton {user} />
+                    </div>
                     <hr />
                     <UserBio {user} />
                 </div>

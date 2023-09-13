@@ -21,15 +21,21 @@
 </script>
 
 {#if $currentUser}
-    <div class="ml-auto flex flex-row gap-2 lg:gap-4 items-center">
+    <div
+        class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between"
+    >
         <Zap {nip19} {listId} />
         <Like {listId} />
         {#if $currentUser && pubkey !== $currentUser.hexpubkey && FORKABLE_LIST_KINDS.includes(listKind)}
             <Fork {rawList} />
         {/if}
         <Edit {pubkey} {editMode} on:toggleEditMode />
-        <button id="listActionsButton" class="ml-auto">
-            <MoreVertical strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black" />
+        <button id="listActionsButton" class="lg:ml-auto">
+            <MoreVertical
+                strokeWidth="1.5"
+                size="20"
+                class="stroke-gray-500 hover:stroke-black w-5 h-5"
+            />
         </button>
         <Popover triggeredBy="#listActionsButton" placement="left-start">
             <div class="flex flex-col gap-2 items-start">

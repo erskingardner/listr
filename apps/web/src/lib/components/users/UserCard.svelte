@@ -3,6 +3,7 @@
     import UserBio from "./UserBio.svelte";
     import FollowButton from "../lists/actions/FollowButton.svelte";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
+    import AddToListButton from "../lists/actions/AddToListButton.svelte";
 
     export let user: NDKUser;
 </script>
@@ -19,7 +20,11 @@
                 npubCopy={true}
                 avatarSize="16"
             />
+        </div>
+        <hr />
+        <div class="flex flex-row gap-4 justify-between items-stretch">
             <FollowButton {user} />
+            <AddToListButton {user} />
         </div>
         <hr />
         <UserBio {user} userProfile={user.profile} />

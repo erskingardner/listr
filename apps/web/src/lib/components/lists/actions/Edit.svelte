@@ -12,12 +12,12 @@
 {#if $currentUser?.hexpubkey === pubkey}
     {#if editMode}
         <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
-            <FileX strokeWidth="1.5" size="20" />
+            <FileX strokeWidth="1.5" size="20" class="w-5 h-5" />
             Stop editing
         </button>
     {:else}
         <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
-            <FileEdit strokeWidth="1.5" size="20" />
+            <FileEdit strokeWidth="1.5" size="20" class="w-5 h-5" />
             Edit list
         </button>
     {/if}

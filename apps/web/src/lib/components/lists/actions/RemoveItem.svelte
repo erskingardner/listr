@@ -29,7 +29,7 @@
                 removal,
             })}
     >
-        <X strokeWidth="1.5" size="20" />
+        <X strokeWidth="1.5" size="20" class="w-5 h-5" />
         Remove item
     </button>
 {/if}

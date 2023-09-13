@@ -193,9 +193,9 @@
     }
 </script>
 
-<div class="flex flex-row items-center justify-between">
-    <div class="flex flex-col gap-1">
-        <div class="text-base lg:text-lg font-bold flex flex-row items-center gap-2">
+<div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+    <div class="flex flex-col gap-1 w-full lg:w-auto">
+        <div class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2">
             {listName}
             <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
             <Tooltip type="light">Kind: {data.kind}</Tooltip>
@@ -242,7 +242,7 @@
     {#if unpublishedChanges}
         <fieldset class="border border-orange-800 rounded-md p-2">
             <legend class="text-orange-800">Unpublished changes</legend>
-            <div class="flex flex-row gap-4 items-center justify-end">
+            <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-end">
                 <ChangesCount
                     nameChanged={listName !== data.name}
                     descriptionChanged={listDescription !== data.description}
@@ -252,9 +252,9 @@
                 <button
                     on:click={publishList}
                     disabled={publishingChanges}
-                    class="flex flex-row gap-2 items-center border border-orange-500 bg-orange-100 hover:bg-orange-200 p-2 px-3 rounded-md text-sm lg:text-base disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
+                    class="flex flex-row gap-2 justify-center items-center border border-orange-500 bg-orange-100 hover:bg-orange-200 p-2 px-3 rounded-md text-sm lg:text-base disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
                 >
-                    <HardDriveUpload strokeWidth="1.5" size="20" />
+                    <HardDriveUpload strokeWidth="1.5" size="20" class="w-5 h-5" />
                     Publish now
                 </button>
             </div>

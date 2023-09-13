@@ -34,7 +34,11 @@
         >
             <span slot="badge" let:nip05Valid>
                 {#if nip05Valid === undefined}
-                    <BadgeHelp size="16" strokeWidth="1.5" class="fill-gray-200 stroke-gray-600" />
+                    <BadgeHelp
+                        size="16"
+                        strokeWidth="1.5"
+                        class="fill-gray-200 stroke-gray-600 w-4 h-4"
+                    />
                 {:else if nip05Valid}
                     <BadgeCheck
                         size="16"
@@ -42,7 +46,11 @@
                         class="fill-purple-200 stroke-purple-800"
                     />
                 {:else}
-                    <BadgeX size="16" strokeWidth="1.5" class="fill-red-200 stroke-red-800" />
+                    <BadgeX
+                        size="16"
+                        strokeWidth="1.5"
+                        class="fill-red-200 stroke-red-800 w-4 h-4"
+                    />
                 {/if}
             </span>
         </Nip05>

@@ -48,6 +48,15 @@
     $: if ($followingLists) $followingLists = filteredLists($followingLists);
 </script>
 
+<svelte:head>
+    <title>Listr</title>
+    <meta
+        name="description"
+        content="A Nostr based app to help you view and manage your own
+        Nostr lists and find great content in other people's lists."
+    />
+</svelte:head>
+
 <div class="flex flex-col gap-2">
     {#if $currentUser}
         {#await followsListReady}

@@ -133,7 +133,7 @@
                     <div
                         class="mt-2 lg:mt-0 lg:absolute flex flex-row gap-2 items-center lg:w-1/4 text-sm top-4 right-0 p-2 bg-red-100 rounded-md"
                     >
-                        <AlertTriangle strokeWidth="1.5" size="24" class="shrink-0" />
+                        <AlertTriangle strokeWidth="1.5" size="24" class="shrink-0 w-6 h-6" />
                         <span
                             >Creating a new {$form.name} list will overwrite your current {$form.name}
                             list</span
@@ -155,7 +155,7 @@
                         disabled={nameInputDisabled}
                     />
                     <div class="absolute -right-20 w-28" tabindex="-1">
-                        <Info strokeWidth="1.5" size="20" class="stroke-gray-500" />
+                        <Info strokeWidth="1.5" size="20" class="stroke-gray-500 w-5 h-5" />
                         <Tooltip
                             type="custom"
                             class="bg-white rounded-md text-sm font-normal absolute border border-gray-300"
@@ -205,7 +205,7 @@
                                             handleListRemoval(privateItem, true)}
                                         class="my-2 w-full lg:w-auto flex justify-center border border-gray-400 bg-red-50 hover:bg-red-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
                                     >
-                                        <X strokeWidth="1.5" />
+                                        <X strokeWidth="1.5" size="20" class="w-5 h-5" />
                                     </button>
                                 </div>
                             {/each}
@@ -226,7 +226,7 @@
                                             handleListRemoval(publicItem, false)}
                                         class="my-2 w-full lg:w-auto flex justify-center border border-gray-400 bg-red-50 hover:bg-red-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
                                     >
-                                        <X strokeWidth="1.5" />
+                                        <X strokeWidth="1.5" size="20" class="w-5 h-5" />
                                     </button>
                                 </div>
                             {/each}
@@ -256,7 +256,7 @@
                             class="w-full lg:w-auto flex justify-center border border-gray-400 bg-green-50 hover:bg-green-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
                             disabled={addItemSubmitting}
                         >
-                            <Check strokeWidth="1.5" />
+                            <Check strokeWidth="1.5" size="20" class="w-5 h-5" />
                         </button>
                     </div>
                     {#if addItemError}

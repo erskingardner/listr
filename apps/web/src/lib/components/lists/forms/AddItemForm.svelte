@@ -40,7 +40,7 @@
             bind:value={listItem}
             tabindex="0"
             placeholder="Identifier (npub..., nprofile..., note..., nevent..., or naddr...)"
-            class="border-gray-400 rounded-md grow disabled:border-gray-200 disabled:bg-gray-100"
+            class="border-gray-400 w-full lg:w-auto rounded-md grow disabled:border-gray-200 disabled:bg-gray-100"
             required
         />
         <select
@@ -48,7 +48,7 @@
             name="listItemType"
             bind:value={listItemType}
             tabindex="0"
-            class="border-gray-400 rounded-md"
+            class="border-gray-400 rounded-md w-full lg:w-auto"
         >
             <option value="public">Public</option>
             <option value="private">Private</option>
@@ -56,10 +56,10 @@
         <button
             on:click|preventDefault={handleListAddition}
             tabindex="0"
-            class="w-auto flex flex-row gap-1 items-center border border-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md p-2 px-3 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
+            class="w-full lg:w-auto justify-center lg:justify-start flex flex-row gap-1 items-center border border-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md p-2 px-3 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
             disabled={addItemSubmitting}
         >
-            <Check strokeWidth="1.5" size="20" />
+            <Check strokeWidth="1.5" size="20" class="w-5 h-5" />
             <div>Add to list</div>
         </button>
     </div>

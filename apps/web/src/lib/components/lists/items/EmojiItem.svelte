@@ -20,13 +20,22 @@
             ? 'border-orange-500 border-dashed'
             : ''}"
     >
-        <div class="flex flex-row gap-2 w-full items-center">
-            <img src={otherTagValues[0]} class="w-12 h-12" alt={id} />
-            <span class="break-all text-sm lg:text-base">:{id}:</span>
-            {#if privateItem}
-                <PrivateItemPill />
-            {/if}
-            <div class="flex flex-row gap-2 items-center ml-auto text-sm">
+        <div class="flex flex-col {editMode ? 'gap-2' : ''} lg:flex-row w-full lg:items-center">
+            <div class="flex flex-row gap-2 items-center">
+                <img src={otherTagValues[0]} class="w-12 h-12" alt={id} />
+                <span class="break-all text-sm lg:text-base">:{id}:</span>
+                {#if privateItem}
+                    <PrivateItemPill />
+                {/if}
+                {#if !editMode && !unsaved}
+                    <div class="lg:hidden ml-auto">
+                        <ItemActions {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
+                    </div>
+                {/if}
+            </div>
+            <div
+                class="flex flex-col lg:flex-row gap-2 items-start lg:items-center lg:ml-auto text-sm"
+            >
                 {#if unsaved}
                     {#if removal}
                         <RemovalItemPill />
@@ -51,7 +60,18 @@
                         {editMode}
                         on:removeItem
                     />
-                    <ItemActions {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
+                    {#if !editMode}
+                        <div class="hidden lg:block">
+                            <ItemActions
+                                {type}
+                                {id}
+                                {privateItem}
+                                {unsaved}
+                                {removal}
+                                on:removeItem
+                            />
+                        </div>
+                    {/if}
                 {/if}
             </div>
         </div>
