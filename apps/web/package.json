@@ -30,8 +30,7 @@
         "typescript": "^5.2.2",
         "vite": "^4.4.9",
         "zod": "^3.22.2"
-    },
-    "type": "module",
+	},
     "dependencies": {
         "@accuser/svelte-plausible-analytics": "^0.5.0",
         "@nostr-dev-kit/ndk": "workspace:*",
