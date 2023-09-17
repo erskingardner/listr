@@ -1,7 +1,7 @@
 <script lang="ts">
     import { UserMinus2, UserPlus2 } from "lucide-svelte";
     import currentUser from "$lib/stores/currentUser";
-    import currentUserFollows from "$lib/stores/currentUserFollows";
+    import { currentUserFollows } from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
     import toast from "svelte-french-toast";

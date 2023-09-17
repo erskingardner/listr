@@ -10,7 +10,7 @@
     import { PlausibleAnalytics } from "@accuser/svelte-plausible-analytics";
     import { pa } from "@accuser/svelte-plausible-analytics";
     import currentUser from "$lib/stores/currentUser";
-    import currentUserFollows from "$lib/stores/currentUserFollows";
+    import { currentUserFollows } from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
     import { goto } from "$app/navigation";
     import type { LayoutServerData } from "./$types";
