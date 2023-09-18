@@ -7,7 +7,7 @@
     import { NDKList, NDKNip07Signer, type NDKTag } from "@nostr-dev-kit/ndk";
     import { slide } from "svelte/transition";
     import { expoInOut } from "svelte/easing";
-    import { afterNavigate, beforeNavigate } from "$app/navigation";
+    import { afterNavigate, beforeNavigate, invalidateAll } from "$app/navigation";
     import currentUser from "$lib/stores/currentUser";
     import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
     import { unixTimeNowInSeconds } from "$lib/utils";
@@ -173,6 +173,7 @@
             });
             publishingChanges = false;
             clearTempStores();
+            invalidateAll();
             return list.encode();
         } else {
             publishingChanges = false;
@@ -265,6 +266,7 @@
                 <Item
                     id={item[1]}
                     tag={item}
+                    kind={data.kind}
                     privateItem={true}
                     unsaved={true}
                     on:removeUnsavedItem={handleRemoveUnsavedItem}
@@ -274,6 +276,7 @@
                 <Item
                     id={item[1]}
                     tag={item}
+                    kind={data.kind}
                     privateItem={false}
                     unsaved={true}
                     on:removeUnsavedItem={handleRemoveUnsavedItem}
@@ -283,6 +286,7 @@
                 <Item
                     id={item[1]}
                     tag={item}
+                    kind={data.kind}
                     privateItem={true}
                     unsaved={true}
                     removal={true}
@@ -293,6 +297,7 @@
                 <Item
                     id={item[1]}
                     tag={item}
+                    kind={data.kind}
                     privateItem={false}
                     unsaved={true}
                     removal={true}
@@ -306,6 +311,7 @@
         <Item
             id={item[1]}
             tag={item}
+            kind={data.kind}
             privateItem={true}
             unsaved={false}
             {editMode}
@@ -316,6 +322,7 @@
         <Item
             id={item[1]}
             tag={item}
+            kind={data.kind}
             privateItem={false}
             unsaved={false}
             {editMode}

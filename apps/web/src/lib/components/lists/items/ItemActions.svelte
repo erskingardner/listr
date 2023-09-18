@@ -1,21 +1,11 @@
 <script lang="ts">
-    import { X, Copy, CopyCheck, MoreVertical, ExternalLink } from "lucide-svelte";
+    import { Copy, CopyCheck, MoreVertical, ExternalLink } from "lucide-svelte";
     import { Popover } from "flowbite-svelte";
-    import { createEventDispatcher } from "svelte";
     import { aTagToNip19, copyToClipboard } from "$lib/utils";
     import { nip19 } from "nostr-tools";
-    import currentUser from "$lib/stores/currentUser";
-    import { page } from "$app/stores";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import ndk from "$lib/stores/ndk";
-
-    const dispatch = createEventDispatcher();
 
     export let type: string;
     export let id: string;
-    export let privateItem: boolean;
-    export let unsaved: boolean;
-    export let removal: boolean;
 
     let copySuccess: boolean = false;
 

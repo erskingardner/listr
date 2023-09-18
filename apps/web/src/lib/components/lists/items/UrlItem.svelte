@@ -5,9 +5,11 @@
     import { Tooltip } from "flowbite-svelte";
     import RemoveItem from "../actions/RemoveItem.svelte";
     import Unstage from "../actions/Unstage.svelte";
+    import RelayPill from "./RelayPill.svelte";
 
     export let type: string;
     export let id: string;
+    export let kind: number;
     export let otherTagValues: string[];
     export let privateItem: boolean;
     export let unsaved: boolean;
@@ -17,19 +19,22 @@
 
 {#key id}
     <div
-        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200 {unsaved
-            ? 'border-orange-500 border-dashed'
-            : ''}"
+        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200
+            {unsaved ? 'border-orange-500 border-dashed' : ''}"
     >
-        <div class="flex flex-row gap-2 w-full">
-            {#if otherTagValues.length > 0}
-                <a href={id} class="hover:underline text-sm lg:text-base" target="_blank"
-                    >{otherTagValues[0]}</a
-                >
-                <Tooltip type="light">{id}</Tooltip>
+        <div class="flex flex-row gap-2 w-full items-center">
+            {#if kind === 10002}
+                {id}
+                <RelayPill marker={otherTagValues[0]} />
+            {:else if otherTagValues.length > 0}
+                <a href={id} class="hover:underline text-sm lg:text-base" target="_blank">
+                    {otherTagValues[0]}
+                </a>
+                <Tooltip type="light" class="z-50">{id}</Tooltip>
             {:else}
                 {id}
             {/if}
+
             {#if privateItem}
                 <PrivateItemPill />
             {/if}
@@ -49,7 +54,7 @@
                         {editMode}
                         on:removeItem
                     />
-                    <ItemActions {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
+                    <ItemActions {type} {id} on:removeItem />
                 {/if}
             </div>
         </div>

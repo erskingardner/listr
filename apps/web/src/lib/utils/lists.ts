@@ -9,15 +9,25 @@ export const SUPPORTED_LIST_KINDS = [
     NDKKind.CategorizedBookmarkList,
     NDKKind.CategorizedPeopleList,
     NDKKind.CategorizedRelayList,
+    NDKKind.InterestsList
 ];
+
+export const FEED_LIST_KINDS = [
+    NDKKind.CategorizedBookmarkList,
+    NDKKind.CategorizedPeopleList,
+    NDKKind.CategorizedRelayList,
+    NDKKind.InterestsList
+]
 
 export const FORKABLE_LIST_KINDS = [
     NDKKind.CategorizedBookmarkList,
     NDKKind.CategorizedPeopleList,
     NDKKind.CategorizedRelayList,
+    NDKKind.InterestsList
 ];
 
 export const LIST_FILTER_REGEXP = /^(chats|notifications|\/)/;
+export const LIST_MUTE_FILTER_REGEXP = /^mute|Mute/;
 
 export const filterAndSortByName = (lists: NDKList[], deletions?: NDKEvent[]) => {
     const nameFiltered = lists.filter((list) => list.name && !list.name.match(LIST_FILTER_REGEXP));
@@ -34,8 +44,13 @@ export const filterAndSortByName = (lists: NDKList[], deletions?: NDKEvent[]) =>
     return sorted;
 };
 
-export const filteredLists = (lists: NDKList[], deletions?: NDKEvent[]) => {
-    const nameFiltered = lists.filter((list) => list.name && !list.name.match(LIST_FILTER_REGEXP));
+export const filteredLists = (lists: NDKList[], deletions?: NDKEvent[], filterMute: boolean = false) => {
+    let nameFiltered = lists.filter((list) => list.name && !list.name.match(LIST_FILTER_REGEXP));
+
+    if(filterMute) {
+        nameFiltered = nameFiltered.filter((list) => list.name && !list.name.match(LIST_MUTE_FILTER_REGEXP));
+    }
+
     let deleteFiltered;
     if (deletions) {
         deleteFiltered = nameFiltered.filter(

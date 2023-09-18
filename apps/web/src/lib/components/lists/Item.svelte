@@ -8,6 +8,7 @@
 
     export let tag: NDKTag;
     export let id: string;
+    export let kind: number;
     export let privateItem: boolean;
     export let unsaved: boolean;
     export let removal: boolean = false;
@@ -46,6 +47,7 @@
         <UrlItem
             {type}
             {id}
+            {kind}
             {otherTagValues}
             {privateItem}
             {unsaved}

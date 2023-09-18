@@ -22,9 +22,9 @@
 
 {#key pubkey}
     <div
-        class="flex flex-col w-full lg:w-auto lg:flex-row gap-4 lg:gap-2 rounded-md p-2 my-2 lg:items-center border border-gray-200 {unsaved
-            ? 'border-orange-500 border-dashed'
-            : ''}"
+        class="flex flex-col w-full lg:w-auto lg:flex-row gap-4 lg:gap-2 
+            rounded-md p-2 my-2 lg:items-center border border-gray-200 
+            {unsaved ? 'border-orange-500 border-dashed' : ''}"
     >
         <div class="grow flex flex-col lg:flex-row gap-2 items-start lg:items-center">
             <UserDetails {user} />
@@ -53,14 +53,7 @@
                 {#if !editMode}
                     <FollowButton {user} />
                     <AddToListButton {user} />
-                    <ItemActions
-                        {type}
-                        id={pubkey}
-                        {privateItem}
-                        {unsaved}
-                        {removal}
-                        on:removeItem
-                    />
+                    <ItemActions {type} id={pubkey} on:removeItem />
                 {/if}
             </div>
         {/if}

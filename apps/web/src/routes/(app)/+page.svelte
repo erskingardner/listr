@@ -1,7 +1,7 @@
 <script lang="ts">
     import ListSummary from "$lib/components/lists/ListSummary.svelte";
     import { onDestroy } from "svelte";
-    import { filteredLists, SUPPORTED_LIST_KINDS } from "$lib/utils";
+    import { filteredLists, FEED_LIST_KINDS } from "$lib/utils";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
     import { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
@@ -11,7 +11,7 @@
 
     const globalLists = $ndk.storeSubscribe(
         {
-            kinds: SUPPORTED_LIST_KINDS,
+            kinds: FEED_LIST_KINDS,
             limit: 50,
         },
         { closeOnEose: false },
@@ -26,7 +26,7 @@
 
             followingLists = $ndk.storeSubscribe(
                 {
-                    kinds: SUPPORTED_LIST_KINDS,
+                    kinds: FEED_LIST_KINDS,
                     authors: Array.from(followers).map((user: NDKUser) => user.hexpubkey),
                     limit: 50,
                 },
@@ -44,8 +44,8 @@
         if (followingLists) followingLists.unsubscribe();
     });
 
-    $: if ($globalLists) $globalLists = filteredLists($globalLists);
-    $: if ($followingLists) $followingLists = filteredLists($followingLists);
+    $: if ($globalLists) $globalLists = filteredLists($globalLists, undefined, true);
+    $: if ($followingLists) $followingLists = filteredLists($followingLists, undefined, true);
 </script>
 
 <svelte:head>

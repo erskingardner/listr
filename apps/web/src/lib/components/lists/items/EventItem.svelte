@@ -69,7 +69,7 @@
                             on:removeItem
                         />
                         <div title={`${new Date(createdTime)}`}>{timeAgo(createdTime)}</div>
-                        <ItemActions {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
+                        <ItemActions {type} {id} on:removeItem />
                     {/if}
                 </div>
             </div>

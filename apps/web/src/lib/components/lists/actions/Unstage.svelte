@@ -13,7 +13,7 @@
 </script>
 
 <button
-    class="primaryActionButton !bg-orange-50 !border-orange-300 hover:!bg-orange-100 place-self-start"
+    class="primaryActionButton !bg-orange-50 !border-orange-300 hover:!bg-orange-100 place-self-start lg:place-self-center"
     on:click={() =>
         dispatch("removeUnsavedItem", {
             type,

@@ -16,9 +16,8 @@
 
 {#key id}
     <div
-        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200 {unsaved
-            ? 'border-orange-500 border-dashed'
-            : ''}"
+        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200 
+            {unsaved ? 'border-orange-500 border-dashed' : ''}"
     >
         <div class="flex flex-col {editMode ? 'gap-2' : ''} lg:flex-row w-full lg:items-center">
             <div class="flex flex-row gap-2 items-center">
@@ -29,7 +28,7 @@
                 {/if}
                 {#if !editMode && !unsaved}
                     <div class="lg:hidden ml-auto">
-                        <ItemActions {type} {id} {privateItem} {unsaved} {removal} on:removeItem />
+                        <ItemActions {type} {id} on:removeItem />
                     </div>
                 {/if}
             </div>
@@ -62,14 +61,7 @@
                     />
                     {#if !editMode}
                         <div class="hidden lg:block">
-                            <ItemActions
-                                {type}
-                                {id}
-                                {privateItem}
-                                {unsaved}
-                                {removal}
-                                on:removeItem
-                            />
+                            <ItemActions {type} {id} on:removeItem />
                         </div>
                     {/if}
                 {/if}
