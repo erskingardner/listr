@@ -7,6 +7,9 @@ A simple app for managing and discovering Nostr lists.
 -   Add item to another list
 -   list feeds
 -   display list a tags
+-   Add "Contacts" name to NDKList
+-   Handle Contacts petnames
+-
 
 #### Other stuff
 
