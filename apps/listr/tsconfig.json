@@ -20,9 +20,9 @@
         "tests/**/*.js",
         "tests/**/*.ts",
         "tests/**/*.svelte",
-        "./tailwind.config.js",
-        "./svelte.config.js",
-        "./postcss.config.js"
+        "tailwind.config.js",
+        "svelte.config.js",
+        "postcss.config.js"
     ]
     // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
     //

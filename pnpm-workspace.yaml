@@ -1,8 +1,6 @@
 packages:
-    - "apps/*"
-    - "packages/*"
+    - "apps/listr"
     - "packages/ndk/ndk"
-    - "packages/ndk/ndk-cache-redis"
     - "packages/ndk/ndk-cache-dexie"
     - "packages/ndk/ndk-svelte"
     - "packages/ndk/ndk-svelte-components"

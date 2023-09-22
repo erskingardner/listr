@@ -1,14 +1,14 @@
 <script lang="ts">
     import ndk from "$lib/stores/ndk";
-    import type { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
-    import UserListNav from "$lib/components/lists/UserListNav.svelte";
-    import { afterUpdate, onMount } from "svelte";
     import currentUser from "$lib/stores/currentUser";
+    import { afterUpdate, onMount } from "svelte";
+    import type { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
     import { afterNavigate } from "$app/navigation";
-    import UserDetails from "$lib/components/users/UserDetails.svelte";
-    import UserBio from "$lib/components/users/UserBio.svelte";
+    import UserListNav from "$lib/components/lists/UserListNav.svelte";
     import FollowButton from "$lib/components/lists/actions/FollowButton.svelte";
     import AddToListButton from "$lib/components/lists/actions/AddToListButton.svelte";
+    import UserBio from "$lib/components/users/UserBio.svelte";
+    import UserDetails from "$lib/components/users/UserDetails.svelte";
 
     export let data;
 

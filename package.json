@@ -3,7 +3,8 @@
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "build": "turbo run build",
-        "dev": "turbo run dev --concurrency=12",
+        "preview": "turbo run preview",
+        "dev": "turbo run dev",
         "lint": "turbo run lint",
         "format": "turbo run format"
     },

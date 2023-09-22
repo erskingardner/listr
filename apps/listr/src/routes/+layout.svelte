@@ -1,20 +1,18 @@
 <script lang="ts">
-    import "../../app.css";
+    import "../app.css";
     import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
     import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
     import Header from "$lib/components/header/Header.svelte";
     import toast, { Toaster } from "svelte-french-toast";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
+    import { type NDKUser, NDKNip07Signer } from "@nostr-dev-kit/ndk";
     import { Modal } from "flowbite-svelte";
-    import { PlausibleAnalytics } from "@accuser/svelte-plausible-analytics";
-    import { pa } from "@accuser/svelte-plausible-analytics";
+    import { PlausibleAnalytics, pa } from "@accuser/svelte-plausible-analytics";
     import currentUser from "$lib/stores/currentUser";
     import { currentUserFollows } from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
+    import { page } from "$app/stores";
     import { goto } from "$app/navigation";
     import type { LayoutServerData } from "./$types";
-    import { page } from "$app/stores";
 
     export let data: LayoutServerData;
 

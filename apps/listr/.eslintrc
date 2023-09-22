@@ -9,7 +9,6 @@
     "parser": "@typescript-eslint/parser",
     "plugins": ["@typescript-eslint"],
     "parserOptions": {
-        "project": "./tsconfig.json",
         "extraFileExtensions": [".svelte"]
     },
     "env": { "browser": true, "node": true },

@@ -1,7 +1,7 @@
 <script lang="ts">
     import ListSummary from "$lib/components/lists/ListSummary.svelte";
     import { onDestroy } from "svelte";
-    import { filteredLists, FEED_LIST_KINDS } from "$lib/utils";
+    import { filteredLists, FEED_LIST_KINDS, unixTimeNowInSeconds } from "$lib/utils";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
     import { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
@@ -13,6 +13,7 @@
         {
             kinds: FEED_LIST_KINDS,
             limit: 50,
+            since: unixTimeNowInSeconds() - 60 * 60 * 96,
         },
         { closeOnEose: false },
         NDKList
@@ -29,6 +30,7 @@
                     kinds: FEED_LIST_KINDS,
                     authors: Array.from(followers).map((user: NDKUser) => user.hexpubkey),
                     limit: 50,
+                    since: unixTimeNowInSeconds() - 60 * 60 * 96,
                 },
                 { closeOnEose: false },
                 NDKList
