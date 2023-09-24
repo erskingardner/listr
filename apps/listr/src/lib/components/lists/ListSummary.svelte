@@ -1,6 +1,5 @@
 <script lang="ts">
     import ndk from "$lib/stores/ndk";
-    import { Avatar, Name } from "@nostr-dev-kit/ndk-svelte-components";
     import { timeAgo } from "$lib/utils";
     import UserDetails from "../users/UserDetails.svelte";
 

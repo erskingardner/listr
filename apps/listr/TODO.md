@@ -7,8 +7,6 @@ A simple app for managing and discovering Nostr lists.
 -   Add item to another list
 -   list feeds
 -   display list a tags
--   Add "Contacts" name to NDKList
--   Handle Contacts petnames
 -
 
 #### Other stuff
@@ -20,6 +18,8 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   Add "Contacts" name to NDKList so contact lists show up in Listr
+-   Search relay integration
 -   Emoji tag support
     -   Support emoji removal from lists
     -   Support emoji addition to lists

@@ -20,8 +20,6 @@ code::after {
     content: "" !important;
 }
 
-.listTable tr {
-}
 .listTable thead td {
     @apply px-2;
 }

@@ -1,4 +1,4 @@
-<span class="loader"></span>
+<span class="loader {$$props.class}"></span>
 
 <style lang="postcss">
     .loader {
