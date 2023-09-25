@@ -5,10 +5,10 @@
     import currentUser from "$lib/stores/currentUser";
     import { NDKNip07Signer, NDKEvent } from "@nostr-dev-kit/ndk";
     import { zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
-    import { requestProvider } from "webln";
+    // import { requestProvider } from "webln";
     import { onMount, onDestroy, beforeUpdate } from "svelte";
     import { afterNavigate } from "$app/navigation";
-    import type { NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
+    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
 
     export let listId: string;
     export let nip19: string;
@@ -50,9 +50,8 @@
         }
 
         try {
-            const webln = await requestProvider();
-            const res = await webln.sendPayment(zapRequest);
-        } catch (error: any) {
+            // const webln = await requestProvider();
+        } catch (error: unknown) {
             console.log(error);
         }
     }

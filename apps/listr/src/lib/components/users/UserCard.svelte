@@ -11,7 +11,7 @@
 <div class="flex flex-col gap-2 p-2 border-gray-300 rounded-md w-96 z-50 relative">
     {#await user.fetchProfile()}
         <p class="animate-pulse">Loading user...</p>
-    {:then value}
+    {:then}
         <div class="flex flex-row justify-between items-start">
             <UserDetails
                 {user}
@@ -28,7 +28,7 @@
         </div>
         <hr />
         <UserBio {user} userProfile={user.profile} />
-    {:catch error}
+    {:catch}
         <p>Error loading user</p>
     {/await}
 </div>

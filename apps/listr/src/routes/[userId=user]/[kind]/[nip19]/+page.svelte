@@ -59,7 +59,7 @@
         listDescription = data.description;
     }
 
-    function handleListAddition(event: any) {
+    function handleListAddition(event: CustomEvent) {
         if (event.detail.type === "public") {
             unsavedPublicItems.push(event.detail.tag);
             unsavedPublicItems = unsavedPublicItems;
@@ -69,7 +69,7 @@
         }
     }
 
-    function handleListRemoval(event: any) {
+    function handleListRemoval(event: CustomEvent) {
         let removedTag = [event.detail.type, event.detail.id];
         if (event.detail.otherTagValues)
             removedTag = [...removedTag, ...event.detail.otherTagValues];
@@ -89,7 +89,7 @@
         }
     }
 
-    function handleRemoveUnsavedItem(event: any) {
+    function handleRemoveUnsavedItem(event: CustomEvent) {
         let replacedTag = [event.detail.type, event.detail.id];
         if (event.detail.otherTagValues)
             replacedTag = [...replacedTag, ...event.detail.otherTagValues];

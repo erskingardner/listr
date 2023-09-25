@@ -21,6 +21,7 @@
 
     let followingLists: NDKEventStore<ExtendedBaseType<NDKList>>;
 
+    // eslint-disable-next-line no-async-promise-executor
     const followsListReady: Promise<void> = new Promise(async (resolve, reject) => {
         if ($currentUser) {
             const followers = await $currentUser.follows();
@@ -65,7 +66,7 @@
             <div class="flex flex-row items-center justify-center my-12">
                 <Loader />
             </div>
-        {:then value}
+        {:then}
             <Tabs class="border-b border-b-gray-300">
                 <TabItem
                     open
@@ -106,7 +107,7 @@
                     {/each}
                 </TabItem>
             </Tabs>
-        {:catch error}
+        {:catch}
             {#each $globalLists as list}
                 <ListSummary
                     name={list.name}

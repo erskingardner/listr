@@ -1,6 +1,5 @@
 <script lang="ts">
     import currentUser from "$lib/stores/currentUser";
-    import ndk from "$lib/stores/ndk";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
     import { Tooltip } from "flowbite-svelte";
     import { ListPlus } from "lucide-svelte";
@@ -14,7 +13,10 @@
     }
 </script>
 
-<button on:click={handleAddToList} class="primaryActionButton grow justify-center">
+<button
+    on:click={handleAddToList}
+    class="primaryActionButton w-full justify-center whitespace-nowrap"
+>
     <ListPlus size="20" strokeWidth="1.5" class="w-5 h-5" />
     Add to list
 </button>

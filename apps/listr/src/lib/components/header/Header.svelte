@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Search, Bell, Menu, Server } from "lucide-svelte";
+    import { Search, Menu, Server } from "lucide-svelte";
     import { createEventDispatcher } from "svelte";
     import { scale } from "svelte/transition";
     import { expoInOut } from "svelte/easing";

@@ -30,7 +30,7 @@
         );
     });
 
-    $: alreadyLiked = $likes?.map((like) => like.pubkey).includes($currentUser?.hexpubkey!);
+    $: alreadyLiked = !!$currentUser && $likes?.map((like) => like.pubkey).includes($currentUser?.hexpubkey);
 
     function likeList() {
         if (!$ndk.signer) {

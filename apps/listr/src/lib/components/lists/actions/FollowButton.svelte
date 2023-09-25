@@ -47,18 +47,18 @@
 
 {#if $currentUser}
     {#if $currentUserFollows.includes(user.hexpubkey)}
-        <button on:click={handleUnfollow} class="primaryActionButton grow justify-center">
+        <button on:click={handleUnfollow} class="primaryActionButton w-full justify-center">
             <UserMinus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
             Unfollow
         </button>
     {:else}
-        <button on:click={handleFollow} class="primaryActionButton">
+        <button on:click={handleFollow} class="primaryActionButton w-full justify-center">
             <UserPlus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
             Follow
         </button>
     {/if}
 {:else}
-    <button class="primaryActionButton">
+    <button class="primaryActionButton w-full justify-center">
         <UserPlus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
         Follow
     </button>

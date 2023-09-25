@@ -29,7 +29,7 @@
         $currentUser.ndk = $ndk;
     }
 
-    async function signin(domEvent: any) {
+    async function signin(domEvent: CustomEvent) {
         try {
             const signer = new NDKNip07Signer();
             $ndk.signer = signer;
@@ -51,13 +51,14 @@
             } else {
                 goto($page.url.pathname);
             }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error(error.message);
             signerModal = true;
         }
     }
 
-    function signout(e: Event) {
+    function signout() {
         currentUser.set(null);
         currentUserFollows.set([]);
         document.cookie = "listrUserNpub=";

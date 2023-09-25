@@ -34,6 +34,7 @@
             if (form.valid) {
                 const nip19Id = await publishList();
                 toast.success("New list published");
+                // eslint-disable-next-line svelte/valid-compile
                 await goto(`/${$currentUser!.npub}/${$form.kind}/${nip19Id}`);
             }
         },

@@ -13,7 +13,7 @@
     export let listId: string;
     export let pubkey: string;
 
-    async function deleteList(event: any) {
+    async function deleteList() {
         if (!$ndk.signer) {
             const signer = new NDKNip07Signer();
             $ndk.signer = signer;

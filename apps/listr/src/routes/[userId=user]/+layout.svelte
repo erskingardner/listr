@@ -2,7 +2,7 @@
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
     import { afterUpdate, onMount } from "svelte";
-    import type { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
+    import type { NDKUser } from "@nostr-dev-kit/ndk";
     import { afterNavigate } from "$app/navigation";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
     import FollowButton from "$lib/components/lists/actions/FollowButton.svelte";
@@ -25,8 +25,6 @@
     afterNavigate(() => {
         if (user.hexpubkey !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
     });
-
-    let list: NDKList;
 </script>
 
 <div class="flex flex-row gap-6">

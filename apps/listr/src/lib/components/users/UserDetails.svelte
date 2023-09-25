@@ -2,7 +2,7 @@
     import { Avatar, Name, Nip05 } from "@nostr-dev-kit/ndk-svelte-components";
     import ndk from "$lib/stores/ndk";
     import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-    import { BadgeCheck, BadgeHelp, BadgeX, Copy } from "lucide-svelte";
+    import { BadgeCheck, BadgeHelp, BadgeX } from "lucide-svelte";
     import { Popover } from "flowbite-svelte";
     import UserCard from "./UserCard.svelte";
     import CopyId from "../lists/actions/CopyId.svelte";
@@ -16,7 +16,7 @@
 
 <div class="flex flex-row gap-2 items-center {user.npub}">
     <Avatar ndk={$ndk} {user} {userProfile} class="w-{avatarSize} h-{avatarSize} rounded-full" />
-    <div class="flex flex-col gap-0.5 truncate">
+    <div class="flex flex-col gap-0.5">
         <a href="/{user.npub}">
             <Name
                 ndk={$ndk}
@@ -31,6 +31,7 @@
             {userProfile}
             pubkey={user.hexpubkey}
             class="flex flex-row gap-1 items-center text-sm truncate"
+            nip05MaxLength={18}
         >
             <span slot="badge" let:nip05Valid>
                 {#if nip05Valid === undefined}

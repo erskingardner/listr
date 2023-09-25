@@ -8,7 +8,6 @@
     import UserSearchResult from "$lib/components/search/UserSearchResult.svelte";
     import ListSearchResult from "$lib/components/search/ListSearchResult.svelte";
     import Loader from "$lib/components/Loader.svelte";
-    import { relayInit } from "nostr-tools";
 
     let query: string | null = $page.url.searchParams.get("q");
     let searchResults: NDKEventStore<ExtendedBaseType<NDKEvent>>;
