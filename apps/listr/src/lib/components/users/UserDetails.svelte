@@ -31,7 +31,7 @@
             {userProfile}
             pubkey={user.hexpubkey}
             class="flex flex-row gap-1 items-center text-sm truncate"
-            nip05MaxLength={18}
+            nip05MaxLength={28}
         >
             <span slot="badge" let:nip05Valid>
                 {#if nip05Valid === undefined}
