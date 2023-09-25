@@ -7,7 +7,7 @@ A simple app for managing and discovering Nostr lists.
 -   Add item to another list
 -   list feeds
 -   display list a tags
--
+-   Check short URL pages
 
 #### Other stuff
 
