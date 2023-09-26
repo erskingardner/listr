@@ -30,9 +30,9 @@
     }
 </script>
 
-<form class="mt-2">
+<form class="mt-2 mb-6">
     <h3 class="font-medium">Add an item to this list</h3>
-    <div class="flex flex-col lg:flex-row gap-2 items-center my-2 mb-6">
+    <div class="flex flex-col lg:flex-row gap-2 items-center my-2">
         <input
             type="text"
             id="listItem"
@@ -40,7 +40,7 @@
             bind:value={listItem}
             tabindex="0"
             placeholder="Identifier (npub..., nprofile..., note..., nevent..., or naddr...)"
-            class="border-gray-400 w-full lg:w-auto rounded-md grow disabled:border-gray-200 disabled:bg-gray-100"
+            class="border-gray-400 w-full bg-transparent lg:w-auto rounded-md grow disabled:border-gray-200 disabled:bg-gray-100"
             required
         />
         <select
@@ -48,7 +48,7 @@
             name="listItemType"
             bind:value={listItemType}
             tabindex="0"
-            class="border-gray-400 rounded-md w-full lg:w-auto"
+            class="border-gray-400 rounded-md w-full lg:w-auto bg-transparent"
         >
             <option value="public">Public</option>
             <option value="private">Private</option>
@@ -56,14 +56,14 @@
         <button
             on:click|preventDefault={handleListAddition}
             tabindex="0"
-            class="w-full lg:w-auto justify-center lg:justify-start flex flex-row gap-1 items-center border border-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md p-2 px-3 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
+            class="w-full lg:w-auto justify-center lg:justify-start flex flex-row gap-1 items-center border border-indigo-600 bg-indigo-50 dark:bg-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-500 rounded-md p-2 px-3"
             disabled={addItemSubmitting}
         >
             <Check strokeWidth="1.5" size="20" class="w-5 h-5" />
             <div>Add to list</div>
         </button>
     </div>
+    {#if addItemError}
+        <span class="text-sm text-red-600 italic">{addItemErrorMessage}</span>
+    {/if}
 </form>
-{#if addItemError}
-    <span class="text-sm text-red-600 italic">{addItemErrorMessage}</span>
-{/if}

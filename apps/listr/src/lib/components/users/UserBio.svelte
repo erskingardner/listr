@@ -14,5 +14,7 @@
 </script>
 
 {#if userProfile?.bio || userProfile?.about}
-    <p class="break-words">{userProfile?.bio || userProfile?.about}</p>
+    <div class="text-sm not-prose leading-relaxed whitespace-normal">
+        {userProfile?.bio || userProfile?.about}
+    </div>
 {/if}

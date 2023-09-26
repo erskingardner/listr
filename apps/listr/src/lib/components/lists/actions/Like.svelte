@@ -30,7 +30,8 @@
         );
     });
 
-    $: alreadyLiked = !!$currentUser && $likes?.map((like) => like.pubkey).includes($currentUser?.hexpubkey);
+    $: alreadyLiked =
+        !!$currentUser && $likes?.map((like) => like.pubkey).includes($currentUser?.hexpubkey);
 
     function likeList() {
         if (!$ndk.signer) {
@@ -69,7 +70,7 @@
         strokeWidth="1.5"
         class="{alreadyLiked
             ? 'fill-red-500 stroke-red-500'
-            : 'stroke-gray-500'} hover:fill-red-500 hover:stroke-black w-4 lg:w-5 h-4 lg:h-5"
+            : 'stroke-gray-500'} hover:fill-red-500 hover:stroke-red-500 w-4 lg:w-5 h-4 lg:h-5"
     />
     {$likes?.length > 0 ? $likes.length : 0}
 </button>

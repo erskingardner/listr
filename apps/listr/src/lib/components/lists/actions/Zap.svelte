@@ -72,11 +72,16 @@
         strokeWidth="1.5"
         class="hover:fill-yellow-500 {alreadyZapped
             ? 'fill-yellow-500 stroke-yellow-500'
-            : 'stroke-gray-500'} hover:stroke-black w-4 lg:w-5 h-4 lg:h-5"
+            : 'stroke-gray-500'} hover:stroke-yellow-500 w-4 lg:w-5 h-4 lg:h-5"
     />
     {totalZaps || 0}
 </button>
-<Popover title="Zap this list" triggeredBy="#zapButton" trigger="click" placement="left-end">
+<Popover
+    triggeredBy="#zapButton"
+    trigger="click"
+    placement="left-end"
+    class="dark:text-gray-50 dark:bg-gray-700"
+>
     <div class="panel-contents flex flex-col gap-2">
         {#if $currentUser}
             <form

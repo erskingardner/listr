@@ -13,7 +13,7 @@
 </script>
 
 <button
-    class="primaryActionButton !bg-orange-50 !border-orange-300 hover:!bg-orange-100 place-self-start lg:place-self-center"
+    class="primaryActionButton dark:border-0 dark:bg-gray-600 dark:hover:bg-gray-500 !p-1.5 place-self-start lg:place-self-center"
     on:click={() =>
         dispatch("removeUnsavedItem", {
             type,
@@ -25,5 +25,4 @@
         })}
 >
     <X strokeWidth="1.5" size="20" class="w-5 h-5" />
-    Unstage
 </button>

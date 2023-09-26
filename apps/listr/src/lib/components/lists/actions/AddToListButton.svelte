@@ -20,4 +20,6 @@
     <ListPlus size="20" strokeWidth="1.5" class="w-5 h-5" />
     Add to list
 </button>
-<Tooltip type="light">Coming soon...</Tooltip>
+<Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
+    Coming soon...
+</Tooltip>

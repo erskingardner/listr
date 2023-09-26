@@ -33,27 +33,29 @@
     {:else}
         <!-- User profile and list of lists -->
         <div
-            class="text-sm flex flex-col gap-2 border border-gray-300 rounded-md shadow-md p-4 w-[18rem] shrink-0"
+            class="text-sm flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
         >
             {#key data.pubkey}
                 <div class="flex flex-col gap-2">
                     <UserDetails {user} npubCopy={true} avatarSize="16" />
-                    <hr />
+                    <hr class="dark:border-gray-700" />
                     <div class="flex flex-row gap-2 justify-between items-stretch">
                         <FollowButton {user} />
                         <AddToListButton {user} />
                     </div>
-                    <hr />
+                    <hr class="dark:border-gray-700" />
                     <UserBio {user} />
                 </div>
-                <hr />
+                <hr class="dark:border-gray-700" />
                 <UserListNav userPubkey={data.pubkey} />
             {/key}
         </div>
     {/if}
 
     <!-- List contents -->
-    <div class="flex flex-col gap-2 border border-gray-300 rounded-md shadow-md p-4 grow">
+    <div
+        class="flex flex-col gap-2 border border-gray-30 dark:border-gray-700 rounded-md shadow-md p-4 grow"
+    >
         <slot />
     </div>
 </div>

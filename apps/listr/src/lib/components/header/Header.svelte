@@ -6,6 +6,7 @@
     import currentUser from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
     import { Avatar, Name, RelayList } from "@nostr-dev-kit/ndk-svelte-components";
+    import NewListButton from "../NewListButton.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -22,7 +23,7 @@
 </script>
 
 <div
-    class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
+    class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
 >
     <button
         type="button"
@@ -34,7 +35,7 @@
     </button>
 
     <!-- Separator -->
-    <div class="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true"></div>
+    <div class="h-6 w-px bg-gray-900/10 dark:bg-gray-50/10 lg:hidden" aria-hidden="true"></div>
 
     <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
         <form class="relative flex flex-1" action="/search" method="GET">
@@ -45,8 +46,8 @@
             />
             <input
                 id="q"
-                class="block h-full w-full border-0 py-0 pl-8 pr-2 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                placeholder="Search for a user or list using an ID (npub..., naddr...)"
+                class="block h-full w-full border-0 py-0 pl-8 pr-2 dark:bg-gray-800 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 placeholder:dark:text-gray-200 focus:ring-0 sm:text-sm"
+                placeholder="Search..."
                 type="search"
                 name="q"
             />
@@ -61,6 +62,8 @@
                     <Bell strokeWidth="1.5" />
                 </button>
             {/if} -->
+
+            <NewListButton buttonText="New list" class="py-1 hidden lg:flex" />
 
             <!-- Relay dropdown -->
             <div class="relative">
@@ -80,7 +83,7 @@
                         on:pointerleave={toggleRelayMenu}
                         in:scale={{ duration: 100, easing: expoInOut, start: 0.95 }}
                         out:scale={{ duration: 75, easing: expoInOut, start: 0.95 }}
-                        class="absolute text-sm right-0 z-10 mt-2.5 w-72 p-4 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                        class="absolute text-sm right-0 z-10 mt-2.5 w-72 p-4 origin-top-right rounded-md bg-white dark:bg-gray-700 dark:text-gray-50 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
                         role="menu"
                         aria-orientation="vertical"
                         aria-labelledby="user-menu-button"
@@ -106,7 +109,7 @@
                         <Avatar ndk={$ndk} user={$currentUser} class="w-8 h-8 rounded-full" />
                         <span class="hidden lg:flex lg:items-center">
                             <span
-                                class="ml-4 text-sm font-semibold leading-6 text-gray-900"
+                                class="ml-4 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
                                 aria-hidden="true"
                             >
                                 <Name
@@ -137,24 +140,24 @@
                             on:pointerleave={toggleProfileMenu}
                             in:scale={{ duration: 100, easing: expoInOut, start: 0.95 }}
                             out:scale={{ duration: 75, easing: expoInOut, start: 0.95 }}
-                            class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                            class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 dark:text-gray-50 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
                             role="menu"
                             aria-orientation="vertical"
                             aria-labelledby="user-menu-button"
                             tabindex="-1"
                         >
                             <a
-                                href={`/${$currentUser.npub}`}
-                                class="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                                href={`/settings`}
+                                class="block px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"
                                 tabindex="-1"
                                 id="user-menu-item-0"
                             >
-                                Your profile
+                                Settings
                             </a>
                             <button
                                 on:click={() => dispatch("signout")}
-                                class="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                                class="block w-full text-left px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"
                                 tabindex="-1"
                                 id="user-menu-item-1"

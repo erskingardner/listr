@@ -34,7 +34,7 @@
 {#key id}
     {#if event && user}
         <div
-            class="flex flex-col gap-6 border border-gray-200 rounded-md p-2 my-2 {unsaved
+            class="flex flex-col gap-6 border border-gray-200 dark:border-gray-700 rounded-md p-2 my-2 {unsaved
                 ? 'border-orange-500 border-dashed'
                 : ''}"
         >

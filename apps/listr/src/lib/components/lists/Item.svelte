@@ -8,7 +8,7 @@
 
     export let tag: NDKTag;
     export let id: string;
-    export let kind: number;
+    export let kind: number | undefined = undefined;
     export let privateItem: boolean;
     export let unsaved: boolean;
     export let removal: boolean = false;
@@ -80,6 +80,11 @@
             on:removeUnsavedItem
         />
     {:else}
-        <pre class="py-2">Unsupported item: <code>{JSON.stringify(tag)}</code></pre>
+        <div>Unsupported item:</div>
+        <pre class="py-2 whitespace-normal">
+            <code>
+                {JSON.stringify(tag)}
+            </code>
+        </pre>
     {/if}
 </div>

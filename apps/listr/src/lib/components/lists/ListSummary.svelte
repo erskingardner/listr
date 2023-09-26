@@ -13,14 +13,19 @@
     const user = $ndk.getUser({ hexpubkey: authorPubkey });
 </script>
 
-<div class="grid grid-cols-5 gap-2 items-center p-2 border-b border-gray-200">
-    <div class="col-span-2">
+<div
+    class="flex flex-col lg:grid lg:grid-cols-5 gap-2 lg:items-center p-2 border-b border-gray-200 dark:border-gray-700"
+>
+    <div class="flex lg:hidden text-sm text-gray-400 dark:text-gray-500">{timeInPast}</div>
+    <div class="lg:col-span-2">
         <UserDetails {user} />
     </div>
-    <div class="col-span-2">
-        updated their <a href="/{user.npub}/{kind}/{listNip19}" class="font-medium hover:underline"
-            >{name}</a
+    <div class="lg:col-span-2">
+        Updated their <a
+            href="/{user.npub}/{kind}/{listNip19}"
+            class="font-bold underline hover:no-underline">{name}</a
         > list
     </div>
-    <div class="text-sm ml-auto">{timeInPast}</div>
+
+    <div class="hidden lg:flex text-sm text-gray-400 dark:text-gray-500 ml-auto">{timeInPast}</div>
 </div>

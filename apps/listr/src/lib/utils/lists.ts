@@ -10,6 +10,7 @@ export const SUPPORTED_LIST_KINDS = [
     NDKKind.CategorizedPeopleList,
     NDKKind.CategorizedRelayList,
     NDKKind.InterestsList,
+    NDKKind.CategorizedHighlightList,
 ];
 
 export const FEED_LIST_KINDS = [
@@ -17,6 +18,7 @@ export const FEED_LIST_KINDS = [
     NDKKind.CategorizedPeopleList,
     NDKKind.CategorizedRelayList,
     NDKKind.InterestsList,
+    NDKKind.CategorizedHighlightList,
 ];
 
 export const FORKABLE_LIST_KINDS = [

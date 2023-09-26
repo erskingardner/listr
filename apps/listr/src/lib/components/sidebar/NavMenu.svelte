@@ -1,21 +1,27 @@
 <script lang="ts">
-    import { Newspaper, PlusCircle, LogIn, HelpCircle } from "lucide-svelte";
+    import { Newspaper, LogIn, HelpCircle } from "lucide-svelte";
     import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
+    import currentUser, { currentUserSettings } from "$lib/stores/currentUser";
     import { onMount, onDestroy } from "svelte";
     import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
     import { SUPPORTED_LIST_KINDS, filterAndSortByName } from "$lib/utils";
     import { createEventDispatcher } from "svelte";
     import { page } from "$app/stores";
     import { Tooltip } from "flowbite-svelte";
+    import NewListButton from "../NewListButton.svelte";
 
     const dispatch = createEventDispatcher();
 
     let currentUserLists: NDKEventStore<ExtendedBaseType<NDKList>>;
     let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
 
-    onMount(() => {
+    function handleSignin() {
+        subscribeToUserLists();
+        dispatch("signin");
+    }
+
+    function subscribeToUserLists() {
         if ($currentUser) {
             currentUserLists = $ndk.storeSubscribe(
                 {
@@ -31,6 +37,10 @@
                 authors: [$currentUser.hexpubkey],
             });
         }
+    }
+
+    onMount(() => {
+        subscribeToUserLists();
     });
 
     onDestroy(() => {
@@ -43,17 +53,11 @@
     }
 </script>
 
-<nav class="flex flex-1 flex-col">
+<nav class="flex flex-1 flex-col relative">
     <ul role="list" class="flex flex-1 flex-col gap-y-7">
         {#if $currentUser}
             <li>
-                <a
-                    href="/new"
-                    class="group flex gap-x-3 rounded-md items-center p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
-                >
-                    <PlusCircle strokeWidth="1.5" size="20" class="w-5 h-5" />
-                    Create a new list
-                </a>
+                <NewListButton buttonText="Create a new list" class="-mx-2" />
             </li>
         {/if}
         <li>
@@ -142,9 +146,11 @@
                                         >{list.name?.slice(0, 1).toUpperCase()}</span
                                     >
                                     <span class="truncate">{list.name}</span>
-                                    <Tooltip type="custom" placement="right" class="text-xs">
-                                        k: {list.kind}
-                                    </Tooltip>
+                                    {#if $currentUserSettings?.devMode}
+                                        <Tooltip type="custom" placement="right" class="text-xs">
+                                            k: {list.kind}
+                                        </Tooltip>
+                                    {/if}
                                 </a>
                             </li>
                         {/each}
@@ -154,7 +160,7 @@
         {:else}
             <li class="mb-10 -mx-2">
                 <button
-                    on:click={() => dispatch("signin")}
+                    on:click={handleSignin}
                     class="group flex gap-x-3 w-full rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
                 >
                     <LogIn strokeWidth="1.5" size="20" class="w-5 h-5" />
@@ -162,11 +168,11 @@
                 </button>
             </li>
         {/if}
-        <li class="text-gray-400 text-sm mb-10">
-            Built with ⚡ and 💜 by <a
-                href="https://primal.net/jeffg"
-                class="underline hover:no-underline font-medium">JeffG</a
-            >
-        </li>
     </ul>
+    <div class="text-gray-400 text-sm -mx-6 px-6 py-4 bottom-0 bg-gray-950 sticky">
+        Built with ⚡ and 💜 by <a
+            href="https://primal.net/jeffg"
+            class="underline hover:no-underline font-medium">JeffG</a
+        >
+    </div>
 </nav>

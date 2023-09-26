@@ -8,7 +8,9 @@
     export let user: NDKUser;
 </script>
 
-<div class="flex flex-col gap-2 p-2 border-gray-300 rounded-md w-96 z-50 relative">
+<div
+    class="flex flex-col gap-2 p-0 not-prose text-black dark:text-gray-50 border-gray-300 dark:bg-gray-800 rounded-md w-96 z-50 relative"
+>
     {#await user.fetchProfile()}
         <p class="animate-pulse">Loading user...</p>
     {:then}
@@ -21,12 +23,12 @@
                 avatarSize="16"
             />
         </div>
-        <hr />
+        <hr class="dark:border-gray-500" />
         <div class="flex flex-row gap-4 justify-between items-stretch">
             <FollowButton {user} />
             <AddToListButton {user} />
         </div>
-        <hr />
+        <hr class="dark:border-gray-500" />
         <UserBio {user} userProfile={user.profile} />
     {:catch}
         <p>Error loading user</p>

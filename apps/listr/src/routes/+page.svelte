@@ -21,8 +21,7 @@
 
     let followingLists: NDKEventStore<ExtendedBaseType<NDKList>>;
 
-    // eslint-disable-next-line no-async-promise-executor
-    const followsListReady: Promise<void> = new Promise(async (resolve, reject) => {
+    async function followsListReady(): Promise<boolean> {
         if ($currentUser) {
             const followers = await $currentUser.follows();
 
@@ -36,11 +35,11 @@
                 { closeOnEose: false },
                 NDKList
             );
-            resolve();
+            return true;
         } else {
-            reject();
+            return false;
         }
-    });
+    }
 
     onDestroy(() => {
         globalLists.unsubscribe();
@@ -52,7 +51,7 @@
 </script>
 
 <svelte:head>
-    <title>Listr</title>
+    <title>Feed - Listr</title>
     <meta
         name="description"
         content="A Nostr based app to help you view and manage your own
@@ -62,24 +61,46 @@
 
 <div class="flex flex-col gap-2">
     {#if $currentUser}
-        {#await followsListReady}
+        {#await followsListReady()}
             <div class="flex flex-row items-center justify-center my-12">
                 <Loader />
             </div>
-        {:then}
-            <Tabs class="border-b border-b-gray-300">
-                <TabItem
-                    open
-                    title="Following"
-                    activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                    defaultClass="text-base"
+        {:then followsListAvailable}
+            {#if followsListAvailable}
+                <Tabs
+                    class="border-b border-b-gray-300"
+                    contentClass="p-0 bg-gray-50 rounded-lg dark:bg-gray-800 mt-4"
+                    inactiveClasses="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
                 >
-                    {#if $followingLists.length === 0}
-                        <div class="flex flex-row items-center justify-center my-12">
-                            <Loader />
-                        </div>
-                    {:else}
-                        {#each $followingLists as list}
+                    <TabItem
+                        open
+                        title="Following"
+                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
+                        defaultClass="text-base"
+                    >
+                        {#if $followingLists.length === 0}
+                            <div class="flex flex-row items-center justify-center my-12">
+                                <Loader />
+                            </div>
+                        {:else}
+                            {#each $followingLists as list}
+                                <ListSummary
+                                    name={list.name}
+                                    kind={list.kind}
+                                    date={list.created_at}
+                                    authorPubkey={list.pubkey}
+                                    listNip19={list.encode()}
+                                />
+                            {/each}
+                        {/if}
+                    </TabItem>
+                    <TabItem
+                        title="Global"
+                        style="underline"
+                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
+                        defaultClass="text-base"
+                    >
+                        {#each $globalLists as list}
                             <ListSummary
                                 name={list.name}
                                 kind={list.kind}
@@ -88,35 +109,19 @@
                                 listNip19={list.encode()}
                             />
                         {/each}
-                    {/if}
-                </TabItem>
-                <TabItem
-                    title="Global"
-                    style="underline"
-                    activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                    defaultClass="text-base"
-                >
-                    {#each $globalLists as list}
-                        <ListSummary
-                            name={list.name}
-                            kind={list.kind}
-                            date={list.created_at}
-                            authorPubkey={list.pubkey}
-                            listNip19={list.encode()}
-                        />
-                    {/each}
-                </TabItem>
-            </Tabs>
-        {:catch}
-            {#each $globalLists as list}
-                <ListSummary
-                    name={list.name}
-                    kind={list.kind}
-                    date={list.created_at}
-                    authorPubkey={list.pubkey}
-                    listNip19={list.encode()}
-                />
-            {/each}
+                    </TabItem>
+                </Tabs>
+            {:else}
+                {#each $globalLists as list}
+                    <ListSummary
+                        name={list.name}
+                        kind={list.kind}
+                        date={list.created_at}
+                        authorPubkey={list.pubkey}
+                        listNip19={list.encode()}
+                    />
+                {/each}
+            {/if}
         {/await}
     {:else}
         {#each $globalLists as list}

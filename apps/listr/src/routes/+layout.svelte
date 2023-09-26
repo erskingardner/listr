@@ -8,7 +8,12 @@
     import { Modal } from "flowbite-svelte";
     import { PlausibleAnalytics, pa } from "@accuser/svelte-plausible-analytics";
     import currentUser from "$lib/stores/currentUser";
-    import { currentUserFollows } from "$lib/stores/currentUser";
+    import {
+        currentUserFollows,
+        currentUserSettings,
+        fetchUserSettings,
+        fetchUserFollows,
+    } from "$lib/stores/currentUser";
     import ndk from "$lib/stores/ndk";
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
@@ -37,9 +42,8 @@
                 if (ndkUser.npub) {
                     $currentUser = ndkUser;
                     $currentUser.ndk = $ndk;
-                    $currentUser.follows().then((followsSet) => {
-                        $currentUserFollows = Array.from(followsSet).map((user) => user.hexpubkey);
-                    });
+                    $currentUserFollows = await fetchUserFollows($currentUser);
+                    $currentUserSettings = await fetchUserSettings($currentUser);
                     document.cookie = `listrUserNpub=${ndkUser.npub};
                     max-age=max-age-in-seconds=1209600; SameSite=Lax; Secure`;
                     if (window.plausible) pa.addEvent("Log in");
@@ -69,9 +73,13 @@
 
     $: {
         if ($currentUser && $currentUserFollows.length === 0) {
-            $currentUser.follows().then((followsSet) => {
-                $currentUserFollows = Array.from(followsSet).map((user) => user.hexpubkey);
-            });
+            fetchUserFollows($currentUser).then((follows) => ($currentUserFollows = follows));
+        }
+    }
+
+    $: {
+        if ($currentUser && !$currentUserSettings) {
+            fetchUserSettings($currentUser).then((settings) => ($currentUserSettings = settings));
         }
     }
 </script>

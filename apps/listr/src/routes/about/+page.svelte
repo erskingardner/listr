@@ -3,12 +3,14 @@
     export let data;
 </script>
 
-<div class="prose max-w-4xl">
+<div class="prose max-w-4xl dark:prose-invert">
     <h2 class="">Listr is a simple tool that allows you to browse and manage Nostr lists.</h2>
     <p>Check out a few examples, then sign in to view your own!</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 not-prose">
         {#each data.users as user (user.hexpubkey)}
-            <div class="p-4 border border-gray-300 rounded-md shadow-md bg-gray-50">
+            <div
+                class="flex p-4 border border-gray-300 rounded-md shadow-md bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:text-gray-50 truncate"
+            >
                 <UserDetails {user} />
             </div>
         {/each}

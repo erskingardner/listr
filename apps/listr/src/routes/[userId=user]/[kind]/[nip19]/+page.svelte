@@ -199,7 +199,9 @@
         <div class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2">
             {listName}
             <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
-            <Tooltip type="light">Kind: {data.kind}</Tooltip>
+            <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
+                Kind: {data.kind}
+            </Tooltip>
             <span class="text-sm font-normal">{data.itemCount} items</span>
         </div>
         <span class="italic text-sm">
@@ -216,7 +218,7 @@
         on:toggleEditMode={toggleEditMode}
     />
 </div>
-<hr />
+<hr class="dark:border-gray-700" />
 <div class="flex flex-col">
     {#if $currentUser?.hexpubkey === data.rawList.pubkey && editMode}
         <div transition:slide={{ easing: expoInOut }}>
@@ -226,14 +228,14 @@
                     type="text"
                     name="listName"
                     bind:value={listName}
-                    class="border-gray-400 col-span-2 rounded-md disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                    class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
                 />
                 <label for="listDescription" class="font-medium">Description</label>
                 <input
                     type="text"
                     name="listDescription"
                     bind:value={listDescription}
-                    class="border-gray-400 col-span-2 rounded-md disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                    class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
                 />
             </form>
             <AddItemForm on:addListItem={handleListAddition} />
@@ -241,8 +243,10 @@
     {/if}
 
     {#if unpublishedChanges}
-        <fieldset class="border border-orange-800 rounded-md p-2">
-            <legend class="text-orange-800">Unpublished changes</legend>
+        <fieldset
+            class="border border-gray-700 dark:border-gray-300/60 bg-gray-50 dark:bg-gray-700 rounded-md p-2"
+        >
+            <legend>Unpublished changes</legend>
             <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-end">
                 <ChangesCount
                     nameChanged={listName !== data.name}
@@ -253,7 +257,7 @@
                 <button
                     on:click={publishList}
                     disabled={publishingChanges}
-                    class="flex flex-row gap-2 justify-center items-center border border-orange-500 bg-orange-100 hover:bg-orange-200 p-2 px-3 rounded-md text-sm lg:text-base disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
+                    class="flex flex-row gap-2 justify-center items-center border border-green-500 dark:border-green-900 bg-green-100 dark:bg-green-800 hover:bg-green-200 dark:hover:bg-green-700 p-2 px-3 rounded-md text-sm lg:text-base"
                 >
                     <HardDriveUpload strokeWidth="1.5" size="20" class="w-5 h-5" />
                     Publish now

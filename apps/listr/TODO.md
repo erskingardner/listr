@@ -8,6 +8,9 @@ A simple app for managing and discovering Nostr lists.
 -   list feeds
 -   display list a tags
 -   Check short URL pages
+-   Handle creation of interest lists (need to make it easy to add "t" tags as well as people to lists)
+    https://image.nostr.build/3f4cc12f5844c89cde1fc2da8118eb62ccd8048be488f3eced7d35fd2f1abbdf.png
+-
 
 #### Other stuff
 

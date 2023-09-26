@@ -16,7 +16,7 @@
 
 {#key id}
     <div
-        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200 
+        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200 dark:border-gray-700
             {unsaved ? 'border-orange-500 border-dashed' : ''}"
     >
         <div class="flex flex-col {editMode ? 'gap-2' : ''} lg:flex-row w-full lg:items-center">

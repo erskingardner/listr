@@ -43,9 +43,9 @@
         {#each $lists as list}
             <a
                 href="/{nip19.npubEncode(userPubkey)}/{list.kind}/{list.encode()}"
-                class="p-2 hover:bg-gray-100 font-semibold {$page.url.pathname ===
-                `/${nip19.npubEncode(userPubkey)}/${list.kind}/${list.encode()}`
-                    ? 'bg-gray-100'
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold {$page.url
+                    .pathname === `/${nip19.npubEncode(userPubkey)}/${list.kind}/${list.encode()}`
+                    ? 'bg-gray-100 dark:bg-gray-700'
                     : ''} w-full block rounded-md text-left truncate"
             >
                 {list.name}

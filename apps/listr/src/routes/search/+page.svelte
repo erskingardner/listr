@@ -46,6 +46,14 @@
     $: $page.url.searchParams.get("q") && queryChanged();
 </script>
 
+<svelte:head>
+    <title>{query} - Listr</title>
+    <meta
+        name="description"
+        content={`Search results for ${query} on Listr, the best app for creating and managing your Nostr lists.`}
+    />
+</svelte:head>
+
 <div class="flex flex-col">
     {#if query}
         {#if userResults.length > 0}

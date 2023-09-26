@@ -19,7 +19,7 @@
 
 {#key id}
     <div
-        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200
+        class="flex flex-row gap-2 rounded-md p-2 my-2 items-center border border-gray-200 dark:border-gray-700
             {unsaved ? 'border-orange-500 border-dashed' : ''}"
     >
         <div class="flex flex-row gap-2 w-full items-center">
@@ -30,7 +30,9 @@
                 <a href={id} class="hover:underline text-sm lg:text-base" target="_blank">
                     {otherTagValues[0]}
                 </a>
-                <Tooltip type="light" class="z-50">{id}</Tooltip>
+                <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md z-50">
+                    {id}
+                </Tooltip>
             {:else}
                 {id}
             {/if}

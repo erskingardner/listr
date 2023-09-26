@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { X } from "lucide-svelte";
+    import { X, SunMoon } from "lucide-svelte";
+    import { DarkMode } from "flowbite-svelte";
     import Logo from "./Logo.svelte";
     import NavMenu from "./NavMenu.svelte";
     import { fade, fly } from "svelte/transition";
@@ -13,7 +14,7 @@
 
 {#if mobileMenuVisible}
     <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
-    <div class="relative z-40 lg:hidden" role="dialog" aria-modal="true">
+    <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
         <!-- Off-canvas menu backdrop -->
         <div
             transition:fade={{ duration: 300, easing: expoInOut }}
@@ -41,10 +42,22 @@
 
                 <!-- Sidebar component -->
                 <div
-                    class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4 ring-1 ring-white/10"
+                    class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 ring-1 ring-white/10"
                 >
-                    <div class="flex h-16 shrink-0 items-center">
-                        <Logo />
+                    <div class="flex h-16 shrink-0 items-center justify-between">
+                        <div class="flex h-16 shrink-0 items-center">
+                            <a href="/" class="flex h-16 shrink-0 items-center">
+                                <Logo />
+                            </a>
+                        </div>
+                        <DarkMode btnClass="text-white hover:text-gray-500">
+                            <svelte:fragment slot="lightIcon">
+                                <SunMoon strokeWidth="1.5" size="24" />
+                            </svelte:fragment>
+                            <svelte:fragment slot="darkIcon">
+                                <SunMoon strokeWidth="1.5" size="24" />
+                            </svelte:fragment>
+                        </DarkMode>
                     </div>
                     <NavMenu on:signin />
                 </div>

@@ -14,9 +14,16 @@
     export let avatarSize: string = "12";
 </script>
 
-<div class="flex flex-row gap-2 items-center {user.npub}">
-    <Avatar ndk={$ndk} {user} {userProfile} class="w-{avatarSize} h-{avatarSize} rounded-full" />
-    <div class="flex flex-col gap-0.5">
+<div class="flex flex-row gap-2 items-center {user.npub} truncate">
+    <a href="/{user.npub}">
+        <Avatar
+            ndk={$ndk}
+            {user}
+            {userProfile}
+            class="w-{avatarSize} h-{avatarSize} rounded-full overflow-hidden object-cover"
+        />
+    </a>
+    <div class="flex flex-col gap-0.5 truncate">
         <a href="/{user.npub}">
             <Name
                 ndk={$ndk}
@@ -67,7 +74,7 @@
 </div>
 
 {#if !noPopover}
-    <Popover triggeredBy=".{user.npub}" class="z-50">
+    <Popover triggeredBy=".{user.npub}" class="z-50 p-0 shadow-3xl dark:shadow-dark3xl">
         <UserCard {user} />
     </Popover>
 {/if}

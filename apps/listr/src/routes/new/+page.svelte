@@ -1,7 +1,7 @@
 <script lang="ts">
     import currentUser from "$lib/stores/currentUser";
     import { superForm, superValidateSync } from "sveltekit-superforms/client";
-    import { AlertTriangle, Check, Info, X } from "lucide-svelte";
+    import { AlertTriangle, Check, Info } from "lucide-svelte";
     import { Tooltip } from "flowbite-svelte";
     import { browser } from "$app/environment";
     import { NOSTR_BECH32_REGEXP, unixTimeNowInSeconds, nip19ToTag } from "$lib/utils";
@@ -22,8 +22,9 @@
         kind: z.string().min(5, "Please select a kind"),
         name: z.string().min(1, "Please give your list a name"),
         description: z.string().optional(),
-        publicItems: z.string().array().max(3).array().optional(),
-        privateItems: z.string().array().max(3).array().optional(),
+        category: z.string().optional(),
+        publicItems: z.string().array().array().optional(),
+        privateItems: z.string().array().array().optional(),
     });
 
     const { form, errors, enhance } = superForm(superValidateSync(newListSchema), {
@@ -107,61 +108,82 @@
     $: if ($form.kind === "10001") $form.name = "Pin";
 </script>
 
-<div class="flex flex-col gap-2 border border-gray-300 rounded-md shadow-md p-4 grow">
+<svelte:head>
+    <title>New List - Listr</title>
+    <meta
+        name="description"
+        content="Create a new list on Listr, the best app for creating and managing your Nostr lists."
+    />
+</svelte:head>
+
+<div
+    class="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-md p-4"
+>
     <div class="text-lg font-bold">Create a new list</div>
-    <hr />
+    <hr class="dark:border-gray-700" />
     {#if $currentUser}
         <form class="py-4 flex flex-col gap-4" method="POST" use:enhance>
             <div class="flex flex-col gap-0 relative">
-                <label for="kind">Kind</label>
-                <select
-                    name="kind"
-                    id="kind"
-                    class="border-gray-400 lg:w-2/3 rounded-md"
-                    tabindex="0"
-                    bind:value={$form.kind}
-                >
-                    <option value="">What kind of list?</option>
-                    <option value="10000">Mute list: Kind 10000</option>
-                    <option value="10001">Pin list: Kind 10001</option>
-                    <option value="30000">People list: Kind 30000</option>
-                    <option value="30001">Bookmarks list: Kind 30001</option>
-                </select>
+                <label for="kind">What type of list is this?</label>
+                <div class=" flex flex-row gap-2 items-center relative">
+                    <select
+                        name="kind"
+                        id="kind"
+                        class="border-gray-400 w-full rounded-md bg-transparent"
+                        tabindex="0"
+                        bind:value={$form.kind}
+                    >
+                        <option disabled selected value="">What kind of list do you want?</option>
+                        <option value="10000">Mute - kind 10000</option>
+                        <option value="10001">Pin - kind 10001</option>
+                        <option value="30000">Categorized People - kind 30000</option>
+                        <option value="30001">Categorized Bookmarks - kind 30001</option>
+                    </select>
+                    <div class="" tabindex="-1">
+                        <Info strokeWidth="1.5" size="20" class="stroke-gray-500 w-5 h-5" />
+                        <Tooltip
+                            type="auto"
+                            class="dark:border-gray-800 dark:text-gray-50 shadow-md text-sm font-normal absolute w-64"
+                        >
+                            The "Kind" defines what type of list this is.
+                        </Tooltip>
+                    </div>
+                </div>
                 {#if $errors.kind}
                     <span class="text-sm text-red-600 italic">{$errors.kind}</span>
                 {/if}
                 {#if $form.kind === "10000" || $form.kind === "10001"}
                     <div
-                        class="mt-2 lg:mt-0 lg:absolute flex flex-row gap-2 items-center lg:w-1/4 text-sm top-4 right-0 p-2 bg-red-100 rounded-md"
+                        class="mt-2 lg:mt-0 lg:absolute flex flex-row gap-2 items-center text-sm -top-4 right-6 p-1 px-2 bg-red-100 dark:bg-red-800 rounded-md"
                     >
                         <AlertTriangle strokeWidth="1.5" size="24" class="shrink-0 w-6 h-6" />
-                        <span
-                            >Creating a new {$form.name} list will overwrite your current {$form.name}
-                            list</span
-                        >
+                        <span>
+                            Creating a new {$form.name} list will overwrite your current {$form.name}
+                            list
+                        </span>
                     </div>
                 {/if}
             </div>
             <div class="flex flex-col gap-0">
                 <label for="name">Name</label>
-                <div class="lg:w-2/3 flex flex-row items-center relative">
+                <div class=" flex flex-row gap-2 items-center relative">
                     <input
                         type="text"
-                        placeholder="First choose a list kind..."
+                        placeholder="Give your list a name..."
                         name="name"
                         id="name"
                         tabindex="0"
-                        class="border-gray-400 rounded-md grow w-full disabled:border-gray-200 disabled:bg-gray-100"
+                        class="border-gray-400 bg-transparent rounded-md grow w-full disabled:border-gray-600 disabled:text-gray-500"
                         bind:value={$form.name}
                         disabled={nameInputDisabled}
                     />
-                    <div class="absolute -right-20 w-28" tabindex="-1">
+                    <div class="" tabindex="-1">
                         <Info strokeWidth="1.5" size="20" class="stroke-gray-500 w-5 h-5" />
                         <Tooltip
-                            type="custom"
-                            class="bg-white rounded-md text-sm font-normal absolute border border-gray-300"
+                            type="auto"
+                            class="dark:border-gray-800 dark:text-gray-50 shadow-md text-sm font-normal absolute w-64"
                         >
-                            Custom names are only allowed for kinds ≥30000
+                            Custom names are only allowed for kinds ≥30,000
                         </Tooltip>
                     </div>
                 </div>
@@ -171,14 +193,14 @@
             </div>
             <div class="flex flex-col gap-0">
                 <label for="name">Description</label>
-                <div class="lg:w-2/3 flex flex-row items-center relative">
+                <div class="flex flex-row items-center relative">
                     <input
                         type="text"
                         placeholder="An optional list description..."
                         name="description"
                         id="description"
                         tabindex="0"
-                        class="border-gray-400 rounded-md grow w-full disabled:border-gray-200 disabled:bg-gray-100"
+                        class="border-gray-400 bg-transparent rounded-md grow w-full disabled:border-gray-200 disabled:bg-gray-100"
                         bind:value={$form.description}
                     />
                 </div>
@@ -186,7 +208,9 @@
                     <span class="text-sm text-red-600 italic">{$errors.description}</span>
                 {/if}
             </div>
-            <fieldset class="border border-gray-300 rounded-md p-2 flex flex-col gap-2">
+            <fieldset
+                class="border border-gray-700 dark:border-gray-300/60 bg-gray-50 dark:bg-gray-700 rounded-md p-2 flex flex-col gap-2"
+            >
                 <legend>List Items</legend>
                 <div class="">
                     <div class="flex flex-col mb-8">
@@ -199,15 +223,10 @@
                                             id={privateItem[1]}
                                             privateItem={true}
                                             unsaved={true}
+                                            on:removeUnsavedItem={() =>
+                                                handleListRemoval(privateItem, true)}
                                         />
                                     </div>
-                                    <button
-                                        on:click|preventDefault={() =>
-                                            handleListRemoval(privateItem, true)}
-                                        class="my-2 w-full lg:w-auto flex justify-center border border-gray-400 bg-red-50 hover:bg-red-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
-                                    >
-                                        <X strokeWidth="1.5" size="20" class="w-5 h-5" />
-                                    </button>
                                 </div>
                             {/each}
                         {/if}
@@ -220,33 +239,28 @@
                                             id={publicItem[1]}
                                             privateItem={false}
                                             unsaved={true}
+                                            on:removeUnsavedItem={() =>
+                                                handleListRemoval(publicItem, false)}
                                         />
                                     </div>
-                                    <button
-                                        on:click|preventDefault={() =>
-                                            handleListRemoval(publicItem, false)}
-                                        class="my-2 w-full lg:w-auto flex justify-center border border-gray-400 bg-red-50 hover:bg-red-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
-                                    >
-                                        <X strokeWidth="1.5" size="20" class="w-5 h-5" />
-                                    </button>
                                 </div>
                             {/each}
                         {/if}
                     </div>
-                    <div class="flex flex-col lg:flex-row gap-1 items-center lg:w-2/3">
+                    <div class="flex flex-col lg:flex-row gap-1 items-center">
                         <input
                             type="text"
                             id="listItem"
                             name="listItem"
                             tabindex="0"
                             placeholder="NIP-19 identifier (npub, nprofile, note, nevent, or naddr)"
-                            class="border-gray-400 rounded-md grow w-full disabled:border-gray-200 disabled:bg-gray-100"
+                            class="border-gray-400 bg-transparent rounded-md grow w-full disabled:border-gray-200 disabled:bg-gray-100"
                         />
                         <select
                             id="listItemType"
                             name="listItemType"
                             tabindex="0"
-                            class="border-gray-400 rounded-md w-full lg:w-auto"
+                            class="border-gray-400 bg-transparent rounded-md w-full lg:w-auto"
                         >
                             <option value="public">Public</option>
                             <option value="private">Private</option>
@@ -254,7 +268,7 @@
                         <button
                             on:click|preventDefault={handleListAddition}
                             tabindex="0"
-                            class="w-full lg:w-auto flex justify-center border border-gray-400 bg-green-50 hover:bg-green-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
+                            class="w-full lg:w-auto flex bg-transparent justify-center border border-gray-400 bg-green-50 hover:bg-green-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
                             disabled={addItemSubmitting}
                         >
                             <Check strokeWidth="1.5" size="20" class="w-5 h-5" />
@@ -269,7 +283,7 @@
                 type="submit"
                 id="publishButton"
                 tabindex="0"
-                class="border border-gray-400 bg-indigo-100 hover:bg-indigo-200 rounded-md lg:w-2/3 p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
+                class="border border-gray-400 bg-indigo-100 hover:bg-indigo-200 dark:border-green-900 dark:hover:bg-green-600 dark:bg-green-700 dark:hover:text-white rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
             >
                 Publish new list
             </button>

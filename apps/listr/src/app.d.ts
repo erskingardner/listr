@@ -6,6 +6,9 @@ declare global {
         // interface Locals {}
         // interface PageData {}
         // interface Platform {}
+        interface UserSettings {
+            devMode: boolean;
+        }
     }
     interface Window {
         plausible;

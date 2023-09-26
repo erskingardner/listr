@@ -62,5 +62,7 @@
         <UserPlus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
         Follow
     </button>
-    <Tooltip type="light">Sign in to follow</Tooltip>
+    <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
+        Sign in to follow
+    </Tooltip>
 {/if}
