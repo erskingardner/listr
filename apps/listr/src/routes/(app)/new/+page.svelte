@@ -65,7 +65,7 @@
         // Encrypt if we need to
         if (list.content) await list.encrypt($currentUser!);
         // Publish
-        await list.publish();
+        await list.publish().then(() => toast.success("New list successfully published"));
 
         return list.encode();
     }

@@ -7,6 +7,7 @@
     import { createEventDispatcher } from "svelte";
     import { goto } from "$app/navigation";
     import { db } from "@nostr-dev-kit/ndk-cache-dexie";
+    import toast from "svelte-french-toast";
 
     const dispatch = createEventDispatcher();
 
@@ -32,6 +33,7 @@
             .then(() => {
                 db.events.delete(listId).catch((error) => console.error(error));
                 dispatch("listDeleted", { event: deleteEvent.rawEvent() });
+                toast.success("Your list was deleted");
                 goto(`/${$currentUser?.npub}`);
             })
             .catch((error) => {

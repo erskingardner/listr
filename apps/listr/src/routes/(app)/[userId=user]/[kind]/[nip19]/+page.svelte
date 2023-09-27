@@ -14,6 +14,7 @@
     import ndk from "$lib/stores/ndk.js";
     import { v4 as uuidv4 } from "uuid";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
+    import toast from "svelte-french-toast";
 
     export let data;
 
@@ -166,12 +167,17 @@
 
         if (newListConfirmation) {
             // Publish
-            await list.publish().catch((error) => {
-                if (error === "User rejected") {
-                    console.log("Rejected");
-                    publishingChanges = false;
-                }
-            });
+            await list
+                .publish()
+                .then(() => {
+                    toast.success("Your list was successfully published");
+                })
+                .catch((error) => {
+                    if (error === "User rejected") {
+                        console.log("Rejected");
+                        publishingChanges = false;
+                    }
+                });
             publishingChanges = false;
             clearTempStores();
             invalidateAll();
