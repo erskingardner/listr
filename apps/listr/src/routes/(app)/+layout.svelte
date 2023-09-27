@@ -1,5 +1,5 @@
 <script lang="ts">
-    import "../app.css";
+    import "../../app.css";
     import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
     import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
     import Header from "$lib/components/header/Header.svelte";
@@ -17,7 +17,8 @@
     import ndk from "$lib/stores/ndk";
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
-    import type { LayoutServerData } from "./$types";
+    import type { LayoutServerData } from "../$types";
+    import { browser } from "$app/environment";
 
     export let data: LayoutServerData;
 
@@ -78,7 +79,7 @@
     }
 
     $: {
-        if ($currentUser && !$currentUserSettings) {
+        if ($currentUser && !$currentUserSettings && browser) {
             fetchUserSettings($currentUser).then((settings) => ($currentUserSettings = settings));
         }
     }

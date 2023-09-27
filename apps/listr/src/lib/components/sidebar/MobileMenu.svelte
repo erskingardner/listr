@@ -47,6 +47,7 @@
                     <div class="flex h-16 shrink-0 items-center justify-between">
                         <div class="flex h-16 shrink-0 items-center">
                             <a href="/" class="flex h-16 shrink-0 items-center">
+                                <span class="sr-only">Listr</span>
                                 <Logo />
                             </a>
                         </div>

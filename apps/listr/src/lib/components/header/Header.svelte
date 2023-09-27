@@ -147,6 +147,15 @@
                             tabindex="-1"
                         >
                             <a
+                                href={`/${$currentUser.npub}`}
+                                class="block px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                role="menuitem"
+                                tabindex="-1"
+                                id="user-menu-item-0"
+                            >
+                                Your profile
+                            </a>
+                            <a
                                 href={`/settings`}
                                 class="block px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"

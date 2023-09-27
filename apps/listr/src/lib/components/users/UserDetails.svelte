@@ -20,7 +20,7 @@
             ndk={$ndk}
             {user}
             {userProfile}
-            class="w-{avatarSize} h-{avatarSize} rounded-full overflow-hidden object-cover"
+            class="w-{avatarSize} h-{avatarSize} dark:!bg-gray-700 rounded-full overflow-hidden object-cover"
         />
     </a>
     <div class="flex flex-col gap-0.5 truncate">

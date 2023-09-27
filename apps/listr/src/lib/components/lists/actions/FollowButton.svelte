@@ -45,24 +45,32 @@
     }
 </script>
 
-{#if $currentUser}
-    {#if $currentUserFollows.includes(user.hexpubkey)}
-        <button on:click={handleUnfollow} class="primaryActionButton w-full justify-center">
-            <UserMinus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
-            Unfollow
-        </button>
+{#key user.hexpubkey}
+    {#if $currentUser}
+        {#if $currentUserFollows.includes(user.hexpubkey)}
+            <button
+                on:click={handleUnfollow}
+                class="primaryActionButton w-full justify-center {$$props.class}"
+            >
+                <UserMinus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
+                Unfollow
+            </button>
+        {:else}
+            <button
+                on:click={handleFollow}
+                class="primaryActionButton w-full justify-center {$$props.class}"
+            >
+                <UserPlus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
+                Follow
+            </button>
+        {/if}
     {:else}
-        <button on:click={handleFollow} class="primaryActionButton w-full justify-center">
+        <button class="primaryActionButton w-full justify-center {$$props.class}">
             <UserPlus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
             Follow
         </button>
+        <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
+            Sign in to follow
+        </Tooltip>
     {/if}
-{:else}
-    <button class="primaryActionButton w-full justify-center">
-        <UserPlus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
-        Follow
-    </button>
-    <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
-        Sign in to follow
-    </Tooltip>
-{/if}
+{/key}

@@ -28,11 +28,19 @@ export const FORKABLE_LIST_KINDS = [
     NDKKind.InterestsList,
 ];
 
+export const BLOCKED_PUBKEYS = [
+    // Primal Algos user - automated
+    "5d8282fc89410f1c57681a2c3b8be57afd1566c262fd1deb543999d39d141cb4",
+];
+
 export const LIST_FILTER_REGEXP = /^(chats|notifications|\/)/;
 export const LIST_MUTE_FILTER_REGEXP = /^mute|Mute/;
 
 export const filterAndSortByName = (lists: NDKList[], deletions?: NDKEvent[]) => {
-    const nameFiltered = lists.filter((list) => list.name && !list.name.match(LIST_FILTER_REGEXP));
+    const userFiltered = lists.filter((list) => !BLOCKED_PUBKEYS.includes(list.pubkey));
+    const nameFiltered = userFiltered.filter(
+        (list) => list.name && !list.name.match(LIST_FILTER_REGEXP)
+    );
     let deleteFiltered;
     if (deletions) {
         deleteFiltered = nameFiltered.filter(

@@ -25,7 +25,6 @@ export async function fetchUserFollows(user: NDKUser): Promise<string[]> {
  */
 export async function fetchUserSettings(user: NDKUser): Promise<App.UserSettings> {
     if (!user || !user.ndk) throw new Error("No logged in user or NDK instance");
-
     const ndk = user.ndk;
     const settingsEvents = await ndk.fetchEvents({
         kinds: [NDKKind.AppSpecificData],

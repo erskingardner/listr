@@ -60,7 +60,7 @@
                 <input type="checkbox" id="devMode" bind:checked={devMode} />
                 <label for="devMode">Developer Mode</label>
                 <Info strokeWidth="1.5" size="20" />
-                <Tooltip class="z-50">
+                <Tooltip type="auto" class="z-50">
                     View list kinds and turn on ability to copy nip19 & hex IDs
                 </Tooltip>
             </div>

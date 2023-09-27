@@ -13,6 +13,7 @@
     import { unixTimeNowInSeconds } from "$lib/utils";
     import ndk from "$lib/stores/ndk.js";
     import { v4 as uuidv4 } from "uuid";
+    import UserListNav from "$lib/components/lists/UserListNav.svelte";
 
     export let data;
 
@@ -194,143 +195,165 @@
     }
 </script>
 
-<div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
-    <div class="flex flex-col gap-1 w-full lg:w-auto">
-        <div class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2">
-            {listName}
-            <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
-            <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
-                Kind: {data.kind}
-            </Tooltip>
-            <span class="text-sm font-normal">{data.itemCount} items</span>
-        </div>
-        <span class="italic text-sm">
-            {listDescription ? listDescription : ""}
-        </span>
-    </div>
-    <ListActions
-        nip19={data.nip19}
-        pubkey={data.pubkey}
-        listId={data.listId}
-        rawList={data.rawList}
-        {editMode}
-        on:listDeleted
-        on:toggleEditMode={toggleEditMode}
-    />
-</div>
-<hr class="dark:border-gray-700" />
-<div class="flex flex-col">
-    {#if $currentUser?.hexpubkey === data.rawList.pubkey && editMode}
-        <div transition:slide={{ easing: expoInOut }}>
-            <form class="flex flex-col gap-2">
-                <label for="listName" class="font-medium">Name</label>
-                <input
-                    type="text"
-                    name="listName"
-                    bind:value={listName}
-                    class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
-                />
-                <label for="listDescription" class="font-medium">Description</label>
-                <input
-                    type="text"
-                    name="listDescription"
-                    bind:value={listDescription}
-                    class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
-                />
-            </form>
-            <AddItemForm on:addListItem={handleListAddition} />
-        </div>
-    {/if}
-
-    {#if unpublishedChanges}
-        <fieldset
-            class="border border-gray-700 dark:border-gray-300/60 bg-gray-50 dark:bg-gray-700 rounded-md p-2"
+<div class="flex flex-row gap-6">
+    {#if $currentUser?.hexpubkey === data.pubkey}
+        <!-- Don't render inside user list nav if it's the current user's list -->
+    {:else}
+        <!-- List of the user's lists -->
+        <div
+            class="text-sm flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
         >
-            <legend>Unpublished changes</legend>
-            <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-end">
-                <ChangesCount
-                    nameChanged={listName !== data.name}
-                    descriptionChanged={listDescription !== data.description}
-                    additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
-                    removals={[...unsavedPublicRemovals, ...unsavedPrivateRemovals]}
-                />
-                <button
-                    on:click={publishList}
-                    disabled={publishingChanges}
-                    class="flex flex-row gap-2 justify-center items-center border border-green-500 dark:border-green-900 bg-green-100 dark:bg-green-800 hover:bg-green-200 dark:hover:bg-green-700 p-2 px-3 rounded-md text-sm lg:text-base"
-                >
-                    <HardDriveUpload strokeWidth="1.5" size="20" class="w-5 h-5" />
-                    Publish now
-                </button>
-            </div>
-
-            <div class="flex flex-col gap-1"></div>
-
-            {#each unsavedPrivateItems as item (item[1])}
-                <Item
-                    id={item[1]}
-                    tag={item}
-                    kind={data.kind}
-                    privateItem={true}
-                    unsaved={true}
-                    on:removeUnsavedItem={handleRemoveUnsavedItem}
-                />
-            {/each}
-            {#each unsavedPublicItems as item (item[1])}
-                <Item
-                    id={item[1]}
-                    tag={item}
-                    kind={data.kind}
-                    privateItem={false}
-                    unsaved={true}
-                    on:removeUnsavedItem={handleRemoveUnsavedItem}
-                />
-            {/each}
-            {#each unsavedPrivateRemovals as item (item[1])}
-                <Item
-                    id={item[1]}
-                    tag={item}
-                    kind={data.kind}
-                    privateItem={true}
-                    unsaved={true}
-                    removal={true}
-                    on:removeUnsavedItem={handleRemoveUnsavedItem}
-                />
-            {/each}
-            {#each unsavedPublicRemovals as item (item[1])}
-                <Item
-                    id={item[1]}
-                    tag={item}
-                    kind={data.kind}
-                    privateItem={false}
-                    unsaved={true}
-                    removal={true}
-                    on:removeUnsavedItem={handleRemoveUnsavedItem}
-                />
-            {/each}
-        </fieldset>
+            {#key data.pubkey}
+                <UserListNav userPubkey={data.pubkey} />
+            {/key}
+        </div>
     {/if}
 
-    {#each privateItems || [] as item (item[1])}
-        <Item
-            id={item[1]}
-            tag={item}
-            kind={data.kind}
-            privateItem={true}
-            unsaved={false}
-            {editMode}
-            on:removeItem={handleListRemoval}
-        />
-    {/each}
-    {#each publicItems || [] as item (item[1])}
-        <Item
-            id={item[1]}
-            tag={item}
-            kind={data.kind}
-            privateItem={false}
-            unsaved={false}
-            {editMode}
-            on:removeItem={handleListRemoval}
-        />
-    {/each}
+    <!-- List contents -->
+    <div
+        class="flex flex-col gap-2 border border-gray-30 dark:border-gray-700 rounded-md shadow-md p-4 grow"
+    >
+        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <div class="flex flex-col gap-1 w-full lg:w-auto">
+                <div
+                    class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
+                >
+                    {listName}
+                    <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
+                    <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
+                        Kind: {data.kind}
+                    </Tooltip>
+                    <span class="text-sm font-normal">{data.itemCount} items</span>
+                </div>
+                <span class="italic text-sm">
+                    {listDescription ? listDescription : ""}
+                </span>
+            </div>
+            <ListActions
+                nip19={data.nip19}
+                pubkey={data.pubkey}
+                listId={data.listId}
+                rawList={data.rawList}
+                {editMode}
+                on:listDeleted
+                on:toggleEditMode={toggleEditMode}
+            />
+        </div>
+        <hr class="dark:border-gray-700" />
+        <div class="flex flex-col">
+            {#if $currentUser?.hexpubkey === data.rawList.pubkey && editMode}
+                <div transition:slide={{ easing: expoInOut }}>
+                    <form class="flex flex-col gap-2">
+                        <label for="listName" class="font-medium">Name</label>
+                        <input
+                            type="text"
+                            name="listName"
+                            bind:value={listName}
+                            class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                        />
+                        <label for="listDescription" class="font-medium">Description</label>
+                        <input
+                            type="text"
+                            name="listDescription"
+                            bind:value={listDescription}
+                            class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                        />
+                    </form>
+                    <AddItemForm on:addListItem={handleListAddition} />
+                </div>
+            {/if}
+
+            {#if unpublishedChanges}
+                <fieldset
+                    class="border border-gray-700 dark:border-gray-300/60 bg-gray-50 dark:bg-gray-700 rounded-md p-2"
+                >
+                    <legend>Unpublished changes</legend>
+                    <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-end">
+                        <ChangesCount
+                            nameChanged={listName !== data.name}
+                            descriptionChanged={listDescription !== data.description}
+                            additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
+                            removals={[...unsavedPublicRemovals, ...unsavedPrivateRemovals]}
+                        />
+                        <button
+                            on:click={publishList}
+                            disabled={publishingChanges}
+                            class="flex flex-row gap-2 justify-center items-center border border-green-500 dark:border-green-900 bg-green-100 dark:bg-green-800 hover:bg-green-200 dark:hover:bg-green-700 p-2 px-3 rounded-md text-sm lg:text-base"
+                        >
+                            <HardDriveUpload strokeWidth="1.5" size="20" class="w-5 h-5" />
+                            Publish now
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-1"></div>
+
+                    {#each unsavedPrivateItems as item (item[1])}
+                        <Item
+                            id={item[1]}
+                            tag={item}
+                            kind={data.kind}
+                            privateItem={true}
+                            unsaved={true}
+                            on:removeUnsavedItem={handleRemoveUnsavedItem}
+                        />
+                    {/each}
+                    {#each unsavedPublicItems as item (item[1])}
+                        <Item
+                            id={item[1]}
+                            tag={item}
+                            kind={data.kind}
+                            privateItem={false}
+                            unsaved={true}
+                            on:removeUnsavedItem={handleRemoveUnsavedItem}
+                        />
+                    {/each}
+                    {#each unsavedPrivateRemovals as item (item[1])}
+                        <Item
+                            id={item[1]}
+                            tag={item}
+                            kind={data.kind}
+                            privateItem={true}
+                            unsaved={true}
+                            removal={true}
+                            on:removeUnsavedItem={handleRemoveUnsavedItem}
+                        />
+                    {/each}
+                    {#each unsavedPublicRemovals as item (item[1])}
+                        <Item
+                            id={item[1]}
+                            tag={item}
+                            kind={data.kind}
+                            privateItem={false}
+                            unsaved={true}
+                            removal={true}
+                            on:removeUnsavedItem={handleRemoveUnsavedItem}
+                        />
+                    {/each}
+                </fieldset>
+            {/if}
+
+            {#each privateItems || [] as item (item[1])}
+                <Item
+                    id={item[1]}
+                    tag={item}
+                    kind={data.kind}
+                    privateItem={true}
+                    unsaved={false}
+                    {editMode}
+                    on:removeItem={handleListRemoval}
+                />
+            {/each}
+            {#each publicItems || [] as item (item[1])}
+                <Item
+                    id={item[1]}
+                    tag={item}
+                    kind={data.kind}
+                    privateItem={false}
+                    unsaved={false}
+                    {editMode}
+                    on:removeItem={handleListRemoval}
+                />
+            {/each}
+        </div>
+    </div>
 </div>
