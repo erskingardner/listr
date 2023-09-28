@@ -51,6 +51,8 @@
     $: if ($currentUserLists) {
         $currentUserLists = filterAndSortByName($currentUserLists, $deletedEvents);
     }
+
+    $: if ($currentUser) subscribeToUserLists();
 </script>
 
 <nav class="flex flex-1 flex-col relative">
