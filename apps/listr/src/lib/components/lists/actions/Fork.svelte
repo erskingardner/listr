@@ -51,6 +51,7 @@
     triggeredBy="#forkButton"
     trigger="click"
     placement="left-end"
+    defaultClass="py-2 px-3 text-black dark:text-white"
 >
     <div class="panel-contents flex flex-col gap-2">
         <form

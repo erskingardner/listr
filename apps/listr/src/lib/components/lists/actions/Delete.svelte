@@ -15,30 +15,36 @@
     export let pubkey: string;
 
     async function deleteList() {
-        if (!$ndk.signer) {
-            const signer = new NDKNip07Signer();
-            $ndk.signer = signer;
-        }
+        const deleteConfirmation = confirm(
+            "Are you sure you want to delete this list? This cannot be undone."
+        );
+        if (deleteConfirmation) {
+            if (!$ndk.signer) {
+                const signer = new NDKNip07Signer();
+                $ndk.signer = signer;
+            }
 
-        // Create & publish list deletion event (kind 5)
-        const deleteEvent = new NDKEvent($ndk, {
-            kind: 5,
-            pubkey: $currentUser?.hexpubkey as string,
-            content: "List deleted by owner",
-            tags: [["a", listId as string]],
-            created_at: unixTimeNowInSeconds(),
-        });
-        deleteEvent
-            .publish()
-            .then(() => {
-                db.events.delete(listId).catch((error) => console.error(error));
-                dispatch("listDeleted", { event: deleteEvent.rawEvent() });
-                toast.success("Your list was deleted");
-                goto(`/${$currentUser?.npub}`);
-            })
-            .catch((error) => {
-                console.error(error);
+            // Create & publish list deletion event (kind 5)
+            const deleteEvent = new NDKEvent($ndk, {
+                kind: 5,
+                pubkey: $currentUser?.hexpubkey as string,
+                content: "List deleted by owner",
+                tags: [["a", listId as string]],
+                created_at: unixTimeNowInSeconds(),
             });
+
+            deleteEvent
+                .publish()
+                .then(() => {
+                    db.events.delete(listId).catch((error) => console.error(error));
+                    dispatch("listDeleted", { event: deleteEvent.rawEvent() });
+                    toast.success("Your list was deleted");
+                    goto(`/${$currentUser?.npub}`);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
     }
 </script>
 

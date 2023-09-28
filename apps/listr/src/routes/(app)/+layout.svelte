@@ -105,14 +105,15 @@
     bind:open={signerModal}
     autoclose
     outsideclose={true}
-    class="relative flex p-2 mx-auto w-1/2"
+    class="relative flex p-2 mx-auto"
+    backdropClass="fixed inset-0 z-40 bg-gray-900 bg-opacity-80"
 >
-    <p class="text-gray-900 mb-4">
+    <p class="text-gray-900 dark:text-white mb-4">
         Listr is an app built on <span class="font-bold">Nostr</span>. To log in and manage your
         lists you need to sign events with your Nostr keys using a browser extension like Alby or
         nos2x in Chrome or Brave.
     </p>
-    <p class="text-gray-900 mb-4">
+    <p class="text-gray-900 dark:text-white mb-4">
         If you're unsure what Nostr is and want to learn more please check out <a
             href="https://nostr.how?utm_source=listr&utm_medium=signerModal">Nostr.how</a
         >
@@ -123,21 +124,21 @@
         >
             <a
                 href="https://getalby.com?utm_source=listr&utm_medium=signerModal"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0"
+                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
                 target="_blank"
             >
                 <span class="">Get Alby</span>
             </a>
             <a
                 href="https://github.com/fiatjaf/nos2x"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0"
+                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
                 target="_blank"
             >
                 <span class="">Get nos2x</span>
             </a>
             <a
                 href="https://nostr.how?utm_source=listr&utm_medium=signerModal"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0"
+                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
                 target="_blank"
             >
                 <span class="">Learn more</span>
