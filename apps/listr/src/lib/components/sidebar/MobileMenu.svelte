@@ -42,7 +42,7 @@
 
                 <!-- Sidebar component -->
                 <div
-                    class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 ring-1 ring-white/10"
+                    class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-300 dark:bg-gray-900 px-6 ring-1 ring-white/10"
                 >
                     <div class="flex h-16 shrink-0 items-center justify-between">
                         <div class="flex h-16 shrink-0 items-center">

@@ -68,8 +68,8 @@
                     <a
                         href="/feed"
                         class="{$page.url.pathname === '/feed'
-                            ? 'bg-gray-800 text-white'
-                            : 'text-gray-400 hover:text-white hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
+                            : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     >
                         <Newspaper strokeWidth="1.5" size="20" class="w-5 h-5" />
                         Activity Feed
@@ -79,8 +79,8 @@
                     <a
                         href="/about"
                         class="{$page.url.pathname === '/about'
-                            ? 'bg-gray-800 text-white'
-                            : 'text-gray-400 hover:text-white hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
+                            : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     >
                         <HelpCircle strokeWidth="1.5" size="20" class="w-5 h-5" />
                         About Listr
@@ -140,16 +140,20 @@
                                     href="/{$currentUser.npub}/{list.kind}/{list.encode()}"
                                     class="{$page.url.pathname ===
                                     `/${$currentUser.npub}/${list.kind}/${list.encode()}`
-                                        ? 'bg-gray-800 text-white'
-                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'} hover:bg-gray-800 group flex flex-row items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                        ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
+                                        : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                 >
                                     <span
-                                        class="flex font-mono h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white"
+                                        class="flex font-mono h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-500 bg-gray-400 dark:border-gray-700 dark:bg-gray-800 text-[0.625rem] font-medium text-gray-700 group-hover:text-black dark:text-gray-400 dark:group-hover:text-white"
                                         >{list.name?.slice(0, 1).toUpperCase()}</span
                                     >
                                     <span class="truncate">{list.name}</span>
                                     {#if $currentUserSettings?.devMode}
-                                        <Tooltip type="custom" placement="right" class="text-xs">
+                                        <Tooltip
+                                            type="custom"
+                                            placement="right"
+                                            class="text-xs bg-transparent border-none shadow-none"
+                                        >
                                             k: {list.kind}
                                         </Tooltip>
                                     {/if}
@@ -171,7 +175,9 @@
             </li>
         {/if}
     </ul>
-    <div class="text-gray-400 text-sm -mx-6 px-6 py-4 bottom-0 bg-gray-950 sticky">
+    <div
+        class="border-t border-gray-500 dark:border-gray-800 text-gray-700 dark:text-gray-400 text-sm -mx-6 px-6 py-4 bottom-0 bg-gray-400 dark:bg-gray-950 sticky"
+    >
         Built with ⚡ and 💜 by <a
             href="https://primal.net/jeffg"
             class="underline hover:no-underline font-medium">JeffG</a

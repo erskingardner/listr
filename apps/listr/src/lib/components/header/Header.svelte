@@ -47,7 +47,7 @@
             <input
                 id="q"
                 class="block h-full w-full border-0 py-0 pl-8 pr-2 dark:bg-gray-800 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 placeholder:dark:text-gray-200 focus:ring-0 sm:text-sm"
-                placeholder="Search..."
+                placeholder={`e.g. "Jack", "Content Creators"...`}
                 type="search"
                 name="q"
             />
