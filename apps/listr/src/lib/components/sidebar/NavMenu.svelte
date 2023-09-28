@@ -72,7 +72,7 @@
                             : 'text-gray-400 hover:text-white hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     >
                         <Newspaper strokeWidth="1.5" size="20" class="w-5 h-5" />
-                        Feed
+                        Activity Feed
                     </a>
                 </li>
                 <li>
