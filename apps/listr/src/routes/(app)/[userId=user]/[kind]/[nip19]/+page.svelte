@@ -8,7 +8,7 @@
     import { slide } from "svelte/transition";
     import { expoInOut } from "svelte/easing";
     import { afterNavigate, beforeNavigate, invalidateAll } from "$app/navigation";
-    import currentUser from "$lib/stores/currentUser";
+    import currentUser, { currentUserSettings } from "$lib/stores/currentUser";
     import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
     import { unixTimeNowInSeconds } from "$lib/utils";
     import ndk from "$lib/stores/ndk.js";
@@ -225,10 +225,15 @@
                     class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
                 >
                     {listName}
-                    <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
-                    <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md">
-                        Kind: {data.kind}
-                    </Tooltip>
+                    {#if $currentUserSettings?.devMode}
+                        <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
+                        <Tooltip
+                            type="auto"
+                            class="dark:border-gray-800 dark:text-gray-50 shadow-md"
+                        >
+                            k: {data.kind}
+                        </Tooltip>
+                    {/if}
                     <span class="text-sm font-normal">{data.itemCount} items</span>
                 </div>
                 <span class="italic text-sm">
