@@ -4,6 +4,7 @@
     import Like from "./Like.svelte";
     import CopyId from "./CopyId.svelte";
     import Fork from "./Fork.svelte";
+    import Share from "./Share.svelte";
     import Delete from "./Delete.svelte";
     import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
     import { FORKABLE_LIST_KINDS } from "$lib/utils";
@@ -20,15 +21,17 @@
     const listKind: NDKKind = rawList.kind as NDKKind;
 </script>
 
-{#if $currentUser}
-    <div
-        class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between"
-    >
+<div class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between">
+    {#if $currentUser}
         <Zap {nip19} {listId} />
         <Like {listId} />
+    {/if}
+    <Share {pubkey} {rawList} {nip19} />
+    {#if $currentUser}
         {#if $currentUser && pubkey !== $currentUser.hexpubkey && FORKABLE_LIST_KINDS.includes(listKind)}
             <Fork {rawList} />
         {/if}
+
         <Edit {pubkey} {editMode} on:toggleEditMode />
         <button id="listActionsButton" class="lg:ml-auto">
             <MoreVertical
@@ -43,5 +46,5 @@
                 <Delete {listId} {pubkey} />
             </div>
         </Popover>
-    </div>
-{/if}
+    {/if}
+</div>

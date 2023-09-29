@@ -14,6 +14,9 @@
     let eoseReceived: boolean = false;
     const searchRelays: NDKRelaySet = new NDKRelaySet(new Set(), $ndk);
     searchRelays.addRelay(new NDKRelay("wss://relay.nostr.band"));
+    searchRelays.addRelay(new NDKRelay("wss://nostr.wine"));
+    searchRelays.addRelay(new NDKRelay("wss://relay.noswhere.com"));
+    searchRelays.addRelay(new NDKRelay("wss://purplepag.es"));
 
     if (query) {
         searchResults = $ndk.storeSubscribe({ search: query });

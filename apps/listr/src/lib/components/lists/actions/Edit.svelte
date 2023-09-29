@@ -18,7 +18,7 @@
     {:else}
         <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
             <FileEdit strokeWidth="1.5" size="20" class="w-5 h-5" />
-            Edit list
+            Edit
         </button>
     {/if}
 {/if}
