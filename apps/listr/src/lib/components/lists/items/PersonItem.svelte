@@ -23,8 +23,8 @@
 {#key pubkey}
     <div
         class="flex flex-col w-full lg:w-auto lg:flex-row gap-4 lg:gap-2
-            rounded-md p-2 my-2 lg:items-center border border-gray-200 dark:border-gray-700
-            {unsaved ? 'border-gray-500/60 dark:border-gray-300/40 border-dashed' : ''}"
+        rounded-md p-2 my-2 lg:items-center border border-gray-200 dark:border-gray-700
+        {unsaved ? 'border-gray-500/60 dark:border-gray-200/30 border-dashed' : ''}"
     >
         <div class="grow flex flex-col lg:flex-row gap-2 items-start lg:items-center">
             <UserDetails {user} />
