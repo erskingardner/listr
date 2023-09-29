@@ -19,6 +19,13 @@ export const load: PageLoad = async ({ params }) => {
     const event = await ndkStore.fetchEvent(nip19);
     const rawList = event?.rawEvent() as NostrEvent;
     const list = NDKList.from(event as NDKEvent);
+    let category: string | undefined;
+
+    try {
+        category = list.tags.filter((tag) => tag[0] === "l")[0][1];
+    } catch (error) {
+        category = undefined;
+    }
 
     let privateItems: NDKTag[] | undefined;
 
@@ -33,13 +40,16 @@ export const load: PageLoad = async ({ params }) => {
         privateItems = await list.encryptedTags();
     }
 
-    const itemCount = list.items.length + (privateItems?.length || 0);
+    const itemCount =
+        list.items.filter((item) => !["L", "l"].includes(item[0])).length +
+        (privateItems?.length || 0);
 
     return {
         kind: parseInt(params.kind),
         nip19: nip19,
         name: list.name,
         description: list.description,
+        category: category,
         rawList,
         listId: list.tagId(),
         items: list.items,

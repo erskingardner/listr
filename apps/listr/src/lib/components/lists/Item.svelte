@@ -18,8 +18,6 @@
     const otherTagValues: string[] | undefined = tag.slice(2);
 </script>
 
-<!-- TODO: Need to filter out title, description, l, etc. tags -->
-<!-- TODO: Support "client" tags (coracle) with icons -->
 <div>
     {#if type === "p"}
         <PersonItem
@@ -79,6 +77,20 @@
             on:removeItem
             on:removeUnsavedItem
         />
+    {:else if ["L", "l", "name", "title", "description"].includes(type)}
+        <!-- Don't do anything for now -->
+    {:else if type === "client"}
+        <!-- Refactor this to a component -->
+        {#if id === "coracle"}
+            <div
+                class="flex flex-col w-full lg:w-auto lg:flex-row gap-4 lg:gap-2
+            rounded-md p-2 my-2 lg:items-center border border-gray-200 dark:border-gray-700
+            {unsaved ? 'border-gray-500/60 dark:border-gray-200/30 border-dashed' : ''}"
+            >
+                <img src="/images/coracle.webp" alt="Coracle" class="w-12 h-12 rounded-full" />
+                Client: Coracle
+            </div>
+        {/if}
     {:else}
         <div>Unsupported item:</div>
         <pre class="py-2 whitespace-normal">

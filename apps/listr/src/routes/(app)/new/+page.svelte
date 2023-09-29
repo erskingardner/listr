@@ -34,7 +34,6 @@
         async onUpdate({ form }) {
             if (form.valid) {
                 const nip19Id = await publishList();
-                toast.success("New list published");
                 // eslint-disable-next-line svelte/valid-compile
                 await goto(`/${$currentUser!.npub}/${$form.kind}/${nip19Id}`);
             }
@@ -60,6 +59,11 @@
         if (list.kind! >= 30000 && list.kind! <= 40000) {
             const uuid = uuidv4();
             list.tags.push(["d", `listr-${uuid}`]);
+        }
+
+        if ($form.category) {
+            list.tags.push(["L", "lol.listr.ontology"]);
+            list.tags.push(["l", $form.category]);
         }
 
         // Encrypt if we need to
@@ -192,7 +196,7 @@
                 {/if}
             </div>
             <div class="flex flex-col gap-0">
-                <label for="name">Description</label>
+                <label for="description">Description</label>
                 <div class="flex flex-row items-center relative">
                     <input
                         type="text"
@@ -206,6 +210,35 @@
                 </div>
                 {#if $errors.description}
                     <span class="text-sm text-red-600 italic">{$errors.description}</span>
+                {/if}
+            </div>
+            <div class="flex flex-col gap-0">
+                <label for="category">Category</label>
+                <div class="flex flex-row items-center relative">
+                    <select
+                        name="category"
+                        id="category"
+                        class="border-gray-400 w-full rounded-md bg-transparent"
+                        tabindex="0"
+                        bind:value={$form.category}
+                    >
+                        <option selected value="">Add a category to your list?</option>
+                        <option value="Books & Literature">Books & Literature</option>
+                        <option value="Finance & Money">Finance & Money</option>
+                        <option value="Food & Drink">Food & Drink</option>
+                        <option value="Gaming & Hobbies">Gaming & Hobbies</option>
+                        <option value="Movies & TV">Movies & TV</option>
+                        <option value="Music">Music</option>
+                        <option value="People">People</option>
+                        <option value="Politics">Politics</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Travel & Places">Travel & Places</option>
+                    </select>
+                </div>
+                {#if $errors.category}
+                    <span class="text-sm text-red-600 italic">{$errors.category}</span>
                 {/if}
             </div>
             <fieldset

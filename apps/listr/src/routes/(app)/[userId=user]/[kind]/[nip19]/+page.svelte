@@ -1,6 +1,6 @@
 <script lang="ts">
     import Item from "$lib/components/lists/Item.svelte";
-    import { HardDriveUpload, Info } from "lucide-svelte";
+    import { Component, HardDriveUpload, Info } from "lucide-svelte";
     import ListActions from "$lib/components/lists/actions/ListActions.svelte";
     import { Tooltip } from "flowbite-svelte";
     import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
@@ -33,6 +33,7 @@
 
     let listName = data.name;
     let listDescription = data.description;
+    let listCategory = data.category;
 
     $: unpublishedChanges =
         unsavedPrivateItems.length > 0 ||
@@ -40,7 +41,8 @@
         unsavedPublicItems.length > 0 ||
         unsavedPublicRemovals.length > 0 ||
         listName !== data.name ||
-        listDescription !== data.description;
+        listDescription !== data.description ||
+        listCategory !== data.category;
 
     beforeNavigate(() => {
         if (unpublishedChanges) {
@@ -59,6 +61,7 @@
         unsavedPrivateRemovals = [];
         listName = data.name;
         listDescription = data.description;
+        listCategory = data.category;
     }
 
     function itemAlreadyIncluded(tag: NDKTag): boolean {
@@ -165,6 +168,11 @@
         list.name = listName;
         list.description = listDescription;
 
+        if (listCategory) {
+            list.tags.push(["L", "lol.listr.ontology"]);
+            list.tags.push(["l", listCategory]);
+        }
+
         let newListConfirmation: boolean = true;
         // This will create a new list for older style lists with a name the same as the d tag.
         if (list.kind! >= 30000 && list.kind! <= 40000) {
@@ -187,10 +195,13 @@
 
         if (newListConfirmation) {
             // Publish
-            await list
-                .publish()
+            list.publish()
                 .then(() => {
                     toast.success("Your list was successfully published");
+                    publishingChanges = false;
+                    editMode = false;
+                    clearTempStores();
+                    invalidateAll();
                 })
                 .catch((error) => {
                     if (error === "User rejected") {
@@ -198,9 +209,7 @@
                         publishingChanges = false;
                     }
                 });
-            publishingChanges = false;
-            clearTempStores();
-            invalidateAll();
+
             return list.encode();
         } else {
             publishingChanges = false;
@@ -256,8 +265,15 @@
                     {/if}
                     <span class="text-sm font-normal">{data.itemCount} items</span>
                 </div>
-                <span class="italic text-sm">
+                <span class="text-sm flex gap-2 items-center">
                     {listDescription ? listDescription : ""}
+                    {#if listCategory}
+                        <span
+                            class="text-2xs text-white md:text-xs px-1.5 md:px-2 md:py-0.5 bg-indigo-600 rounded-full"
+                        >
+                            {listCategory}
+                        </span>
+                    {/if}
                 </span>
             </div>
             <ListActions
@@ -289,6 +305,27 @@
                             bind:value={listDescription}
                             class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
                         />
+                        <label for="listCategory" class="font-medium">Category</label>
+                        <select
+                            name="listCategory"
+                            class="border-gray-400 w-full rounded-md bg-transparent"
+                            tabindex="0"
+                            bind:value={listCategory}
+                        >
+                            <option selected value="">Add a category to your list?</option>
+                            <option value="Books & Literature">Books & Literature</option>
+                            <option value="Finance & Money">Finance & Money</option>
+                            <option value="Food & Drink">Food & Drink</option>
+                            <option value="Gaming & Hobbies">Gaming & Hobbies</option>
+                            <option value="Movies & TV">Movies & TV</option>
+                            <option value="Music">Music</option>
+                            <option value="People">People</option>
+                            <option value="Politics">Politics</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Travel & Places">Travel & Places</option>
+                        </select>
                     </form>
                     <AddItemForm on:addListItem={handleListAddition} />
                 </div>
