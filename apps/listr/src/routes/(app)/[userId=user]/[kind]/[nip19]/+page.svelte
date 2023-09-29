@@ -61,13 +61,33 @@
         listDescription = data.description;
     }
 
+    function itemAlreadyIncluded(tag: NDKTag): boolean {
+        const alreadyIncluded = [
+            ...publicItems,
+            ...privateItems,
+            ...unsavedPublicItems,
+            ...unsavedPrivateItems,
+        ]
+            .map((item) => item[1])
+            .includes(tag[1]);
+
+        if (alreadyIncluded) {
+            toast.error("You already have that item in your list, you can't add it again.");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function handleListAddition(event: CustomEvent) {
-        if (event.detail.type === "public") {
-            unsavedPublicItems.push(event.detail.tag);
-            unsavedPublicItems = unsavedPublicItems;
-        } else if (event.detail.type === "private") {
-            unsavedPrivateItems.push(event.detail.tag);
-            unsavedPrivateItems = unsavedPrivateItems;
+        if (!itemAlreadyIncluded(event.detail.tag)) {
+            if (event.detail.type === "public") {
+                unsavedPublicItems.push(event.detail.tag);
+                unsavedPublicItems = unsavedPublicItems;
+            } else if (event.detail.type === "private") {
+                unsavedPrivateItems.push(event.detail.tag);
+                unsavedPrivateItems = unsavedPrivateItems;
+            }
         }
     }
 
