@@ -6,6 +6,7 @@
     import { Tooltip } from "flowbite-svelte";
     import { Info } from "lucide-svelte";
     import { currentUserSettings } from "$lib/stores/currentUser";
+    import toast from "svelte-french-toast";
 
     let devMode: boolean = !!$currentUserSettings?.devMode;
 
@@ -33,6 +34,7 @@
         await settingsEvent.encrypt($currentUser);
         await settingsEvent.publish();
         $currentUserSettings = settingsObj;
+        toast.success("Settings updated");
     }
 </script>
 
