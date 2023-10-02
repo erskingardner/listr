@@ -22,16 +22,6 @@
     });
 </script>
 
-<svelte:head>
-    {#await user.fetchProfile() then profile}
-        <title>Listr: {profile?.displayName}</title>
-        <meta
-            name="description"
-            content={`Listr user page showing all lists for ${profile?.displayName}`}
-        />
-    {/await}
-</svelte:head>
-
 {#key data.pubkey}
     <UserProfileHeader pubkey={data.pubkey} />
 {/key}

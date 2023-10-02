@@ -230,6 +230,11 @@
     }
 </script>
 
+<svelte:head>
+    <title>{`${listName} - Listr`}</title>
+    <meta name="description" content={`${listName} a list on Listr`} />
+</svelte:head>
+
 <div class="flex flex-row gap-6">
     {#if $currentUser?.hexpubkey === data.pubkey}
         <!-- Don't render inside user list nav if it's the current user's list -->

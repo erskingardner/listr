@@ -72,6 +72,11 @@
         goto("/");
     }
 
+    if (browser) {
+        document.body.classList.remove("bg-gray-900");
+        document.body.classList.remove("dark:bg-gray-900");
+    }
+
     $: {
         if ($currentUser && $currentUserFollows.length === 0) {
             fetchUserFollows($currentUser).then((follows) => ($currentUserFollows = follows));

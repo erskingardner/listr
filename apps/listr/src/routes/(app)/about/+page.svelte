@@ -3,6 +3,14 @@
     export let data;
 </script>
 
+<svelte:head>
+    <title>About - Listr</title>
+    <meta
+        name="description"
+        content="Learn more about Listr, the best app for creating and managing your Nostr lists."
+    />
+</svelte:head>
+
 <div class="prose max-w-4xl dark:prose-invert">
     <h2 class="">Listr is a simple tool that allows you to browse and manage Nostr lists.</h2>
     <p>Check out a few examples, then sign in to view your own!</p>

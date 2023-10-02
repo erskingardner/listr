@@ -9,6 +9,14 @@
     }
 </script>
 
+<svelte:head>
+    <title>Listr</title>
+    <meta
+        name="description"
+        content="Listr is the best way to create, manage, and discover Nostr lists."
+    />
+</svelte:head>
+
 <div class="bg-gray-900">
     <header class="absolute inset-x-0 top-0 z-50">
         <nav class="flex items-center justify-between p-4 lg:px-8" aria-label="Global">

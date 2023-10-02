@@ -4,17 +4,20 @@
     import { onMount, onDestroy } from "svelte";
     import { filterAndSortByName } from "$lib/utils";
     import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { type NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
+    import { type NDKEvent, NDKList, NDKKind, type NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { SUPPORTED_LIST_KINDS } from "$lib/utils";
     import ListCard from "$lib/components/lists/ListCard.svelte";
+    import { afterNavigate } from "$app/navigation";
 
     export let data: PageData;
     const user = $ndk.getUser({ hexpubkey: data.pubkey });
+    let userProfile: NDKUserProfile | null;
+    let displayableName: string;
 
     let lists: NDKEventStore<ExtendedBaseType<NDKList>>;
     let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
 
-    onMount(() => {
+    onMount(async () => {
         lists = $ndk.storeSubscribe(
             {
                 kinds: SUPPORTED_LIST_KINDS,
@@ -30,6 +33,11 @@
         });
     });
 
+    afterNavigate(async () => {
+        console.log("navigate", user);
+        userProfile = await user.fetchProfile();
+    });
+
     onDestroy(() => {
         lists?.unsubscribe();
         deletedEvents?.unsubscribe();
@@ -38,7 +46,23 @@
     $: if ($lists) {
         $lists = filterAndSortByName($lists, $deletedEvents);
     }
+
+    $: displayableName = displayableName =
+        userProfile?.displayName ||
+        userProfile?.name ||
+        userProfile?.nip05 ||
+        `${user.npub.slice(0, 9)}...`;
 </script>
+
+<svelte:head>
+    {#await user.fetchProfile() then profile}
+        <title>{`${displayableName} - Listr`}</title>
+        <meta
+            name="description"
+            content={`Listr user page showing all lists for ${displayableName}`}
+        />
+    {/await}
+</svelte:head>
 
 {#if $lists}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

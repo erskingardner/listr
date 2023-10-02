@@ -51,7 +51,7 @@
 </script>
 
 <svelte:head>
-    <title>Feed - Listr</title>
+    <title>Activity Feed - Listr</title>
     <meta
         name="description"
         content="A Nostr based app to help you view and manage your own
