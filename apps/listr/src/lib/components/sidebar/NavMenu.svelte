@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Newspaper, LogIn, HelpCircle } from "lucide-svelte";
+    import { Newspaper, LogIn, HelpCircle, LifeBuoy, Github } from "lucide-svelte";
     import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser, { currentUserSettings } from "$lib/stores/currentUser";
@@ -71,7 +71,7 @@
                             ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                             : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     >
-                        <Newspaper strokeWidth="1.5" size="20" class="w-5 h-5" />
+                        <Newspaper strokeWidth="1.5" size="20" />
                         Activity Feed
                     </a>
                 </li>
@@ -82,8 +82,28 @@
                             ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                             : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     >
-                        <HelpCircle strokeWidth="1.5" size="20" class="w-5 h-5" />
+                        <HelpCircle strokeWidth="1.5" size="20" />
                         About Listr
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://primal.net/jeffg"
+                        class="text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                        target="_blank"
+                    >
+                        <LifeBuoy strokeWidth="1.5" size="20" />
+                        Help / Feedback
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://github.com/erskingardner/listr"
+                        class="text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                        target="_blank"
+                    >
+                        <Github strokeWidth="1.5" size="20" />
+                        Listr on Github
                     </a>
                 </li>
             </ul>
@@ -169,7 +189,7 @@
                     on:click={handleSignin}
                     class="group flex gap-x-3 w-full rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
                 >
-                    <LogIn strokeWidth="1.5" size="20" class="w-5 h-5" />
+                    <LogIn strokeWidth="1.5" size="20" />
                     Sign in to manage your lists
                 </button>
             </li>
