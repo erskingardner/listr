@@ -31,7 +31,7 @@
         on:click={() => dispatch("openMobileMenu")}
     >
         <span class="sr-only">Open sidebar</span>
-        <Menu strokeWidth="1.5" />
+        <Menu strokeWidth="1.5" size="24" class="text-gray-400 hover:text-gray-500" />
     </button>
 
     <!-- Separator -->
