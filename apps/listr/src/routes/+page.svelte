@@ -1,6 +1,12 @@
 <script lang="ts">
     import "../app.css";
     import Logo from "$lib/components/sidebar/Logo.svelte";
+    import { browser } from "$app/environment";
+
+    if (browser) {
+        document.body.classList.add("bg-gray-900");
+        document.body.classList.add("dark:bg-gray-900");
+    }
 </script>
 
 <div class="bg-gray-900">
