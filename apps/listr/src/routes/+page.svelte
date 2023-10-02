@@ -1,6 +1,7 @@
 <script lang="ts">
     import "../app.css";
     import Logo from "$lib/components/sidebar/Logo.svelte";
+    import { PlausibleAnalytics } from "@accuser/svelte-plausible-analytics";
     import { browser } from "$app/environment";
 
     if (browser) {
@@ -16,6 +17,8 @@
         content="Listr is the best way to create, manage, and discover Nostr lists."
     />
 </svelte:head>
+
+<PlausibleAnalytics apiHost="/stats" domain="listr.lol" />
 
 <div class="bg-gray-900">
     <header class="absolute inset-x-0 top-0 z-50">
