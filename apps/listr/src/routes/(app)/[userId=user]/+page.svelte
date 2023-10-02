@@ -70,7 +70,10 @@
             property="og:description"
             content="Listr is the best way to curate, organize, and discover everything that Nostr has to offer. Build new lists, stay organized, and browse collections."
         />
-        <meta property="og:image" content={profile?.image || "/images/open-graph.webp"} />
+        <meta
+            property="og:image"
+            content={profile?.image || "https://beta.listr.lol/images/open-graph.webp"}
+        />
 
         <!-- Twitter Meta Tags -->
         <meta name="twitter:card" content="summary_large_image" />
@@ -81,7 +84,10 @@
             name="twitter:description"
             content="Listr is the best way to curate, organize, and discover everything that Nostr has to offer. Build new lists, stay organized, and browse collections."
         />
-        <meta name="twitter:image" content={profile?.image || "/images/open-graph.webp"} />
+        <meta
+            name="twitter:image"
+            content={profile?.image || "https://beta.listr.lol/images/open-graph.webp"}
+        />
     {/await}
 </svelte:head>
 
