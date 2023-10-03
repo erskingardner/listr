@@ -18,7 +18,7 @@
 
     export let data;
 
-    let privateItems: NDKTag[] = data.privateItems || [];
+    let privateItems: NDKTag[] = data.privateItems;
     let publicItems: NDKTag[] = data.items;
     let unsavedPublicItems: NDKTag[] = [];
     let unsavedPrivateItems: NDKTag[] = [];
@@ -381,7 +381,7 @@
 
                     <div class="flex flex-col gap-1"></div>
 
-                    {#each unsavedPrivateItems as item (item[1])}
+                    {#each unsavedPrivateItems as item (`${item[0]}${item[1]}`)}
                         <Item
                             id={item[1]}
                             tag={item}
@@ -391,7 +391,7 @@
                             on:removeUnsavedItem={handleRemoveUnsavedItem}
                         />
                     {/each}
-                    {#each unsavedPublicItems as item (item[1])}
+                    {#each unsavedPublicItems as item (`${item[0]}${item[1]}`)}
                         <Item
                             id={item[1]}
                             tag={item}
@@ -401,7 +401,7 @@
                             on:removeUnsavedItem={handleRemoveUnsavedItem}
                         />
                     {/each}
-                    {#each unsavedPrivateRemovals as item (item[1])}
+                    {#each unsavedPrivateRemovals as item (`${item[0]}${item[1]}`)}
                         <Item
                             id={item[1]}
                             tag={item}
@@ -412,7 +412,7 @@
                             on:removeUnsavedItem={handleRemoveUnsavedItem}
                         />
                     {/each}
-                    {#each unsavedPublicRemovals as item (item[1])}
+                    {#each unsavedPublicRemovals as item (`${item[0]}${item[1]}`)}
                         <Item
                             id={item[1]}
                             tag={item}
@@ -426,7 +426,7 @@
                 </fieldset>
             {/if}
 
-            {#each privateItems || [] as item (item[1])}
+            {#each privateItems || [] as item (`${item[0]}${item[1]}`)}
                 <Item
                     id={item[1]}
                     tag={item}
@@ -437,7 +437,7 @@
                     on:removeItem={handleListRemoval}
                 />
             {/each}
-            {#each publicItems || [] as item (item[1])}
+            {#each publicItems || [] as item (`${item[0]}${item[1]}`)}
                 <Item
                     id={item[1]}
                     tag={item}

@@ -1,4 +1,4 @@
-import type { NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
+import type { NDKEvent, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 import { NDKKind } from "@nostr-dev-kit/ndk";
 
 export const SUPPORTED_LIST_KINDS = [
@@ -21,7 +21,7 @@ export const FEED_LIST_KINDS = [
     NDKKind.CategorizedHighlightList,
 ];
 
-export const FORKABLE_LIST_KINDS = [
+export const DUPLICATABLEABLE_LIST_KINDS = [
     NDKKind.CategorizedBookmarkList,
     NDKKind.CategorizedPeopleList,
     NDKKind.CategorizedRelayList,
@@ -78,3 +78,14 @@ export const filteredLists = (
 
     return deleteFiltered || nameFiltered;
 };
+
+export function deduplicateItems(itemsArray: NDKTag[]): NDKTag[] {
+    const dedupedArr: NDKTag[] = [];
+    itemsArray.forEach((item) => {
+        const dupes = dedupedArr.filter(
+            (dedupedItem) => dedupedItem[0] === item[0] && dedupedItem[1] === item[1]
+        );
+        if (dupes.length === 0) dedupedArr.push(item);
+    });
+    return dedupedArr;
+}

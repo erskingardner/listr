@@ -3,11 +3,11 @@
     import Zap from "./Zap.svelte";
     import Like from "./Like.svelte";
     import CopyId from "./CopyId.svelte";
-    import Fork from "./Fork.svelte";
+    import Duplicate from "./Duplicate.svelte";
     import Share from "./Share.svelte";
     import Delete from "./Delete.svelte";
     import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
-    import { FORKABLE_LIST_KINDS } from "$lib/utils";
+    import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
     import { MoreVertical } from "lucide-svelte";
     import { Popover } from "flowbite-svelte";
     import Edit from "./Edit.svelte";
@@ -28,8 +28,8 @@
     {/if}
     <Share {pubkey} {rawList} {nip19} />
     {#if $currentUser}
-        {#if $currentUser && pubkey !== $currentUser.hexpubkey && FORKABLE_LIST_KINDS.includes(listKind)}
-            <Fork {rawList} />
+        {#if $currentUser && pubkey !== $currentUser.hexpubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
+            <Duplicate {rawList} />
         {/if}
 
         <Edit {pubkey} {editMode} on:toggleEditMode />

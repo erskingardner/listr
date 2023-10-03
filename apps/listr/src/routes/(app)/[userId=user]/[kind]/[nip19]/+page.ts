@@ -1,6 +1,7 @@
 import { browser } from "$app/environment";
 import currentUser from "$lib/stores/currentUser";
 import ndk from "$lib/stores/ndk";
+import { deduplicateItems } from "$lib/utils";
 import {
     NDKEvent,
     NDKList,
@@ -28,6 +29,7 @@ export const load: PageLoad = async ({ params }) => {
     }
 
     let privateItems: NDKTag[] | undefined;
+    let dedupedPrivateItems: NDKTag[] = [];
 
     if (
         browser &&
@@ -38,11 +40,17 @@ export const load: PageLoad = async ({ params }) => {
         const signer = new NDKNip07Signer();
         ndkStore.signer = signer;
         privateItems = await list.encryptedTags();
+
+        // Svelte keyed each will blow up if we send lists with duplicate items
+        dedupedPrivateItems = deduplicateItems(privateItems);
     }
 
+    // Svelte keyed each will blow up if we send lists with duplicate items
+    const dedupedListItemsArr = deduplicateItems(list.items);
+
     const itemCount =
-        list.items.filter((item) => !["L", "l"].includes(item[0])).length +
-        (privateItems?.length || 0);
+        dedupedListItemsArr.filter((item) => !["L", "l"].includes(item[0])).length +
+        (dedupedPrivateItems?.length || 0);
 
     return {
         kind: parseInt(params.kind),
@@ -52,8 +60,8 @@ export const load: PageLoad = async ({ params }) => {
         category: category,
         rawList,
         listId: list.tagId(),
-        items: list.items,
-        privateItems,
+        items: dedupedListItemsArr,
+        privateItems: dedupedPrivateItems,
         itemCount,
     };
 };
