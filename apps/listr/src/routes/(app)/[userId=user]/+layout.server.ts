@@ -17,8 +17,11 @@ export const load: LayoutServerLoad = async ({ params }) => {
     }
     const ndkStore = get(ndk);
     const user = ndkStore.getUser(ndkUserOpts);
+    const profile = await user.fetchProfile();
 
     return {
         pubkey: user.hexpubkey,
+        npub: user.npub,
+        profile,
     };
 };

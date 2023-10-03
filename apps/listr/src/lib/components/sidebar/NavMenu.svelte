@@ -59,7 +59,11 @@
     <ul role="list" class="flex flex-1 flex-col gap-y-7">
         {#if $currentUser}
             <li>
-                <NewListButton buttonText="Create a new list" class="-mx-2" />
+                <NewListButton
+                    buttonText="Create a new list"
+                    class="-mx-2"
+                    on:click={() => dispatch("closeMobileMenu")}
+                />
             </li>
         {/if}
         <li>
@@ -70,6 +74,7 @@
                         class="{$page.url.pathname === '/feed'
                             ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                             : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                        on:click={() => dispatch("closeMobileMenu")}
                     >
                         <Newspaper strokeWidth="1.5" size="20" />
                         Activity Feed
@@ -81,6 +86,7 @@
                         class="{$page.url.pathname === '/about'
                             ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                             : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                        on:click={() => dispatch("closeMobileMenu")}
                     >
                         <HelpCircle strokeWidth="1.5" size="20" />
                         About Listr
@@ -91,6 +97,7 @@
                         href="https://primal.net/jeffg"
                         class="text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         target="_blank"
+                        on:click={() => dispatch("closeMobileMenu")}
                     >
                         <LifeBuoy strokeWidth="1.5" size="20" />
                         Help / Feedback
@@ -101,6 +108,7 @@
                         href="https://github.com/erskingardner/listr"
                         class="text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         target="_blank"
+                        on:click={() => dispatch("closeMobileMenu")}
                     >
                         <Github strokeWidth="1.5" size="20" />
                         Listr on Github
@@ -162,6 +170,7 @@
                                     `/${$currentUser.npub}/${list.kind}/${list.encode()}`
                                         ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                                         : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                    on:click={() => dispatch("closeMobileMenu")}
                                 >
                                     <span
                                         class="flex font-mono h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-500 bg-gray-400 dark:border-gray-700 dark:bg-gray-800 text-[0.625rem] font-medium text-gray-700 group-hover:text-black dark:text-gray-400 dark:group-hover:text-white"

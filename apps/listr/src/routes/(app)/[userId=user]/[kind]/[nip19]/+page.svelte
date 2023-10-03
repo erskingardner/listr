@@ -1,8 +1,8 @@
 <script lang="ts">
     import Item from "$lib/components/lists/Item.svelte";
-    import { Component, HardDriveUpload, Info } from "lucide-svelte";
+    import { HardDriveUpload, Home, Info } from "lucide-svelte";
     import ListActions from "$lib/components/lists/actions/ListActions.svelte";
-    import { Tooltip } from "flowbite-svelte";
+    import { Tooltip, Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
     import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
     import { NDKList, NDKNip07Signer, type NDKTag } from "@nostr-dev-kit/ndk";
     import { slide } from "svelte/transition";
@@ -235,13 +235,34 @@
     <meta name="description" content={`${listName} a list on Listr`} />
 </svelte:head>
 
+<Breadcrumb
+    aria-label="User list breadcrumb"
+    navClass="flex flex-row gap-2 w-full my-6"
+    classOl="flex flex-row gap-2 items-center w-full"
+>
+    <BreadcrumbItem
+        href="/feed"
+        homeClass="flex flex-row gap-1.5 items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white "
+        home
+    >
+        <svelte:fragment slot="icon">
+            <Home strokeWidth="1.5" size="16" class="w-4 h-4 shrink-0" />
+        </svelte:fragment>
+        Activity Feed
+    </BreadcrumbItem>
+    <BreadcrumbItem href="/{data.npub}" class="flex flex-row gap-1.5 items-center"
+        >{data.profile?.displayName}</BreadcrumbItem
+    >
+    <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listName}</BreadcrumbItem>
+</Breadcrumb>
+
+<!-- List of the user's lists -->
 <div class="flex flex-row gap-6">
     {#if $currentUser?.hexpubkey === data.pubkey}
         <!-- Don't render inside user list nav if it's the current user's list -->
     {:else}
-        <!-- List of the user's lists -->
         <div
-            class="text-sm flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
+            class="text-sm hidden lg:flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
         >
             {#key data.pubkey}
                 <UserListNav userPubkey={data.pubkey} />

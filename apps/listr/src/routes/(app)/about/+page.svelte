@@ -35,7 +35,7 @@
     <h3>The various types of lists</h3>
     <table class="text-base listTable">
         <colgroup>
-            <col class="w-52" />
+            <col class="lg:w-52" />
             <col />
             <col />
         </colgroup>

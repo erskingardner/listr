@@ -8,6 +8,8 @@
     import { SUPPORTED_LIST_KINDS } from "$lib/utils";
     import ListCard from "$lib/components/lists/ListCard.svelte";
     import { afterNavigate } from "$app/navigation";
+    import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
+    import { Home } from "lucide-svelte";
 
     export let data: PageData;
     const user = $ndk.getUser({ hexpubkey: data.pubkey });
@@ -34,7 +36,6 @@
     });
 
     afterNavigate(async () => {
-        console.log("navigate", user);
         userProfile = await user.fetchProfile();
     });
 
@@ -47,7 +48,7 @@
         $lists = filterAndSortByName($lists, $deletedEvents);
     }
 
-    $: displayableName = displayableName =
+    $: displayableName =
         userProfile?.displayName ||
         userProfile?.name ||
         userProfile?.nip05 ||
@@ -90,6 +91,26 @@
         />
     {/await}
 </svelte:head>
+
+<Breadcrumb
+    aria-label="User list breadcrumb"
+    navClass="flex flex-row gap-2 w-full my-6"
+    classOl="flex flex-row gap-2 items-center w-full"
+>
+    <BreadcrumbItem
+        href="/feed"
+        homeClass="flex flex-row gap-1.5 items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white "
+        home
+    >
+        <svelte:fragment slot="icon">
+            <Home strokeWidth="1.5" size="16" />
+        </svelte:fragment>
+        Activity Feed
+    </BreadcrumbItem>
+    <BreadcrumbItem class="flex flex-row gap-1.5 items-center">
+        {data.profile?.displayName}
+    </BreadcrumbItem>
+</Breadcrumb>
 
 {#if $lists}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
