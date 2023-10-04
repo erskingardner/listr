@@ -81,7 +81,10 @@ bg-gradient-to-b from-transparent via-80% via-white dark:via-gray-800 to-white d
             <div class="flex flex-col gap-4 lg:flex-row justify-between">
                 <div class="leading-relaxed break-words max-w-xl">{profile?.about}</div>
                 <div class="flex flex-row gap-4">
-                    <ZapUserButton {user} class="!justify-start h-fit !py-2" />
+                    <ZapUserButton
+                        {user}
+                        class="primaryActionButton w-full whitespace-nowrap justify-start h-fit !py-2"
+                    />
                     <FollowButton {user} class="!justify-start h-fit !py-2" />
                     <AddToListButton {user} class="!justify-start h-fit !py-2" />
                 </div>

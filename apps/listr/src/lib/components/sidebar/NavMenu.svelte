@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Newspaper, LogIn, HelpCircle, LifeBuoy, Github } from "lucide-svelte";
+    import { Newspaper, LogIn, HelpCircle, LifeBuoy, Github, Zap } from "lucide-svelte";
     import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser, { currentUserSettings } from "$lib/stores/currentUser";
@@ -10,6 +10,7 @@
     import { page } from "$app/stores";
     import { Tooltip } from "flowbite-svelte";
     import NewListButton from "../NewListButton.svelte";
+    import DonateButton from "../DonateButton.svelte";
 
     const dispatch = createEventDispatcher();
 
@@ -113,6 +114,12 @@
                         <Github strokeWidth="1.5" size="20" />
                         Listr on Github
                     </a>
+                </li>
+                <li>
+                    <DonateButton
+                        on:donateButtonClicked
+                        class="w-full text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                    />
                 </li>
             </ul>
         </li>

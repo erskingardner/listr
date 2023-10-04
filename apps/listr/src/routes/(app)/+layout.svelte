@@ -19,6 +19,8 @@
     import { goto } from "$app/navigation";
     import type { LayoutServerData } from "../$types";
     import { browser } from "$app/environment";
+    import DonateModal from "$lib/components/DonateModal.svelte";
+    import NoSignerModal from "$lib/components/NoSignerModal.svelte";
 
     export let data: LayoutServerData;
 
@@ -29,6 +31,7 @@
     }
 
     let signerModal = false;
+    let donateModal = false;
 
     if (data.listrCookie) {
         $currentUser = $ndk.getUser({ npub: data.listrCookie });
@@ -94,8 +97,13 @@
 
 <Toaster />
 
-<MobileMenu {mobileMenuVisible} on:closeMobileMenu={toggleMobileMenu} on:signin={signin} />
-<DesktopMenu on:signin={signin} />
+<MobileMenu
+    {mobileMenuVisible}
+    on:closeMobileMenu={toggleMobileMenu}
+    on:signin={signin}
+    on:donateButtonClicked={() => (donateModal = true)}
+/>
+<DesktopMenu on:signin={signin} on:donateButtonClicked={() => (donateModal = true)} />
 <div class="lg:pl-72">
     <Header on:openMobileMenu={toggleMobileMenu} on:signout={signout} on:signin={signin} />
     <main class="py-4 sm:py-6 lg:py-10">
@@ -105,49 +113,5 @@
     </main>
 </div>
 
-<Modal
-    title="Nostr Signing Extension Not Found"
-    bind:open={signerModal}
-    autoclose
-    outsideclose={true}
-    class="relative flex p-2 mx-auto"
-    backdropClass="fixed inset-0 z-40 bg-gray-900 bg-opacity-80"
->
-    <p class="text-gray-900 dark:text-white mb-4">
-        Listr is an app built on <span class="font-bold">Nostr</span>. To log in and manage your
-        lists you need to sign events with your Nostr keys using a browser extension like Alby or
-        nos2x in Chrome or Brave.
-    </p>
-    <p class="text-gray-900 dark:text-white mb-4">
-        If you're unsure what Nostr is and want to learn more please check out <a
-            href="https://nostr.how?utm_source=listr&utm_medium=signerModal">Nostr.how</a
-        >
-    </p>
-    <svelte:fragment slot="footer">
-        <div
-            class="flex flex-col gap-8 md:flex-row items-center justify-center md:justify-around w-full"
-        >
-            <a
-                href="https://getalby.com?utm_source=listr&utm_medium=signerModal"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
-                target="_blank"
-            >
-                <span class="">Get Alby</span>
-            </a>
-            <a
-                href="https://github.com/fiatjaf/nos2x"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
-                target="_blank"
-            >
-                <span class="">Get nos2x</span>
-            </a>
-            <a
-                href="https://nostr.how?utm_source=listr&utm_medium=signerModal"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
-                target="_blank"
-            >
-                <span class="">Learn more</span>
-            </a>
-        </div>
-    </svelte:fragment>
-</Modal>
+<DonateModal bind:modalOpen={donateModal} />
+<NoSignerModal bind:modalOpen={signerModal} />

@@ -30,7 +30,7 @@
                 .sendPayment(zapRequest)
                 .then(() => {
                     toast.success("Zap successful!");
-                    popoverOpen = closed;
+                    popoverOpen = false;
                 })
                 .catch((err) => {
                     console.error(err);
@@ -48,17 +48,14 @@
         `${user.npub.slice(0, 9)}...`;
 </script>
 
-<button
-    on:click={() => (popoverOpen = true)}
-    class="primaryActionButton w-full justify-center whitespace-nowrap {$$props.class}"
->
+<button on:click={() => (popoverOpen = true)} class={$$props.class}>
     <Zap size="20" strokeWidth="1.5" class="w-5 h-5" />
     Zap
 </button>
 <Popover
     bind:open={popoverOpen}
     trigger="click"
-    placement="left-end"
+    placement="left"
     class="dark:text-gray-50 dark:bg-gray-700"
 >
     <div class="panel-contents flex flex-col gap-2">
