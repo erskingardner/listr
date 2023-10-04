@@ -20,7 +20,7 @@
 
     const newListSchema = z.object({
         kind: z.string().min(5, "Please select a kind"),
-        name: z.string().min(1, "Please give your list a name"),
+        title: z.string().min(1, "Please give your list a name"),
         description: z.string().optional(),
         category: z.string().optional(),
         publicItems: z.string().array().array().optional(),
@@ -52,7 +52,7 @@
             tags: $form.publicItems as NDKTag[],
         });
 
-        list.name = $form.name;
+        list.title = $form.title;
         list.description = $form.description;
 
         // Only add a "d" tag if needed

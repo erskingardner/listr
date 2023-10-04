@@ -10,7 +10,7 @@
 
     export let rawList: NostrEvent;
 
-    let name: string;
+    let title: string;
     let description: string;
 
     async function createDuplicateList() {
@@ -19,7 +19,9 @@
             $ndk.signer = signer;
         }
 
-        const tags = rawList.tags.filter((tag) => !["d", "name", "description"].includes(tag[0]));
+        const tags = rawList.tags.filter(
+            (tag) => !["d", "name", "title", "description"].includes(tag[0])
+        );
         // Only add a "d" tag if needed
         const uuid = uuidv4();
         tags.push(["d", `listr-${uuid}`]);
@@ -31,7 +33,7 @@
             created_at: unixTimeNowInSeconds(),
             tags: tags,
         });
-        duplicateList.name = name;
+        duplicateList.title = title;
         duplicateList.description = description;
 
         duplicateList
@@ -58,14 +60,14 @@
             on:submit|preventDefault={createDuplicateList}
             class="flex flex-col gap-2 justify-start items-start"
         >
-            <label for="name" class="w-full">
-                Name *
+            <label for="title" class="w-full">
+                Title *
                 <input
                     type="text"
-                    bind:value={name}
-                    name="name"
+                    bind:value={title}
+                    name="title"
                     class="rounded-md bg-transparent w-full text-sm"
-                    placeholder="A name for your list"
+                    placeholder="A title for your list"
                     required
                 />
             </label>

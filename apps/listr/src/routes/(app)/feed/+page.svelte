@@ -82,7 +82,7 @@
                 {#if followsListAvailable}
                     <Tabs
                         class="border-b border-b-gray-300"
-                        contentClass="p-0 bg-gray-50 rounded-lg dark:bg-gray-800 mt-4"
+                        contentClass="p-0 rounded-lg dark:bg-gray-800 mt-4"
                         inactiveClasses="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
                     >
                         <TabItem
@@ -98,7 +98,7 @@
                             {:else}
                                 {#each $followingLists as list}
                                     <ListSummary
-                                        name={list.name}
+                                        title={list.title}
                                         kind={list.kind}
                                         date={list.created_at}
                                         authorPubkey={list.pubkey}
@@ -115,7 +115,7 @@
                         >
                             {#each $globalLists as list}
                                 <ListSummary
-                                    name={list.name}
+                                    title={list.title}
                                     kind={list.kind}
                                     date={list.created_at}
                                     authorPubkey={list.pubkey}
@@ -127,7 +127,7 @@
                 {:else}
                     {#each $globalLists as list}
                         <ListSummary
-                            name={list.name}
+                            title={list.title}
                             kind={list.kind}
                             date={list.created_at}
                             authorPubkey={list.pubkey}
@@ -139,7 +139,7 @@
         {:else}
             {#each $globalLists as list}
                 <ListSummary
-                    name={list.name}
+                    title={list.title}
                     kind={list.kind}
                     date={list.created_at}
                     authorPubkey={list.pubkey}

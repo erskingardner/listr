@@ -3,7 +3,7 @@
     import { timeAgo } from "$lib/utils";
     import UserDetails from "../users/UserDetails.svelte";
 
-    export let name: string | undefined;
+    export let title: string | undefined;
     export let kind: number | undefined;
     export let date: number | undefined;
     export let listNip19: string;
@@ -23,7 +23,7 @@
     <div class="lg:col-span-2">
         Updated their <a
             href="/{user.npub}/{kind}/{listNip19}"
-            class="font-bold underline hover:no-underline">{name}</a
+            class="font-bold underline hover:no-underline">{title}</a
         > list
     </div>
 

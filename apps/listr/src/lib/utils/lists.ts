@@ -36,21 +36,23 @@ export const BLOCKED_PUBKEYS = [
 export const LIST_FILTER_REGEXP = /^(chats|notifications|\/)/;
 export const LIST_MUTE_FILTER_REGEXP = /^mute|Mute/;
 
-export const filterAndSortByName = (lists: NDKList[], deletions?: NDKEvent[]) => {
+export const filterAndSortByTitle = (lists: NDKList[], deletions?: NDKEvent[]) => {
     const userFiltered = lists.filter((list) => !BLOCKED_PUBKEYS.includes(list.pubkey));
-    const nameFiltered = userFiltered.filter(
-        (list) => list.name && !list.name.match(LIST_FILTER_REGEXP)
+    const titleFiltered = userFiltered.filter(
+        (list) => list.title && !list.title.match(LIST_FILTER_REGEXP)
     );
     let deleteFiltered;
     if (deletions) {
-        deleteFiltered = nameFiltered.filter(
+        deleteFiltered = titleFiltered.filter(
             (list) =>
                 !deletions
                     .map((event) => event.tagValue("a") || event.tagValue("e"))
                     .includes(list.tagId())
         );
     }
-    const sorted = (deleteFiltered || nameFiltered).sort((a, b) => a.name!.localeCompare(b.name!));
+    const sorted = (deleteFiltered || titleFiltered).sort((a, b) =>
+        a.title!.localeCompare(b.title!)
+    );
     return sorted;
 };
 
@@ -59,24 +61,24 @@ export const filteredLists = (
     deletions?: NDKEvent[],
     filterMute: boolean = false
 ) => {
-    let nameFiltered = lists.filter((list) => list.name && !list.name.match(LIST_FILTER_REGEXP));
+    let titleFiltered = lists.filter((list) => list.title && !list.title.match(LIST_FILTER_REGEXP));
 
     if (filterMute) {
-        nameFiltered = nameFiltered.filter(
-            (list) => list.name && !list.name.match(LIST_MUTE_FILTER_REGEXP)
+        titleFiltered = titleFiltered.filter(
+            (list) => list.title && !list.title.match(LIST_MUTE_FILTER_REGEXP)
         );
     }
 
     let deleteFiltered;
     if (deletions) {
-        deleteFiltered = nameFiltered.filter(
+        deleteFiltered = titleFiltered.filter(
             (list) =>
                 !deletions.map((event) => event.tagValue("a")).includes(list.tagId()) ||
                 !deletions.map((event) => event.tagValue("e")).includes(list.id)
         );
     }
 
-    return deleteFiltered || nameFiltered;
+    return deleteFiltered || titleFiltered;
 };
 
 export function deduplicateItems(itemsArray: NDKTag[]): NDKTag[] {

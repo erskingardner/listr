@@ -3,16 +3,16 @@
 
     export let additions: Array<NDKTag>;
     export let removals: Array<NDKTag>;
-    export let nameChanged: boolean;
+    export let titleChanged: boolean;
     export let descriptionChanged: boolean;
 </script>
 
 <div class="text-sm">
-    {#if nameChanged}
+    {#if titleChanged}
         Name updated
     {/if}
 
-    {#if nameChanged && descriptionChanged}
+    {#if titleChanged && descriptionChanged}
         /
     {/if}
 
@@ -20,7 +20,7 @@
         Description updated
     {/if}
 
-    {#if (nameChanged || descriptionChanged) && (additions.length > 0 || removals.length > 0)}
+    {#if (titleChanged || descriptionChanged) && (additions.length > 0 || removals.length > 0)}
         /
     {/if}
 

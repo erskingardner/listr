@@ -2,7 +2,7 @@
     import type { PageData } from "./$types";
     import ndk from "$lib/stores/ndk";
     import { onMount, onDestroy } from "svelte";
-    import { filterAndSortByName } from "$lib/utils";
+    import { filterAndSortByTitle } from "$lib/utils";
     import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
     import { type NDKEvent, NDKList, NDKKind, type NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { SUPPORTED_LIST_KINDS } from "$lib/utils";
@@ -45,7 +45,7 @@
     });
 
     $: if ($lists) {
-        $lists = filterAndSortByName($lists, $deletedEvents);
+        $lists = filterAndSortByTitle($lists, $deletedEvents);
     }
 
     $: displayableName =

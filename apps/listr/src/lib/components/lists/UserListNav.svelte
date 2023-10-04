@@ -1,7 +1,7 @@
 <script lang="ts">
     import ndk from "$lib/stores/ndk";
     import { onMount, onDestroy } from "svelte";
-    import { SUPPORTED_LIST_KINDS, filterAndSortByName } from "$lib/utils";
+    import { SUPPORTED_LIST_KINDS, filterAndSortByTitle } from "$lib/utils";
     import type { ExtendedBaseType, NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
     import { NDKList, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
     import { nip19 } from "nostr-tools";
@@ -34,7 +34,7 @@
     });
 
     $: if ($lists) {
-        $lists = filterAndSortByName($lists, $deletedEvents);
+        $lists = filterAndSortByTitle($lists, $deletedEvents);
     }
 </script>
 
@@ -48,7 +48,7 @@
                     ? 'bg-gray-100 dark:bg-gray-700'
                     : ''} w-full block rounded-md text-left truncate"
             >
-                {list.name}
+                {list.title}
             </a>
         {/each}
     {/if}

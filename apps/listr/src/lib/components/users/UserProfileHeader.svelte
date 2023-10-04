@@ -5,13 +5,13 @@
     import ndk from "$lib/stores/ndk";
     import FollowButton from "../lists/actions/FollowButton.svelte";
     import AddToListButton from "../lists/actions/AddToListButton.svelte";
+    import ZapUserButton from "../lists/actions/ZapUserButton.svelte";
 
     export let pubkey: string;
 
     const user = $ndk.getUser({ hexpubkey: pubkey });
 
-    const defaultBannerImage =
-        "https://nostr.build/i/nostr.build_e76387d298587c61e40913929eafe746ce6a780938750d21913a7b488228a146.webp";
+    const defaultBannerImage = "/images/default-banner.webp";
 </script>
 
 <div class="relative w-full mb-14">
@@ -81,8 +81,9 @@ bg-gradient-to-b from-transparent via-80% via-white dark:via-gray-800 to-white d
             <div class="flex flex-col gap-4 lg:flex-row justify-between">
                 <div class="leading-relaxed break-words max-w-xl">{profile?.about}</div>
                 <div class="flex flex-row gap-4">
-                    <FollowButton {user} class="!text-base !justify-start h-fit !py-2" />
-                    <AddToListButton {user} class="!text-base !justify-start h-fit !py-2" />
+                    <ZapUserButton {user} class="!justify-start h-fit !py-2" />
+                    <FollowButton {user} class="!justify-start h-fit !py-2" />
+                    <AddToListButton {user} class="!justify-start h-fit !py-2" />
                 </div>
             </div>
         </div>

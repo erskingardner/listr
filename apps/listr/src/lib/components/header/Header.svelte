@@ -7,11 +7,14 @@
     import ndk from "$lib/stores/ndk";
     import { Avatar, Name, RelayList } from "@nostr-dev-kit/ndk-svelte-components";
     import NewListButton from "../NewListButton.svelte";
+    import { browser } from "$app/environment";
 
     const dispatch = createEventDispatcher();
 
     let profileMenuVisible: boolean = false;
     let relayMenuVisible: boolean = false;
+
+    let searchQuery: string;
 
     function toggleProfileMenu() {
         profileMenuVisible = !profileMenuVisible;
@@ -38,7 +41,7 @@
     <div class="h-6 w-px bg-gray-900/10 dark:bg-gray-50/10 lg:hidden" aria-hidden="true"></div>
 
     <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-        <form class="relative flex flex-1" action="/search" method="GET">
+        <form class="relative flex flex-1 items-center" action="/search" method="GET">
             <label for="q" class="sr-only">Search</label>
             <Search
                 strokeWidth="1.5"
@@ -50,7 +53,16 @@
                 placeholder={`e.g. "JeffG", "Content Creators"...`}
                 type="search"
                 name="q"
+                bind:value={searchQuery}
             />
+            {#if !!searchQuery}
+                <button
+                    type="submit"
+                    class="whitespace-nowrap rounded-md p-2 text-sm font-semibold leading-6 text-gray-50 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
+                >
+                    Search
+                </button>
+            {/if}
         </form>
         <div class="flex items-center gap-x-4 lg:gap-x-6">
             <!-- Separator -->

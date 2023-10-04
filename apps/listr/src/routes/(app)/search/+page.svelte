@@ -17,6 +17,7 @@
     searchRelays.addRelay(new NDKRelay("wss://nostr.wine"));
     searchRelays.addRelay(new NDKRelay("wss://relay.noswhere.com"));
     searchRelays.addRelay(new NDKRelay("wss://purplepag.es"));
+    searchRelays.addRelay(new NDKRelay("wss://search.nos.today"));
 
     if (query) {
         searchResults = $ndk.storeSubscribe({ search: query });
@@ -26,6 +27,9 @@
         query = $page.url.searchParams.get("q");
         if (query) {
             searchResults = $ndk.storeSubscribe({ search: query }, { relaySet: searchRelays });
+            setTimeout(() => {
+                eoseReceived = true;
+            }, 7000);
         }
     }
 

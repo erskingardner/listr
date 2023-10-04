@@ -43,6 +43,7 @@
             $currentUserFollows = newFollowsArray;
         });
     }
+    let followingButtonText: string = "Following";
 </script>
 
 {#key user.hexpubkey}
@@ -50,10 +51,12 @@
         {#if $currentUserFollows.includes(user.hexpubkey)}
             <button
                 on:click={handleUnfollow}
-                class="primaryActionButton w-full justify-center {$$props.class}"
+                on:mouseenter={() => (followingButtonText = "Unfollow")}
+                on:mouseleave={() => (followingButtonText = "Following")}
+                class="primaryActionButton bg:white hover:bg-white hover:text-red-700 hover:border-red-700 dark:bg-white dark:text-indigo-800 hover:dark:border-red-700 hover:dark:text-red-700 w-full hover:dark:bg-white justify-center {$$props.class}"
             >
                 <UserMinus2 size="20" strokeWidth="1.5" class="w-5 h-5" />
-                Unfollow
+                <span class="w-16 text-left">{followingButtonText}</span>
             </button>
         {:else}
             <button

@@ -19,7 +19,7 @@
     class="flex flex-col gap-1 border border-gray-300 rounded-md shadow-md bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:text-gray-50 p-4 hover:dark:bg-gray-600"
 >
     <div class="flex flex-row gap-2 items-center">
-        <h3 class="text-lg font-bold">{list.name}</h3>
+        <h3 class="text-lg font-bold">{list.title}</h3>
         {#if $currentUserSettings?.devMode}
             <Info strokeWidth="1.5" size="16" />
             <Tooltip

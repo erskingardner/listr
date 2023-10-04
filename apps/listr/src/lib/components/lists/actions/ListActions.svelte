@@ -1,6 +1,6 @@
 <script lang="ts">
     import currentUser from "$lib/stores/currentUser";
-    import Zap from "./Zap.svelte";
+    import Zap from "./ZapListButton.svelte";
     import Like from "./Like.svelte";
     import CopyId from "./CopyId.svelte";
     import Duplicate from "./Duplicate.svelte";
@@ -22,10 +22,8 @@
 </script>
 
 <div class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between">
-    {#if $currentUser}
-        <Zap {nip19} {listId} />
-        <Like {listId} />
-    {/if}
+    <Zap {nip19} {listId} />
+    <Like {listId} />
     <Share {pubkey} {rawList} {nip19} />
     {#if $currentUser}
         {#if $currentUser && pubkey !== $currentUser.hexpubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
@@ -37,7 +35,7 @@
             <MoreVertical
                 strokeWidth="1.5"
                 size="20"
-                class="stroke-gray-500 hover:stroke-black w-5 h-5"
+                class="stroke-gray-500 hover:stroke-black hover:dark:stroke-white w-5 h-5"
             />
         </button>
         <Popover triggeredBy="#listActionsButton" placement="left-start">

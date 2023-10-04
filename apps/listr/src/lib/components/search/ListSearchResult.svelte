@@ -8,7 +8,7 @@
 </script>
 
 <ListSummary
-    name={list.name}
+    title={list.title}
     kind={list.kind}
     date={list.created_at}
     listNip19={list.encode()}

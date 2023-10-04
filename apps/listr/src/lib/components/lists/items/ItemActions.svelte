@@ -66,7 +66,7 @@
         <MoreVertical
             strokeWidth="1.5"
             size="20"
-            class="stroke-gray-500 hover:stroke-black w-5 h-5"
+            class="stroke-gray-500 hover:stroke-black hover:dark:stroke-white w-5 h-5"
         />
     </button>
     <Popover triggeredBy="#actions-{hashedId ? hashedId : itemCopyString}" placement="left-start">
@@ -75,13 +75,13 @@
                 {#if copySuccess}
                     <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500 w-5 h-5" />
                 {:else}
-                    <Copy strokeWidth="1.5" size="20" class="stroke-gray-500 w-5 h-5" />
+                    <Copy strokeWidth="1.5" size="20" class="w-5 h-5" />
                 {/if}
                 Copy {itemCopyName}
             </button>
             {#if primalUrl}
                 <a href={primalUrl} target="_blank" class="popoverActionButton shrink-0">
-                    <ExternalLink strokeWidth="1.5" size="20" class="stroke-gray-500 w-5 h-5" />
+                    <ExternalLink strokeWidth="1.5" size="20" class="w-5 h-5" />
                     Open in Primal
                 </a>
             {/if}

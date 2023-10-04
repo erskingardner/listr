@@ -31,7 +31,7 @@
 
     let editMode: boolean = false;
 
-    let listName = data.name;
+    let listTitle = data.title;
     let listDescription = data.description;
     let listCategory = data.category;
 
@@ -40,7 +40,7 @@
         unsavedPrivateRemovals.length > 0 ||
         unsavedPublicItems.length > 0 ||
         unsavedPublicRemovals.length > 0 ||
-        listName !== data.name ||
+        listTitle !== data.title ||
         listDescription !== data.description ||
         listCategory !== data.category;
 
@@ -59,7 +59,7 @@
         unsavedPrivateItems = [];
         unsavedPublicRemovals = [];
         unsavedPrivateRemovals = [];
-        listName = data.name;
+        listTitle = data.title;
         listDescription = data.description;
         listCategory = data.category;
     }
@@ -165,7 +165,7 @@
             tags: [...publicItems, ...unsavedPublicItems],
         });
 
-        list.name = listName;
+        list.title = listTitle;
         list.description = listDescription;
 
         if (listCategory) {
@@ -179,7 +179,7 @@
             const listTags = data.rawList.tags;
             const dTagValue = listTags.filter((tag) => tag[0] === "d")[0][1];
 
-            if (dTagValue === list.name) {
+            if (dTagValue === list.title) {
                 newListConfirmation = confirm(
                     "Updating this list will upgrade the format of the list to allow editing the list name going forward. Do you want to proceed?\n\nWe suggest deleting the original list after the new list is created."
                 );
@@ -228,11 +228,18 @@
             clearTempStores();
         }
     }
+
+    let displayableName: string;
+    $: displayableName =
+        data.profile?.displayName ||
+        data.profile?.name ||
+        data.profile?.nip05 ||
+        `${data.npub.slice(0, 9)}...`;
 </script>
 
 <svelte:head>
-    <title>{`${listName} - Listr`}</title>
-    <meta name="description" content={`${listName} a list on Listr`} />
+    <title>{`${listTitle} - Listr`}</title>
+    <meta name="description" content={`${listTitle} a list on Listr`} />
 </svelte:head>
 
 <Breadcrumb
@@ -251,9 +258,9 @@
         Activity Feed
     </BreadcrumbItem>
     <BreadcrumbItem href="/{data.npub}" class="flex flex-row gap-1.5 items-center"
-        >{data.profile?.displayName}</BreadcrumbItem
+        >{displayableName}</BreadcrumbItem
     >
-    <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listName}</BreadcrumbItem>
+    <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listTitle}</BreadcrumbItem>
 </Breadcrumb>
 
 <!-- List of the user's lists -->
@@ -262,7 +269,7 @@
         <!-- Don't render inside user list nav if it's the current user's list -->
     {:else}
         <div
-            class="text-sm hidden lg:flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
+            class="text-sm hidden lg:flex flex-col gap-2 border border-gray-200 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
         >
             {#key data.pubkey}
                 <UserListNav userPubkey={data.pubkey} />
@@ -279,7 +286,7 @@
                 <div
                     class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
                 >
-                    {listName}
+                    {listTitle}
                     {#if $currentUserSettings?.devMode}
                         <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
                         <Tooltip
@@ -317,11 +324,11 @@
             {#if $currentUser?.hexpubkey === data.rawList.pubkey && editMode}
                 <div transition:slide={{ easing: expoInOut }}>
                     <form class="flex flex-col gap-2">
-                        <label for="listName" class="font-medium">Name</label>
+                        <label for="listTitle" class="font-medium">Name</label>
                         <input
                             type="text"
-                            name="listName"
-                            bind:value={listName}
+                            name="listTitle"
+                            bind:value={listTitle}
                             class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
                         />
                         <label for="listDescription" class="font-medium">Description</label>
@@ -364,7 +371,7 @@
                     <legend>Unpublished changes</legend>
                     <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-end">
                         <ChangesCount
-                            nameChanged={listName !== data.name}
+                            titleChanged={listTitle !== data.title}
                             descriptionChanged={listDescription !== data.description}
                             additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
                             removals={[...unsavedPublicRemovals, ...unsavedPrivateRemovals]}

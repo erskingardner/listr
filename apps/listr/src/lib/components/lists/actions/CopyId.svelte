@@ -18,15 +18,11 @@
     }
 </script>
 
-<button on:click={copyListId} class="popoverActionButton {$$props.class}">
+<button on:click={copyListId} class="popoverActionButton dark:text-white {$$props.class}">
     {#if copySuccess}
         <CopyCheck strokeWidth="1.5" {size} class="stroke-green-500" />
     {:else}
-        <Copy
-            strokeWidth="1.5"
-            {size}
-            class="stroke-black hover:stroke-gray-900 dark:stroke-gray-300 dark:hover:stroke-white"
-        />
+        <Copy strokeWidth="1.5" {size} class="stroke-black dark:stroke-white" />
     {/if}
     {#if showText}
         Copy ID

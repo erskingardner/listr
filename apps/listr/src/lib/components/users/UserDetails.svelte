@@ -3,7 +3,6 @@
     import ndk from "$lib/stores/ndk";
     import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
     import { BadgeCheck, BadgeHelp, BadgeX } from "lucide-svelte";
-    import { Popover } from "flowbite-svelte";
     import UserCard from "./UserCard.svelte";
     import CopyId from "../lists/actions/CopyId.svelte";
 
@@ -12,10 +11,17 @@
     export let noPopover: boolean = false;
     export let npubCopy: boolean = false;
     export let avatarSize: string = "12";
+
+    let userCardVisible: boolean = false;
 </script>
 
-<div class="flex flex-row gap-2 items-center {user.npub} truncate">
-    <a href="/{user.npub}">
+<div
+    role="link"
+    tabindex="-1"
+    class="flex flex-row gap-2 items-center relative"
+    on:mouseleave={() => (userCardVisible = false)}
+>
+    <a href="/{user.npub}" on:mouseenter={() => (userCardVisible = true)}>
         <Avatar
             ndk={$ndk}
             {user}
@@ -23,6 +29,13 @@
             class="w-{avatarSize} h-{avatarSize} dark:!bg-gray-700 rounded-full overflow-hidden object-cover"
         />
     </a>
+    {#if userCardVisible && !noPopover}
+        <div
+            class="absolute -translate-y-[59%] z-50 left-10 -translate-x-1/2 p-2 pb-6 bg-transparent"
+        >
+            <UserCard {user} />
+        </div>
+    {/if}
     <div class="flex flex-col gap-0.5 truncate">
         <a href="/{user.npub}">
             <Name
@@ -72,9 +85,3 @@
         {/if}
     </div>
 </div>
-
-{#if !noPopover}
-    <Popover triggeredBy=".{user.npub}" class="z-50 p-0 shadow-3xl dark:shadow-dark3xl">
-        <UserCard {user} />
-    </Popover>
-{/if}

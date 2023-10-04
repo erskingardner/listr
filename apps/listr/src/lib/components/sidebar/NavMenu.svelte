@@ -5,7 +5,7 @@
     import currentUser, { currentUserSettings } from "$lib/stores/currentUser";
     import { onMount, onDestroy } from "svelte";
     import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { SUPPORTED_LIST_KINDS, filterAndSortByName } from "$lib/utils";
+    import { SUPPORTED_LIST_KINDS, filterAndSortByTitle } from "$lib/utils";
     import { createEventDispatcher } from "svelte";
     import { page } from "$app/stores";
     import { Tooltip } from "flowbite-svelte";
@@ -49,7 +49,7 @@
     });
 
     $: if ($currentUserLists) {
-        $currentUserLists = filterAndSortByName($currentUserLists, $deletedEvents);
+        $currentUserLists = filterAndSortByTitle($currentUserLists, $deletedEvents);
     }
 
     $: if ($currentUser) subscribeToUserLists();
@@ -174,9 +174,9 @@
                                 >
                                     <span
                                         class="flex font-mono h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-500 bg-gray-400 dark:border-gray-700 dark:bg-gray-800 text-[0.625rem] font-medium text-gray-700 group-hover:text-black dark:text-gray-400 dark:group-hover:text-white"
-                                        >{list.name?.slice(0, 1).toUpperCase()}</span
+                                        >{list.title?.slice(0, 1).toUpperCase()}</span
                                     >
-                                    <span class="truncate">{list.name}</span>
+                                    <span class="truncate">{list.title}</span>
                                     {#if $currentUserSettings?.devMode}
                                         <Tooltip
                                             type="custom"

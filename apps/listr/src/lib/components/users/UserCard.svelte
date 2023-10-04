@@ -4,12 +4,15 @@
     import FollowButton from "../lists/actions/FollowButton.svelte";
     import type { NDKUser } from "@nostr-dev-kit/ndk";
     import AddToListButton from "../lists/actions/AddToListButton.svelte";
+    import { fly } from "svelte/transition";
 
     export let user: NDKUser;
 </script>
 
 <div
-    class="flex flex-col gap-2 p-0 not-prose text-black dark:text-gray-50 border-gray-300 dark:bg-gray-800 rounded-md w-96 z-50 relative"
+    class="flex flex-col gap-2 not-prose text-black dark:text-gray-50 border border-gray-300 dark:border-gray-700 shadow-3xl dark:shadow-dark3xl p-4 bg-white dark:bg-gray-800 rounded-lg w-96 z-50 relative"
+    in:fly={{ duration: 300, y: 10 }}
+    out:fly={{ duration: 100, y: 10 }}
 >
     {#await user.fetchProfile()}
         <p class="animate-pulse">Loading user...</p>

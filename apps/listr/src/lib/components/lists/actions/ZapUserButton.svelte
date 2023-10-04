@@ -1,48 +1,23 @@
 <script lang="ts">
+    import { type NDKUser, NDKNip07Signer } from "@nostr-dev-kit/ndk";
     import { Zap } from "lucide-svelte";
     import { Popover } from "flowbite-svelte";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
-    import { NDKNip07Signer, NDKEvent } from "@nostr-dev-kit/ndk";
-    import { zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
-    // import { requestProvider } from "webln";
-    import { onMount, onDestroy, beforeUpdate } from "svelte";
-    import { afterNavigate } from "$app/navigation";
-    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
+    import { requestProvider } from "webln";
+    import toast from "svelte-french-toast";
 
-    export let listId: string;
-    export let nip19: string;
-    let amount: number = 402;
+    export let user: NDKUser;
+
+    let amount: number = 21;
     let comment: string;
 
-    let totalZaps = 0;
-    let alreadyZapped = false;
-    let zaps: NDKEventStore<ExtendedBaseType<NDKEvent>>;
-
-    zaps = $ndk.storeSubscribe({ kinds: [9735], "#a": [listId as string] }, { closeOnEose: true });
-    onMount(() => {
-        zaps = $ndk.storeSubscribe(
-            { kinds: [9735], "#a": [listId as string] },
-            { closeOnEose: true }
-        );
-    });
-
-    beforeUpdate(() => zaps?.unsubscribe());
-    onDestroy(() => zaps?.unsubscribe());
-
-    afterNavigate(() => {
-        alreadyZapped = false;
-        zaps = $ndk.storeSubscribe(
-            { kinds: [9735], "#a": [listId as string] },
-            { closeOnEose: true }
-        );
-    });
+    let popoverOpen: boolean = false;
 
     async function submitZap() {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
-        const event = await $ndk.fetchEvent(nip19 as string);
-        let zapRequest = await event?.zap(amount * 1000, comment);
+        let zapRequest = await user.zap(amount * 1000, comment);
 
         if (!zapRequest) {
             console.log("No payment request");
@@ -50,34 +25,38 @@
         }
 
         try {
-            // const webln = await requestProvider();
-        } catch (error: unknown) {
+            const webln = await requestProvider();
+            webln
+                .sendPayment(zapRequest)
+                .then(() => {
+                    toast.success("Zap successful!");
+                    popoverOpen = closed;
+                })
+                .catch((err) => {
+                    console.error(err);
+                    toast.error("Zap failed. Please try again.");
+                });
+        } catch (error: any) {
             console.log(error);
         }
     }
 
-    $: {
-        totalZaps = $zaps
-            .map((event) => {
-                const zapInvoice = zapInvoiceFromEvent(event as unknown as NDKEvent);
-                alreadyZapped = zapInvoice?.zappee === $currentUser?.hexpubkey;
-                return (zapInvoice?.amount || 0) / 1000;
-            })
-            .reduce((subTotal, value) => subTotal + value, 0);
-    }
+    const displayableName =
+        user.profile?.displayName ||
+        user.profile?.name ||
+        user.profile?.nip05 ||
+        `${user.npub.slice(0, 9)}...`;
 </script>
 
-<button id="zapButton" class="flex flex-row gap-1 items-center text-sm lg:text-base">
-    <Zap
-        strokeWidth="1.5"
-        class="hover:fill-yellow-500 {alreadyZapped
-            ? 'fill-yellow-500 stroke-yellow-500'
-            : 'stroke-gray-500'} hover:stroke-yellow-500 w-4 lg:w-5 h-4 lg:h-5"
-    />
-    {totalZaps || 0}
+<button
+    on:click={() => (popoverOpen = true)}
+    class="primaryActionButton w-full justify-center whitespace-nowrap {$$props.class}"
+>
+    <Zap size="20" strokeWidth="1.5" class="w-5 h-5" />
+    Zap
 </button>
 <Popover
-    triggeredBy="#zapButton"
+    bind:open={popoverOpen}
     trigger="click"
     placement="left-end"
     class="dark:text-gray-50 dark:bg-gray-700"
@@ -117,7 +96,7 @@
                         class="stroke-yellow-500 fill-yellow-500 w-5 h-5"
                         size="20"
                     />
-                    Zap this list
+                    Zap {displayableName}
                 </button>
             </form>
         {:else}
