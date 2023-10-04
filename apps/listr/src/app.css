@@ -1,0 +1,25 @@
+@import url("https://fonts.bunny.net/css?family=unica-one:400");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.popoverActionButton {
+    @apply flex flex-row gap-2 items-center text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md py-1 px-2 text-sm w-full;
+}
+
+.primaryActionButton {
+    @apply font-medium flex flex-row gap-2 items-center bg-indigo-100 border border-indigo-500 dark:border-indigo-800 dark:bg-indigo-700 hover:bg-indigo-200 dark:hover:bg-indigo-600 hover:dark:text-white rounded-md text-sm px-2 py-0.5;
+}
+
+code::before {
+    content: "" !important;
+}
+
+code::after {
+    content: "" !important;
+}
+
+.listTable thead td {
+    @apply px-2;
+}
