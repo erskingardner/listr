@@ -4,7 +4,6 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
--   Set up develop on beta.listr.lol
 -   Add item to another list
 -   list feeds
 -   display list a tags
@@ -22,6 +21,7 @@ A simple app for managing and discovering Nostr lists.
 
 ### ✅ Done
 
+-   Set up develop on beta.listr.lol
 -   Add "Contacts" name to NDKList so contact lists show up in Listr
 -   Search relay integration
 -   Emoji tag support
