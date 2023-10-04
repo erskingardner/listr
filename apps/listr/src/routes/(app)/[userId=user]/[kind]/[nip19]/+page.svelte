@@ -249,11 +249,11 @@
     <meta name="description" content={`${listTitle} a list on Listr`} />
 </svelte:head>
 
-<Drawer bind:visible={drawerVisible}>
+<!-- <Drawer bind:visible={drawerVisible}>
     <h3 class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2">
         Drawer contents
     </h3>
-</Drawer>
+</Drawer> -->
 
 <Breadcrumb
     aria-label="User list breadcrumb"

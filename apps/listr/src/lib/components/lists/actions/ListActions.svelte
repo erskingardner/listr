@@ -27,9 +27,9 @@
 <div class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between">
     <Zap {nip19} {listId} />
     <Like {listId} />
-    <button on:click={() => dispatch("toggleConversationDrawer")}>
+    <!-- <button on:click={() => dispatch("toggleConversationDrawer")}>
         <MessagesSquare strokeWidth="1.5" size="20" />
-    </button>
+    </button> -->
 
     <Share {pubkey} {rawList} {nip19} />
     {#if $currentUser}
