@@ -4,6 +4,7 @@ A simple app for managing and discovering Nostr lists.
 
 ### 📥 Todo
 
+-   Set up develop on beta.listr.lol
 -   Add item to another list
 -   list feeds
 -   display list a tags
