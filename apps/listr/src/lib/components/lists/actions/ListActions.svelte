@@ -8,9 +8,12 @@
     import Delete from "./Delete.svelte";
     import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
     import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
-    import { MoreVertical } from "lucide-svelte";
+    import { MessagesSquare, MoreVertical } from "lucide-svelte";
     import { Popover } from "flowbite-svelte";
     import Edit from "./Edit.svelte";
+    import { createEventDispatcher } from "svelte";
+
+    const dispatch = createEventDispatcher();
 
     export let nip19: string;
     export let listId: string;
@@ -24,6 +27,10 @@
 <div class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between">
     <Zap {nip19} {listId} />
     <Like {listId} />
+    <button on:click={() => dispatch("toggleConversationDrawer")}>
+        <MessagesSquare strokeWidth="1.5" size="20" />
+    </button>
+
     <Share {pubkey} {rawList} {nip19} />
     {#if $currentUser}
         {#if $currentUser && pubkey !== $currentUser.hexpubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}

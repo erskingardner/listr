@@ -15,6 +15,7 @@
     import { v4 as uuidv4 } from "uuid";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
     import toast from "svelte-french-toast";
+    import Drawer from "$lib/components/Drawer.svelte";
 
     export let data;
 
@@ -235,12 +236,24 @@
         data.profile?.name ||
         data.profile?.nip05 ||
         `${data.npub.slice(0, 9)}...`;
+
+    let drawerVisible = false;
+
+    function toggleDrawerVisible() {
+        drawerVisible = !drawerVisible;
+    }
 </script>
 
 <svelte:head>
     <title>{`${listTitle} - Listr`}</title>
     <meta name="description" content={`${listTitle} a list on Listr`} />
 </svelte:head>
+
+<Drawer bind:visible={drawerVisible}>
+    <h3 class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2">
+        Drawer contents
+    </h3>
+</Drawer>
 
 <Breadcrumb
     aria-label="User list breadcrumb"
@@ -317,6 +330,7 @@
                 {editMode}
                 on:listDeleted
                 on:toggleEditMode={toggleEditMode}
+                on:toggleConversationDrawer={toggleDrawerVisible}
             />
         </div>
         <hr class="dark:border-gray-700" />

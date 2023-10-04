@@ -8,7 +8,7 @@
     title="Nostr signing extension not found"
     bind:open={modalOpen}
     placement="top-center"
-    backdropClass="fixed inset-0 z-40 bg-gray-900 bg-opacity-80"
+    backdropClass="fixed inset-0 z-40 bg-black/60"
 >
     <div class="p-4">
         <p class="text-gray-900 dark:text-white mb-4">

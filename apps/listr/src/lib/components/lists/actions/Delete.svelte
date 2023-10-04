@@ -50,7 +50,7 @@
 
 {#if $currentUser?.hexpubkey === pubkey}
     <button on:click={deleteList} class="popoverActionButton">
-        <Trash2 strokeWidth="1.5" size="20" class="stroke-gray-500 hover:stroke-black w-5 h-5" />
+        <Trash2 strokeWidth="1.5" size="20" class="stroke-black dark:stroke-white w-5 h-5" />
         Delete list
     </button>
 {/if}
