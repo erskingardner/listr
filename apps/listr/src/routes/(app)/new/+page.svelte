@@ -52,8 +52,8 @@
             tags: $form.publicItems as NDKTag[],
         });
 
-        list.title = $form.title;
-        list.description = $form.description;
+        list.title = $form.title.trim();
+        list.description = $form.description?.trim();
 
         // Only add a "d" tag if needed
         if (list.kind! >= 30000 && list.kind! <= 40000) {
@@ -108,8 +108,8 @@
 
     $: nameInputDisabled = parseInt($form.kind) < 30000;
 
-    $: if ($form.kind === "10000") $form.name = "Mute";
-    $: if ($form.kind === "10001") $form.name = "Pin";
+    $: if ($form.kind === "10000") $form.title = "Mute";
+    $: if ($form.kind === "10001") $form.title = "Pin";
 </script>
 
 <svelte:head>
@@ -162,7 +162,7 @@
                     >
                         <AlertTriangle strokeWidth="1.5" size="24" class="shrink-0 w-6 h-6" />
                         <span>
-                            Creating a new {$form.name} list will overwrite your current {$form.name}
+                            Creating a new {$form.title} list will overwrite your current {$form.title}
                             list
                         </span>
                     </div>
@@ -178,7 +178,7 @@
                         id="name"
                         tabindex="0"
                         class="border-gray-400 bg-transparent rounded-md grow w-full disabled:border-gray-600 disabled:text-gray-500"
-                        bind:value={$form.name}
+                        bind:value={$form.title}
                         disabled={nameInputDisabled}
                     />
                     <div class="" tabindex="-1">
@@ -191,8 +191,8 @@
                         </Tooltip>
                     </div>
                 </div>
-                {#if $errors.name}
-                    <span class="text-sm text-red-600 italic">{$errors.name}</span>
+                {#if $errors.title}
+                    <span class="text-sm text-red-600 italic">{$errors.title}</span>
                 {/if}
             </div>
             <div class="flex flex-col gap-0">
