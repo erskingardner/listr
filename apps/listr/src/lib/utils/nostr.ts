@@ -10,8 +10,9 @@ export function nip19ToTag(nip19Id: string): string[] | undefined {
     let tag: string[];
     switch (decoded.type) {
         case "npub":
-        case "note":
             return ["p", decoded.data];
+        case "note":
+            return ["e", decoded.data];
         case "nprofile":
             tag = ["e", decoded.data.pubkey];
             if (decoded.data.relays && decoded.data.relays.length > 0)

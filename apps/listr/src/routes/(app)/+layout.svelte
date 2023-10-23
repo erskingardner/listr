@@ -5,7 +5,6 @@
     import Header from "$lib/components/header/Header.svelte";
     import toast, { Toaster } from "svelte-french-toast";
     import { type NDKUser, NDKNip07Signer } from "@nostr-dev-kit/ndk";
-    import { Modal } from "flowbite-svelte";
     import { PlausibleAnalytics, pa } from "@accuser/svelte-plausible-analytics";
     import currentUser from "$lib/stores/currentUser";
     import {

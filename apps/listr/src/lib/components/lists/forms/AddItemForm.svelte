@@ -19,6 +19,7 @@
 
         if (listItem.match(NOSTR_BECH32_REGEXP)) {
             const tag = nip19ToTag(listItem);
+
             dispatch("addListItem", { tag: tag, type: listItemType });
         } else {
             addItemError = true;

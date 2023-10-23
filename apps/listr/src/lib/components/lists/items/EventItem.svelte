@@ -35,7 +35,7 @@
     {#if event && user}
         <div
             class="flex flex-col gap-6 border border-gray-200 dark:border-gray-700 rounded-md p-2 my-2
-            {unsaved ? 'border-gray-500/60 dark:border-gray-200/30 border-dashed' : ''}"
+            {unsaved ? 'border-gray-500/60 dark:border-gray-100/30 border-dashed' : ''}"
         >
             <div class="flex flex-row gap-2 items-center">
                 <a href="/{user?.npub}" class="flex flex-row gap-2 items-center">
