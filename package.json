@@ -9,10 +9,10 @@
         "format": "turbo run format"
     },
     "devDependencies": {
-        "eslint": "^8.50.0",
+        "eslint": "^8.52.0",
         "prettier": "^3.0.3",
         "prettier-plugin-svelte": "^3.0.3",
-        "turbo": "^1.10.14"
+        "turbo": "^1.10.16"
     },
     "packageManager": "pnpm@8.7.6"
 }
