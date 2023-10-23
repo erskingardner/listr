@@ -9,6 +9,7 @@
     import UserDetails from "$lib/components/users/UserDetails.svelte";
     import RemoveItem from "../actions/RemoveItem.svelte";
     import Unstage from "../actions/Unstage.svelte";
+    import AdditionItemPill from "./AdditionItemPill.svelte";
 
     export let type: string;
     export let id: string;
@@ -50,6 +51,8 @@
                     {#if unsaved}
                         {#if removal}
                             <RemovalItemPill />
+                        {:else}
+                            <AdditionItemPill />
                         {/if}
                         <Unstage
                             {type}
