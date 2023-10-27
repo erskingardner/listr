@@ -60,7 +60,7 @@
                             </svelte:fragment>
                         </DarkMode>
                     </div>
-                    <NavMenu on:signin on:closeMobileMenu on:donateButtonClicked />
+                    <NavMenu on:closeMobileMenu on:donateButtonClicked />
                 </div>
             </div>
         </div>
