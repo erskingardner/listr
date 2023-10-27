@@ -7,7 +7,8 @@
     import ndk from "$lib/stores/ndk";
     import { Avatar, Name, RelayList } from "@nostr-dev-kit/ndk-svelte-components";
     import NewListButton from "../NewListButton.svelte";
-    import { browser } from "$app/environment";
+    import SigninSelector from "./SigninSelector.svelte";
+    import { signout } from "$lib/utils/auth";
 
     const dispatch = createEventDispatcher();
 
@@ -26,7 +27,7 @@
 </script>
 
 <div
-    class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
+    class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
 >
     <button
         type="button"
@@ -177,7 +178,8 @@
                                 Settings
                             </a>
                             <button
-                                on:click={() => dispatch("signout")}
+                                on:click={() => signout()}
+                                on:touchend={() => signout()}
                                 class="block w-full text-left px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"
                                 tabindex="-1"
@@ -189,12 +191,7 @@
                     {/if}
                 </div>
             {:else}
-                <button
-                    on:click={() => dispatch("signin")}
-                    class="whitespace-nowrap rounded-md p-2 text-sm font-semibold leading-6 text-gray-50 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
-                >
-                    Sign in
-                </button>
+                <SigninSelector dropdownClass="w-56" />
             {/if}
         </div>
     </div>

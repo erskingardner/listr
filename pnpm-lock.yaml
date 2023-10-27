@@ -303,10 +303,19 @@ importers:
       svelte-preprocess:
         specifier: ^5.0.4
         version: 5.0.4(@babel/core@7.22.19)(postcss@8.4.29)(svelte@4.2.0)(typescript@5.2.2)
+      svelte-time:
+        specifier: ^0.8.0
+        version: 0.8.0
     devDependencies:
       '@nostr-dev-kit/eslint-config-custom':
         specifier: workspace:*
         version: link:../packages/eslint-config-custom
+      '@nostr-dev-kit/ndk-cache-dexie':
+        specifier: workspace:*
+        version: link:../ndk-cache-dexie
+      '@nostr-dev-kit/ndk-svelte':
+        specifier: workspace:*
+        version: link:../ndk-svelte
       '@nostr-dev-kit/tailwind-config':
         specifier: workspace:*
         version: link:../packages/tailwind-config
@@ -10707,23 +10716,6 @@ packages:
       yaml: 1.10.2
     dev: true
 
-  /postcss-load-config@4.0.1(postcss@8.4.29):
-    resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
-    engines: {node: '>= 14'}
-    peerDependencies:
-      postcss: '>=8.0.9'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      postcss:
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      lilconfig: 2.1.0
-      postcss: 8.4.29
-      yaml: 2.3.2
-    dev: true
-
   /postcss-load-config@4.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
     engines: {node: '>= 14'}
@@ -12148,6 +12140,12 @@ packages:
       typescript: 5.2.2
     dev: true
 
+  /svelte-time@0.8.0:
+    resolution: {integrity: sha512-V0LBpJhYV2Q+jqiJ94ITAo51P6RIhrHQpDt3LCSk8PXfL2UMvSMlDzkqHq8mdKqmBCRZURnXhpynN03GQa/G/A==}
+    dependencies:
+      dayjs: 1.11.10
+    dev: false
+
   /svelte-writable-derived@3.1.0(svelte@4.2.2):
     resolution: {integrity: sha512-cTvaVFNIJ036vSDIyPxJYivKC7ZLtcFOPm1Iq6qWBDo1fOHzfk6ZSbwaKrxhjgy52Rbl5IHzRcWgos6Zqn9/rg==}
     peerDependencies:
@@ -12687,7 +12685,7 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.1(postcss@8.4.29)
+      postcss-load-config: 4.0.1(postcss@8.4.31)
       resolve-from: 5.0.0
       rollup: 3.29.2
       source-map: 0.8.0-beta.0

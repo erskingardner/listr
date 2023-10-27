@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Newspaper, LogIn, HelpCircle, LifeBuoy, Github, Zap } from "lucide-svelte";
+    import { Newspaper, HelpCircle, LifeBuoy, Github } from "lucide-svelte";
     import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser, { currentUserSettings } from "$lib/stores/currentUser";
@@ -11,16 +11,12 @@
     import { Tooltip } from "flowbite-svelte";
     import NewListButton from "../NewListButton.svelte";
     import DonateButton from "../DonateButton.svelte";
+    import SigninSelector from "../header/SigninSelector.svelte";
 
     const dispatch = createEventDispatcher();
 
     let currentUserLists: NDKEventStore<ExtendedBaseType<NDKList>>;
     let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
-
-    function handleSignin() {
-        subscribeToUserLists();
-        dispatch("signin");
-    }
 
     function subscribeToUserLists() {
         if ($currentUser) {
@@ -201,13 +197,7 @@
             </li>
         {:else}
             <li class="mb-10 -mx-2">
-                <button
-                    on:click={handleSignin}
-                    class="group flex gap-x-3 w-full rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
-                >
-                    <LogIn strokeWidth="1.5" size="20" />
-                    Sign in to manage your lists
-                </button>
+                <SigninSelector buttonClass="w-full py-2" dropdownClass="" />
             </li>
         {/if}
     </ul>
