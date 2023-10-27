@@ -18,18 +18,6 @@
     let currentUserLists: NDKEventStore<ExtendedBaseType<NDKList>>;
     let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
 
-    enum signinType {
-        Nip07Ext,
-        Nip46Remote,
-    }
-
-    function handleSignin(signin: signinType) {
-        subscribeToUserLists();
-        console.log("Signin", signinType);
-        if (signin === signinType.Nip07Ext) dispatch("signinExt");
-        if (signin === signinType.Nip46Remote) dispatch("signinBunker");
-    }
-
     function subscribeToUserLists() {
         if ($currentUser) {
             currentUserLists = $ndk.storeSubscribe(
