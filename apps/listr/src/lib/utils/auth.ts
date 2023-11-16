@@ -57,7 +57,10 @@ export async function signin(
 }
 
 /**
- * Sign in with Private Key ☠️
+ * Retrieves a user object using a private key stored in local storage ☠️
+ * @async
+ * @param ndk - An instance of the NDK class.
+ * @returns A Promise that resolves to an NDKUser object if the private key is found, or null otherwise.
  */
 async function userFromPrivateKey(ndk: NDK): Promise<NDKUser | null> {
     const privateKey = localStorage.getItem("listrNostrPrivateKey");
@@ -72,7 +75,10 @@ async function userFromPrivateKey(ndk: NDK): Promise<NDKUser | null> {
 }
 
 /**
- * Sign in with NIP-07 extension
+ * Retrieves a user object using the NDKNip07Signer.
+ * @async
+ * @param ndk - An instance of the NDK class.
+ * @returns A Promise that resolves to an NDKUser object if the NDKNip07Signer is available, or null otherwise.
  */
 async function userFromNip07(ndk: NDK): Promise<NDKUser | null> {
     let user: NDKUser | null = null;
@@ -90,7 +96,12 @@ async function userFromNip07(ndk: NDK): Promise<NDKUser | null> {
 }
 
 /**
- * Sign in with NIP-46 remote signer (nsecBunker)
+ * Retrieves a user object using the NDKNip46Signer.
+ * @async
+ * @param ndk - An instance of the NDK class.
+ * @param bunkerNdk - An instance of the NDK class for the Bunker server.
+ * @param token - An optional token for creating a new nsecBunker connection.
+ * @returns A Promise that resolves to an NDKUser object if the NDKNip46Signer is available, or null otherwise.
  */
 async function userFromNip46(ndk: NDK, bunkerNdk: NDK, token?: string): Promise<NDKUser | null> {
     let localSigner: NDKPrivateKeySigner;
@@ -130,7 +141,7 @@ async function userFromNip46(ndk: NDK, bunkerNdk: NDK, token?: string): Promise<
 }
 
 /**
- * Sign out
+ * Signs the user out.
  */
 export function signout() {
     currentUser.set(null);
