@@ -95,7 +95,7 @@
     bind:open={popoverOpen}
     trigger="click"
     placement="left-end"
-    class="dark:text-gray-50 dark:bg-gray-700"
+    class="dark:text-gray-50 dark:bg-gray-700 z-30"
 >
     <div class="panel-contents flex flex-col gap-2">
         {#if $currentUser}
@@ -125,7 +125,7 @@
                 </label>
                 <button
                     type="submit"
-                    class="w-full flex flex-row items-center mt-2 gap-1 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
+                    class="w-full flex flex-row justify-center items-center mt-2 gap-1 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white text-center"
                 >
                     <Zap
                         strokeWidth="1.5"
@@ -135,6 +135,15 @@
                     Zap this list
                 </button>
             </form>
+            <div class="flex flex-col items-center">
+                <span>or</span>
+                <a
+                    href="https://www.makeprisms.com/create/{nip19}"
+                    class="w-full mt-2 gap-1 rounded-md p-2 text-sm font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white text-center"
+                >
+                    Zap everyone on this list via Prism
+                </a>
+            </div>
         {:else}
             Please sign in to zap.
         {/if}
