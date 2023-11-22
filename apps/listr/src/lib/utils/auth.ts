@@ -48,8 +48,7 @@ export async function signin(
         const currentUserStore = get(currentUser);
         currentUserFollows.set(await fetchUserFollows(currentUserStore as NDKUser));
         currentUserSettings.set(await fetchUserSettings(currentUserStore as NDKUser));
-        document.cookie = `listrUserNpub=${user.npub};
-            max-age=max-age-in-seconds=1209600; SameSite=Lax; Secure`;
+        document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
         if (window.plausible) pa.addEvent("Log in");
         toast.success("Signed in successfully");
     }
