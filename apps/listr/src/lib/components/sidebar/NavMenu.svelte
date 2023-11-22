@@ -77,18 +77,20 @@
                         Activity Feed
                     </a>
                 </li>
-                <li>
-                    <a
-                        href="/merge"
-                        class="{$page.url.pathname === '/merge'
-                            ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
-                            : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                        on:click={() => dispatch("closeMobileMenu")}
-                    >
-                        <Merge strokeWidth="1.5" size="20" />
-                        Merge Lists
-                    </a>
-                </li>
+                {#if $currentUser}
+                    <li>
+                        <a
+                            href="/merge"
+                            class="{$page.url.pathname === '/merge'
+                                ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
+                                : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            on:click={() => dispatch("closeMobileMenu")}
+                        >
+                            <Merge strokeWidth="1.5" size="20" />
+                            Merge Lists
+                        </a>
+                    </li>
+                {/if}
                 <li>
                     <a
                         href="/about"
