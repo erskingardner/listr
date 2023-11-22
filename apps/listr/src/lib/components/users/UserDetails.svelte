@@ -49,7 +49,7 @@
         <Nip05
             ndk={$ndk}
             {userProfile}
-            pubkey={user.hexpubkey}
+            pubkey={user.pubkey}
             class="flex flex-row gap-1 items-center text-sm truncate"
             nip05MaxLength={28}
         >

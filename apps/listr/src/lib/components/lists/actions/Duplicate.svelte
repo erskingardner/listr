@@ -27,7 +27,7 @@
         tags.push(["d", `listr-${uuid}`]);
 
         const duplicateList = new NDKList($ndk, {
-            pubkey: $currentUser!.hexpubkey,
+            pubkey: $currentUser!.pubkey,
             kind: rawList.kind,
             content: "",
             created_at: unixTimeNowInSeconds(),

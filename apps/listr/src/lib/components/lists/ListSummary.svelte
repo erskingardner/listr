@@ -10,7 +10,7 @@
     export let authorPubkey: string;
 
     const timeInPast = timeAgo(date as number);
-    const user = $ndk.getUser({ hexpubkey: authorPubkey });
+    const user = $ndk.getUser({ pubkey: authorPubkey });
 </script>
 
 <div

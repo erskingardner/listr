@@ -7,18 +7,18 @@
 
     export let data;
 
-    let user: NDKUser = $ndk.getUser({ hexpubkey: data.pubkey });
+    let user: NDKUser = $ndk.getUser({ pubkey: data.pubkey });
 
     onMount(() => {
-        user = $ndk.getUser({ hexpubkey: data.pubkey });
+        user = $ndk.getUser({ pubkey: data.pubkey });
     });
 
     afterUpdate(() => {
-        if (user.hexpubkey !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
+        if (user.pubkey !== data.pubkey) user = $ndk.getUser({ pubkey: data.pubkey });
     });
 
     afterNavigate(() => {
-        if (user.hexpubkey !== data.pubkey) user = $ndk.getUser({ hexpubkey: data.pubkey });
+        if (user.pubkey !== data.pubkey) user = $ndk.getUser({ pubkey: data.pubkey });
     });
 </script>
 

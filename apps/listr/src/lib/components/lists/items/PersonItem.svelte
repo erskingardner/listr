@@ -17,7 +17,7 @@
     export let removal: boolean;
     export let editMode: boolean;
 
-    const user = $ndk.getUser({ hexpubkey: pubkey });
+    const user = $ndk.getUser({ pubkey: pubkey });
 </script>
 
 {#key pubkey}

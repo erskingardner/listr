@@ -12,7 +12,7 @@
     import { Home } from "lucide-svelte";
 
     export let data: PageData;
-    const user = $ndk.getUser({ hexpubkey: data.pubkey });
+    const user = $ndk.getUser({ pubkey: data.pubkey });
     let userProfile: NDKUserProfile | null;
     let displayableName: string;
 

@@ -25,7 +25,7 @@
 
     async function fetchEventAndUser() {
         event = await $ndk.fetchEvent(id);
-        user = $ndk.getUser({ hexpubkey: event?.pubkey });
+        user = $ndk.getUser({ pubkey: event?.pubkey });
         createdTime = event?.created_at as number;
     }
 

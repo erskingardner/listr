@@ -3,19 +3,19 @@ import { writable } from "svelte/store";
 
 const currentUser = writable<NDKUser | null>(null);
 
-// Store the user's current follower list as an array of hexpubkeys
+// Store the user's current follower list as an array of pubkeys
 export const currentUserFollows = writable<string[]>([]);
 // Store the user's app settings for Listr
 export const currentUserSettings = writable<App.UserSettings | null>(null);
 
 /**
- * Fetch the follows for a user, formatted as an array of hexpubkeys
+ * Fetch the follows for a user, formatted as an array of pubkeys
  * @param user the user who you want to fetch follows for
- * @returns an array of hexpubkeys of all the users they follow
+ * @returns an array of pubkeys of all the users they follow
  */
 export async function fetchUserFollows(user: NDKUser): Promise<string[]> {
     const followsSet = await user.follows();
-    return Array.from(followsSet).map((user) => user.hexpubkey);
+    return Array.from(followsSet).map((user) => user.pubkey);
 }
 
 /**
@@ -28,7 +28,7 @@ export async function fetchUserSettings(user: NDKUser): Promise<App.UserSettings
     const ndk = user.ndk;
     const settingsEvents = await ndk.fetchEvents({
         kinds: [NDKKind.AppSpecificData],
-        authors: [user.hexpubkey],
+        authors: [user.pubkey],
         "#d": ["listr/settings/v1"],
     });
     const eventsArray = Array.from(settingsEvents);

@@ -278,7 +278,7 @@
 
 <!-- List of the user's lists -->
 <div class="flex flex-row gap-6">
-    {#if $currentUser?.hexpubkey === data.pubkey}
+    {#if $currentUser?.pubkey === data.pubkey}
         <!-- Don't render inside user list nav if it's the current user's list -->
     {:else}
         <div
@@ -335,7 +335,7 @@
         </div>
         <hr class="dark:border-gray-700" />
         <div class="flex flex-col">
-            {#if $currentUser?.hexpubkey === data.rawList.pubkey && editMode}
+            {#if $currentUser?.pubkey === data.rawList.pubkey && editMode}
                 <div transition:slide={{ easing: expoInOut }}>
                     <form class="flex flex-col gap-2">
                         <label for="listTitle" class="font-medium">Name</label>

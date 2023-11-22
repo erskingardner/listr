@@ -46,7 +46,7 @@
 
         const list = new NDKList($ndk, {
             kind: parseInt($form.kind),
-            pubkey: $currentUser!.hexpubkey,
+            pubkey: $currentUser!.pubkey,
             created_at: unixTimeNowInSeconds(),
             content: JSON.stringify($form.privateItems),
             tags: $form.publicItems as NDKTag[],
@@ -84,7 +84,7 @@
             const listItemTypeEl = document.getElementById("listItemType") as HTMLInputElement;
 
             if (listItemInputEl.value.match(NOSTR_BECH32_REGEXP)) {
-                const tag = nip19ToTag(listItemInputEl.value);
+                const tag = nip19ToTag(listItemInputEl.value) as string[];
                 if (listItemTypeEl.value === "public")
                     $form.publicItems = $form.publicItems ? [...$form.publicItems, tag] : [tag];
                 if (listItemTypeEl.value === "private")

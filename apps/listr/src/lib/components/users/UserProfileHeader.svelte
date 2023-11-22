@@ -9,7 +9,7 @@
 
     export let pubkey: string;
 
-    const user = $ndk.getUser({ hexpubkey: pubkey });
+    const user = $ndk.getUser({ pubkey: pubkey });
 
     const defaultBannerImage = "/images/default-banner.webp";
 </script>

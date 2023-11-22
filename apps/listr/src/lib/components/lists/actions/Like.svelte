@@ -31,7 +31,7 @@
     });
 
     $: alreadyLiked =
-        !!$currentUser && $likes?.map((like) => like.pubkey).includes($currentUser?.hexpubkey);
+        !!$currentUser && $likes?.map((like) => like.pubkey).includes($currentUser?.pubkey);
 
     function likeList() {
         if ($currentUser) {
@@ -46,11 +46,11 @@
                 const likeEvent = new NDKEvent($ndk, {
                     kind: 7,
                     content: "+",
-                    pubkey: $currentUser?.hexpubkey as string,
+                    pubkey: $currentUser?.pubkey as string,
                     created_at: unixTimeNowInSeconds(),
                     tags: [
                         ["a", listId as string],
-                        ["p", $currentUser?.hexpubkey as string],
+                        ["p", $currentUser?.pubkey as string],
                     ],
                 });
                 likeEvent

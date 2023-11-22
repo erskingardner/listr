@@ -11,7 +11,7 @@
     export let nip19: string;
 
     let tooltipVisible: boolean = false;
-    const user = $ndk.getUser({ hexpubkey: pubkey });
+    const user = $ndk.getUser({ pubkey: pubkey });
 
     async function copyShareUrl() {
         tooltipVisible = true;
