@@ -1,18 +1,12 @@
 import type { Handle } from "@sveltejs/kit";
-
-function redirect(location: string, body?: string) {
-    return new Response(body, {
-        status: 303,
-        headers: { location },
-    });
-}
+import { redirect } from "@sveltejs/kit";
 
 const protectedRoutes: string[] = ["/new", "/settings", "/merge"];
 
 export const handle: Handle = async ({ event, resolve }) => {
     const sessionCookie = event.cookies.get("listrUserNpub");
     if (!sessionCookie && protectedRoutes.includes(event.url.pathname)) {
-        throw redirect("/", "Please log in");
+        throw redirect(303, "/");
     }
 
     return resolve(event);

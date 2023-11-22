@@ -1,7 +1,7 @@
 import ndk from "$lib/stores/ndk";
 import type { NDKUserParams } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
-import type { ProfilePointer } from "nostr-tools/lib/nip19";
+import type { ProfilePointer } from "nostr-tools/libs/nip19";
 import { get } from "svelte/store";
 
 import type { LayoutServerLoad } from "./$types";
