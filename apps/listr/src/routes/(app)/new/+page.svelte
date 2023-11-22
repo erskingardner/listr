@@ -322,6 +322,6 @@
             </button>
         </form>
     {:else}
-        <div>You need to sign in before creating a new list. Sign in now.</div>
+        <div>You need to sign in before creating a new list.</div>
     {/if}
 </div>
