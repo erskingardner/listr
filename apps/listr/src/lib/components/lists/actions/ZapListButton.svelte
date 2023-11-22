@@ -72,7 +72,7 @@
         totalZaps = $zaps
             .map((event) => {
                 const zapInvoice = zapInvoiceFromEvent(event as unknown as NDKEvent);
-                alreadyZapped = zapInvoice?.zappee === $currentUser?.hexpubkey;
+                alreadyZapped = zapInvoice?.zappee === $currentUser?.pubkey;
                 return (zapInvoice?.amount || 0) / 1000;
             })
             .reduce((subTotal, value) => subTotal + value, 0);

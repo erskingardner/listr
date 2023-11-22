@@ -35,7 +35,7 @@ export const load: PageLoad = async ({ params }) => {
         browser &&
         !privateItems &&
         list.content.length > 0 &&
-        currentUserStore?.hexpubkey === list.pubkey
+        currentUserStore?.pubkey === list.pubkey
     ) {
         const signer = new NDKNip07Signer();
         ndkStore.signer = signer;
@@ -49,8 +49,22 @@ export const load: PageLoad = async ({ params }) => {
     const dedupedListItemsArr = deduplicateItems(list.items);
 
     const itemCount =
-        dedupedListItemsArr.filter((item) => !["L", "l"].includes(item[0])).length +
-        (dedupedPrivateItems?.length || 0);
+        dedupedListItemsArr.filter(
+            (item) =>
+                ![
+                    "L",
+                    "l",
+                    "d",
+                    "image",
+                    "thumb",
+                    "summary",
+                    "alt",
+                    "expiration",
+                    "subject",
+                    "title",
+                    "description",
+                ].includes(item[0])
+        ).length + (dedupedPrivateItems?.length || 0);
 
     return {
         kind: parseInt(params.kind),

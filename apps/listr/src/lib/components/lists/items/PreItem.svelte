@@ -17,7 +17,7 @@
 
     const tagIdSplit = id.split(":");
     const kind: number = parseInt(tagIdSplit[0]);
-    const creator: NDKUser = $ndk.getUser({ hexpubkey: tagIdSplit[1] });
+    const creator: NDKUser = $ndk.getUser({ pubkey: tagIdSplit[1] });
     const name: string = tagIdSplit[2];
 </script>
 

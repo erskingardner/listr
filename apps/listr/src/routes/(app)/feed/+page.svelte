@@ -28,7 +28,7 @@
             followingLists = $ndk.storeSubscribe(
                 {
                     kinds: FEED_LIST_KINDS,
-                    authors: Array.from(followers).map((user: NDKUser) => user.hexpubkey),
+                    authors: Array.from(followers).map((user: NDKUser) => user.pubkey),
                     limit: 50,
                     since: unixTimeNowInSeconds() - 60 * 60 * 96,
                 },

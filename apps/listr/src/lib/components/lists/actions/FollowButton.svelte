@@ -19,18 +19,18 @@
             toast.success("Successfully followed");
             const followsSet = await $currentUser?.follows();
             const followsArray = Array.from(followsSet as Set<NDKUser>);
-            $currentUserFollows = followsArray.map((user) => user.hexpubkey);
+            $currentUserFollows = followsArray.map((user) => user.pubkey);
         } else {
             toast("You're already following them");
         }
     }
 
     async function handleUnfollow() {
-        const newFollowsArray = $currentUserFollows.filter((pubkey) => pubkey !== user.hexpubkey);
+        const newFollowsArray = $currentUserFollows.filter((pubkey) => pubkey !== user.pubkey);
         const tags: NDKTag[] = newFollowsArray.map((pubkey) => ["p", pubkey] as NDKTag);
 
         const event = new NDKEvent($ndk, {
-            pubkey: $currentUser!.hexpubkey,
+            pubkey: $currentUser!.pubkey,
             kind: NDKKind.Contacts,
             tags: tags,
             created_at: unixTimeNowInSeconds(),
@@ -46,9 +46,9 @@
     let followingButtonText: string = "Following";
 </script>
 
-{#key user.hexpubkey}
+{#key user.pubkey}
     {#if $currentUser}
-        {#if $currentUserFollows.includes(user.hexpubkey)}
+        {#if $currentUserFollows.includes(user.pubkey)}
             <button
                 on:click={handleUnfollow}
                 on:mouseenter={() => (followingButtonText = "Unfollow")}

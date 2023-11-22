@@ -19,7 +19,7 @@
 
         const settingsEvent = new NDKEvent($ndk, {
             kind: NDKKind.AppSpecificData,
-            pubkey: $currentUser.hexpubkey,
+            pubkey: $currentUser.pubkey,
             created_at: unixTimeNowInSeconds(),
             tags: [["d", "listr/settings/v1"]],
             content: JSON.stringify(settingsObj),

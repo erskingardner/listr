@@ -46,7 +46,7 @@
 
         const list = new NDKList($ndk, {
             kind: parseInt($form.kind),
-            pubkey: $currentUser!.hexpubkey,
+            pubkey: $currentUser!.pubkey,
             created_at: unixTimeNowInSeconds(),
             content: JSON.stringify($form.privateItems),
             tags: $form.publicItems as NDKTag[],
@@ -322,6 +322,6 @@
             </button>
         </form>
     {:else}
-        <div>You need to sign in before creating a new list.</div>
+        <div>You need to sign in before creating a new list. Sign in now.</div>
     {/if}
 </div>

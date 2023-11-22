@@ -9,7 +9,7 @@
     export let editMode: boolean;
 </script>
 
-{#if $currentUser?.hexpubkey === pubkey}
+{#if $currentUser?.pubkey === pubkey}
     {#if editMode}
         <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
             <FileX strokeWidth="1.5" size="20" class="w-5 h-5" />
