@@ -33,7 +33,7 @@
 
     <Share {pubkey} {rawList} {nip19} />
     {#if $currentUser}
-        {#if $currentUser && pubkey !== $currentUser.hexpubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
+        {#if $currentUser && pubkey !== $currentUser.pubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
             <Duplicate {rawList} />
         {/if}
 

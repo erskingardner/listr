@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Newspaper, HelpCircle, LifeBuoy, Github } from "lucide-svelte";
+    import { Newspaper, HelpCircle, LifeBuoy, Github, Merge } from "lucide-svelte";
     import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
     import ndk from "$lib/stores/ndk";
     import currentUser, { currentUserSettings } from "$lib/stores/currentUser";
@@ -23,7 +23,7 @@
             currentUserLists = $ndk.storeSubscribe(
                 {
                     kinds: SUPPORTED_LIST_KINDS,
-                    authors: [$currentUser.hexpubkey],
+                    authors: [$currentUser.pubkey],
                 },
                 { closeOnEose: false },
                 NDKList
@@ -31,7 +31,7 @@
 
             deletedEvents = $ndk.storeSubscribe({
                 kinds: [NDKKind.EventDeletion],
-                authors: [$currentUser.hexpubkey],
+                authors: [$currentUser.pubkey],
             });
         }
     }
@@ -75,6 +75,18 @@
                     >
                         <Newspaper strokeWidth="1.5" size="20" />
                         Activity Feed
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="/merge"
+                        class="{$page.url.pathname === '/merge'
+                            ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
+                            : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                        on:click={() => dispatch("closeMobileMenu")}
+                    >
+                        <Merge strokeWidth="1.5" size="20" />
+                        Merge Lists
                     </a>
                 </li>
                 <li>

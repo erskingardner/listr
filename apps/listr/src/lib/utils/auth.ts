@@ -48,8 +48,7 @@ export async function signin(
         const currentUserStore = get(currentUser);
         currentUserFollows.set(await fetchUserFollows(currentUserStore as NDKUser));
         currentUserSettings.set(await fetchUserSettings(currentUserStore as NDKUser));
-        document.cookie = `listrUserNpub=${user.npub};
-            max-age=max-age-in-seconds=1209600; SameSite=Lax; Secure`;
+        document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
         if (window.plausible) pa.addEvent("Log in");
         toast.success("Signed in successfully");
     }
@@ -114,7 +113,7 @@ async function userFromNip46(ndk: NDK, bunkerNdk: NDK, token?: string): Promise<
             console.log("stored key and target npub");
             localSigner = new NDKPrivateKeySigner(storedKey);
             const targetUser = ndk.getUser({ npub: targetNpub });
-            const remoteSigner = new NDKNip46Signer(bunkerNdk, targetUser!.hexpubkey, localSigner);
+            const remoteSigner = new NDKNip46Signer(bunkerNdk, targetUser!.pubkey, localSigner);
             ndk.signer = remoteSigner;
             await remoteSigner.blockUntilReady();
             user = await remoteSigner.user();

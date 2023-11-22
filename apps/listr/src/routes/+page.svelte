@@ -30,7 +30,9 @@
                 </a>
             </div>
             <div class="flex flex-1 justify-end">
-                <a href="/feed" class="text-sm font-semibold leading-6 text-white"
+                <a
+                    href="/feed"
+                    class="text-sm font-semibold text-white hover:bg-white/10 px-3.5 py-2.5 rounded-md"
                     >Go to Listr <span aria-hidden="true">&rarr;</span></a
                 >
             </div>
@@ -63,7 +65,9 @@
                             class="rounded-md bg-indigo-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
                             >Get started</a
                         >
-                        <a href="/about" class="text-sm font-semibold leading-6 text-white"
+                        <a
+                            href="/about"
+                            class="text-sm font-semibold text-white hover:bg-white/10 px-3.5 py-2.5 rounded-md"
                             >Learn more <span aria-hidden="true">→</span></a
                         >
                     </div>

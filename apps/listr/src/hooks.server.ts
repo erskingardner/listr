@@ -7,7 +7,7 @@ function redirect(location: string, body?: string) {
     });
 }
 
-const protectedRoutes: string[] = ["/new", "/settings"];
+const protectedRoutes: string[] = ["/new", "/settings", "/merge"];
 
 export const handle: Handle = async ({ event, resolve }) => {
     const sessionCookie = event.cookies.get("listrUserNpub");

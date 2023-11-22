@@ -24,7 +24,7 @@ export const load: PageLoad = async () => {
 
     const ndkStore = get(ndk);
     const shuffled = ids.sort(() => 0.5 - Math.random()).slice(0, 9);
-    const users = shuffled.map((id) => ndkStore.getUser({ hexpubkey: id }));
+    const users = shuffled.map((id) => ndkStore.getUser({ pubkey: id }));
 
     return {
         users,

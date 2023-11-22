@@ -13,14 +13,14 @@ export const load: LayoutServerLoad = async ({ params }) => {
         ndkUserOpts.npub = userId;
     } else if (userId.match(/^nprofile1/)) {
         const profile = nip19.decode(userId);
-        ndkUserOpts.hexpubkey = (profile.data as ProfilePointer).pubkey;
+        ndkUserOpts.pubkey = (profile.data as ProfilePointer).pubkey;
     }
     const ndkStore = get(ndk);
     const user = ndkStore.getUser(ndkUserOpts);
     const profile = await user.fetchProfile();
 
     return {
-        pubkey: user.hexpubkey,
+        pubkey: user.pubkey,
         npub: user.npub,
         profile,
     };
