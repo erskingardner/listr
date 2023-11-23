@@ -4,7 +4,7 @@
     import { AlertTriangle, Check, Info } from "lucide-svelte";
     import { Tooltip } from "flowbite-svelte";
     import { browser } from "$app/environment";
-    import { NOSTR_BECH32_REGEXP, unixTimeNowInSeconds, nip19ToTag } from "$lib/utils";
+    import { unixTimeNowInSeconds, validateTagForListKind, stringInputToTag } from "$lib/utils";
     import Item from "$lib/components/lists/Item.svelte";
     import { z } from "zod";
     import ndk from "$lib/stores/ndk";
@@ -39,6 +39,37 @@
             }
         },
     });
+
+    function placeholderForListKind(kind: number): string {
+        switch (kind) {
+            case 10000:
+                return "NIP-19 identifier (npub, nprofile, note, nevent), a hashtag (e.g. #NSFW), or a word (e.g. Bitcoin)";
+            case 10001:
+                return "Note NIP-19 identifier (note or nevent)";
+            case 10002:
+            case 10006:
+            case 10007:
+            case 30002:
+                return "Relay NIP-19 identifier (nrelay) or a relay URL (e.g. wss://relay.damus.io)";
+            case 10003:
+            case 30003:
+                return "Note or event NIP-19 identifier (note, nevent, naddr), a hashtag (e.g. #NSFW), or a URL";
+            case 10015:
+                return "NIP-19 identifier (naddr) of an Interest Set (kind 30015) or a hashtag (e.g. #NSFW)";
+            case 10030:
+                return "NIP-19 identifier (naddr) of an Emoji Set (kind 30030) or a comma-separated shortcode and url to an emoji (e.g. :smile:, https://example.com/smile.png)";
+            case 30000:
+                return "NIP-19 pubkey identifier (npub or nprofile)";
+            case 30004:
+                return "Note or event NIP-19 identifier (note, nevent, naddr)";
+            case 30015:
+                return "Hashtag (e.g. #climbing)";
+            case 30030:
+                return "Comma-separated shortcode and url to an emoji (e.g. :smile:, https://example.com/smile.png)";
+            default:
+                return "";
+        }
+    }
 
     async function publishList(): Promise<string> {
         const signer = new NDKNip07Signer();
@@ -83,19 +114,30 @@
             const listItemInputEl = document.getElementById("listItem") as HTMLInputElement;
             const listItemTypeEl = document.getElementById("listItemType") as HTMLInputElement;
 
-            if (listItemInputEl.value.match(NOSTR_BECH32_REGEXP)) {
-                const tag = nip19ToTag(listItemInputEl.value) as string[];
+            // Convert the string input to a NDKTag
+            let tag: NDKTag | undefined;
+            tag = stringInputToTag(listItemInputEl.value);
+
+            if (!tag) {
+                // Error if we can't parse the input to a tag
+                addItemError = true;
+                addItemErrorMessage = "Please enter a valid input.";
+            } else if (tag && validateTagForListKind(tag, parseInt($form.kind))) {
                 if (listItemTypeEl.value === "public")
                     $form.publicItems = $form.publicItems ? [...$form.publicItems, tag] : [tag];
                 if (listItemTypeEl.value === "private")
                     $form.privateItems = $form.privateItems ? [...$form.privateItems, tag] : [tag];
             } else {
+                // Error if the type of tag isn't valid for the kind of list
                 addItemError = true;
-                addItemErrorMessage = "Please enter a valid NIP-19 identifier";
+                addItemErrorMessage = "This isn't a valid item for this kind of list.";
+                listItemInputEl.value = "";
             }
+
+            // Clean up the input
             listItemInputEl.value = "";
+            addItemSubmitting = false;
         }
-        addItemSubmitting = false;
     }
 
     function handleListRemoval(item: string[], privateItem: boolean) {
@@ -106,10 +148,18 @@
         }
     }
 
-    $: nameInputDisabled = parseInt($form.kind) < 30000;
+    let placeholder: string = "";
 
+    $: nameInputDisabled = parseInt($form.kind) < 30000;
     $: if ($form.kind === "10000") $form.title = "Mute";
     $: if ($form.kind === "10001") $form.title = "Pin";
+    $: if ($form.kind === "10002") $form.title = "Relays";
+    $: if ($form.kind === "10003") $form.title = "Bookmarks";
+    $: if ($form.kind === "10006") $form.title = "Blocked Relays";
+    $: if ($form.kind === "10007") $form.title = "Search Relays";
+    $: if ($form.kind === "10015") $form.title = "Interests";
+    $: if ($form.kind === "10030") $form.title = "Emojis";
+    $: placeholder = placeholderForListKind(parseInt($form.kind));
 </script>
 
 <svelte:head>
@@ -140,8 +190,18 @@
                         <option disabled selected value="">What kind of list do you want?</option>
                         <option value="10000">Mute - kind 10000</option>
                         <option value="10001">Pin - kind 10001</option>
-                        <option value="30000">Categorized People - kind 30000</option>
-                        <option value="30001">Categorized Bookmarks - kind 30001</option>
+                        <option value="10002">Relays - kind 10002</option>
+                        <option value="10003">Bookmarks - kind 10003</option>
+                        <option value="10006">Blocked Relays - kind 10006</option>
+                        <option value="10007">Search Relays - kind 10007</option>
+                        <option value="10015">Interests - kind 10015</option>
+                        <option value="10030">Emojis - kind 10030</option>
+                        <option value="30000">Named Follow Set - kind 30000</option>
+                        <option value="30002">Named Relay Set - kind 30002</option>
+                        <option value="30003">Named Bookmark Set - kind 30003</option>
+                        <option value="30004">Named Curation Set - kind 30004</option>
+                        <option value="30015">Named Interest Set - kind 30015</option>
+                        <option value="30030">Named Emoji Set - kind 30030</option>
                     </select>
                     <div class="" tabindex="-1">
                         <Info strokeWidth="1.5" size="20" class="stroke-gray-500 w-5 h-5" />
@@ -156,7 +216,7 @@
                 {#if $errors.kind}
                     <span class="text-sm text-red-600 italic">{$errors.kind}</span>
                 {/if}
-                {#if $form.kind === "10000" || $form.kind === "10001"}
+                {#if parseInt($form.kind) < 30000}
                     <div
                         class="mt-2 lg:mt-0 lg:absolute flex flex-row gap-2 items-center text-sm -top-4 right-6 p-1 px-2 bg-red-100 dark:bg-red-800 rounded-md"
                     >
@@ -254,6 +314,7 @@
                                         <Item
                                             tag={privateItem}
                                             id={privateItem[1]}
+                                            listKind={parseInt($form.kind)}
                                             privateItem={true}
                                             unsaved={true}
                                             on:removeUnsavedItem={() =>
@@ -270,6 +331,7 @@
                                         <Item
                                             tag={publicItem}
                                             id={publicItem[1]}
+                                            listKind={parseInt($form.kind)}
                                             privateItem={false}
                                             unsaved={true}
                                             on:removeUnsavedItem={() =>
@@ -286,7 +348,7 @@
                             id="listItem"
                             name="listItem"
                             tabindex="0"
-                            placeholder="NIP-19 identifier (npub, nprofile, note, nevent, or naddr)"
+                            placeholder={placeholderForListKind(parseInt($form.kind))}
                             class="border-gray-400 bg-transparent rounded-md grow w-full disabled:border-gray-200 disabled:bg-gray-100"
                         />
                         <select
@@ -324,4 +386,53 @@
     {:else}
         <div>You need to sign in before creating a new list.</div>
     {/if}
+</div>
+
+<div
+    class="mt-8 flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-md p-4"
+>
+    <div class="text-lg font-bold">How do I know what kind of list to select?</div>
+    <hr class="dark:border-gray-700" />
+    <div class="prose dark:prose-invert">
+        <p>
+            At the start, lists in Nostr clients can feel quite complicated. Let's look a bit more
+            closely to better understand lists and help answer the question of what type of list you
+            want to create.
+        </p>
+        <p>
+            The basic distinction in lists comes down to whether they are a standardized list or a
+            named list (set).
+        </p>
+        <h3>Standardized Lists</h3>
+        <p>
+            Standardized lists are in the 10000-19999 range of kinds. You don't need to worry about
+            the kind number in specific, just that lists in this range have a predefined name and
+            use. For example, your "Mute" list (kind 10000) is used to mute users, keywords, and
+            threads.
+        </p>
+        <p>
+            Importantly, you can only have 1 active standardized list of a given kind. When you
+            create a new Mute list, your old list is lost and replaced by the newer list.
+        </p>
+        <p>
+            But what if you want to create multiple lists of the same kind? That's what named lists
+            are for.
+        </p>
+        <h3>Named Lists (Sets)</h3>
+        <p>
+            Named lists are in the 30000-39999 range of kinds. You'll also see these referred to as
+            Sets. The point of named lists is that you can give your list a custom name, and you can
+            many of the same kind of list active at any given time.
+        </p>
+        <p>
+            For example, I can create multiple named follow sets, each with a different purpose.
+            Maybe one set is people that relate to climbing, another set is people who create great
+            memes.
+        </p>
+        <p>
+            Named lists are great for organizing people and content that you care about and sharing
+            it with others. And in many cases, you can include your named lists or sets into your
+            standard lists. For example, you can add a named follow set to your Mute list.
+        </p>
+    </div>
 </div>

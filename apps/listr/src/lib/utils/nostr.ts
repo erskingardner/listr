@@ -29,6 +29,31 @@ export function nip19ToTag(nip19Id: string): string[] | undefined {
                 tag.push(decoded.data.relays[0]);
             }
             return tag;
+        case "nrelay":
+            tag = ["relay", decoded.data];
+            return tag;
+    }
+}
+
+export function stringInputToTag(input: string): NDKTag | undefined {
+    if (input.match(NOSTR_BECH32_REGEXP)) {
+        return nip19ToTag(input);
+    } else {
+        // Handle hashtags (e.g. "#bitcoin")
+        if (input.startsWith("#")) return ["t", input.substring(1)];
+        // Handle URLs
+        if (input.match(/https?:\/\//)) return ["r", input];
+        // Handle relay URLs
+        if (input.match(/wss?:\/\//)) return ["relay", input];
+        // Handle emojis
+        if (input.match(/:.*:,\s?https?:\/\/.*/)) {
+            const shortcode = input.split(",")[0].replace(":", "").trim();
+            const url = input.split(",")[1].trim();
+            return ["emoji", shortcode, url];
+        }
+        // Handle bare words (e.g. "bitcoin")
+        // Not sure I want to do this...
+        return undefined;
     }
 }
 

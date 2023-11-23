@@ -2,17 +2,12 @@
     import PrivateItemPill from "./PrivateItemPill.svelte";
     import ItemActions from "./ItemActions.svelte";
     import RemovalItemPill from "./RemovalItemPill.svelte";
-    import { Tooltip } from "flowbite-svelte";
     import RemoveItem from "../actions/RemoveItem.svelte";
     import Unstage from "../actions/Unstage.svelte";
-    import RelayPill from "./RelayPill.svelte";
-    import { NDKKind } from "@nostr-dev-kit/ndk";
-    import { Database, Link } from "lucide-svelte";
+    import { Tag } from "lucide-svelte";
 
     export let type: string;
     export let id: string;
-    export let listKind: number | undefined;
-    export let otherTagValues: string[];
     export let privateItem: boolean;
     export let unsaved: boolean;
     export let removal: boolean;
@@ -28,22 +23,8 @@
             : 'border-gray-200 dark:border-gray-700'}"
     >
         <div class="flex flex-row gap-2 w-full items-center">
-            {#if listKind && [NDKKind.RelayList, NDKKind.BlockRelayList, NDKKind.SearchRelayList, NDKKind.RelaySet].includes(listKind)}
-                <Database strokeWidth="1.5" size="24" />
-                {id}
-                <RelayPill marker={otherTagValues[0]} />
-            {:else if otherTagValues.length > 0}
-                <a href={id} class="hover:underline text-sm lg:text-base" target="_blank">
-                    {otherTagValues[0]}
-                </a>
-                <Tooltip type="auto" class="dark:border-gray-800 dark:text-gray-50 shadow-md z-50">
-                    {id}
-                </Tooltip>
-            {:else}
-                <Link strokeWidth="1.5" size="24" />
-                {id}
-            {/if}
-
+            <Tag strokeWidth="1.5" size="24" />
+            {id}
             {#if privateItem}
                 <PrivateItemPill />
             {/if}

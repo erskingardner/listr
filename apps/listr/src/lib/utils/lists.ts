@@ -2,30 +2,57 @@ import type { NDKEvent, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 import { NDKKind } from "@nostr-dev-kit/ndk";
 
 export const SUPPORTED_LIST_KINDS = [
+    // 10000-19999: Lists
     NDKKind.Contacts,
     NDKKind.MuteList,
     NDKKind.PinList,
+    NDKKind.BookmarkList,
     NDKKind.RelayList,
-    NDKKind.CategorizedBookmarkList,
-    NDKKind.CategorizedPeopleList,
-    NDKKind.CategorizedRelayList,
-    NDKKind.InterestsList,
-    NDKKind.CategorizedHighlightList,
+    NDKKind.CommunityList,
+    NDKKind.BlockRelayList,
+    NDKKind.SearchRelayList,
+    NDKKind.InterestList,
+    NDKKind.EmojiList,
+
+    // 30000-39999: Categorized Lists
+    NDKKind.FollowSet,
+    NDKKind.CategorizedBookmarkList, // Deprecated but we'll keep it around for now
+    NDKKind.RelaySet,
+    NDKKind.BookmarkSet,
+    NDKKind.CurationSet,
+    NDKKind.InterestSet,
+    NDKKind.EmojiSet,
+    NDKKind.HighlightSet,
 ];
 
+// What shows up in the feed
 export const FEED_LIST_KINDS = [
+    NDKKind.PinList,
+    NDKKind.RelayList,
+    NDKKind.BookmarkList,
+    NDKKind.CommunityList,
+    NDKKind.InterestList,
+    NDKKind.EmojiList,
+
+    NDKKind.FollowSet,
     NDKKind.CategorizedBookmarkList,
-    NDKKind.CategorizedPeopleList,
-    NDKKind.CategorizedRelayList,
-    NDKKind.InterestsList,
-    NDKKind.CategorizedHighlightList,
+    NDKKind.RelaySet,
+    NDKKind.BookmarkSet,
+    NDKKind.CurationSet,
+    NDKKind.InterestSet,
+    NDKKind.EmojiSet,
+    NDKKind.HighlightSet,
 ];
 
 export const DUPLICATABLEABLE_LIST_KINDS = [
+    NDKKind.FollowSet,
     NDKKind.CategorizedBookmarkList,
-    NDKKind.CategorizedPeopleList,
-    NDKKind.CategorizedRelayList,
-    NDKKind.InterestsList,
+    NDKKind.RelaySet,
+    NDKKind.BookmarkSet,
+    NDKKind.CurationSet,
+    NDKKind.InterestSet,
+    NDKKind.EmojiSet,
+    NDKKind.HighlightSet,
 ];
 
 export const BLOCKED_PUBKEYS = [
@@ -40,6 +67,7 @@ type AllowedItemsForListKind = {
 export const ITEM_TYPES_FOR_LIST_KINDS: AllowedItemsForListKind = {
     10000: undefined, // Need to allow everything through because of bare words
     10001: ["e"],
+    10002: ["relay"],
     10003: ["e", "a", "t", "r"],
     10004: ["a"],
     10005: ["e"],
@@ -105,6 +133,11 @@ export const filteredLists = (
     return deleteFiltered || titleFiltered;
 };
 
+/**
+ * Removes duplicate items from an array of NDKTag items.
+ * @param itemsArray - An array of NDKTag items to be deduplicated.
+ * @returns An array of NDKTag items with duplicates removed. If the input array is empty or contains no duplicates, returns the original array.
+ */
 export function deduplicateItems(itemsArray: NDKTag[]): NDKTag[] {
     const dedupedArr: NDKTag[] = [];
     itemsArray.forEach((item) => {
@@ -128,4 +161,18 @@ export function filteredItemsForListKind(itemsArray: NDKTag[], kind: number): ND
         return itemsArray;
     }
     return itemsArray.filter((item) => filterItems.includes(item[0]));
+}
+
+/**
+ * Validates a tag for a specific list kind.
+ * @param tag - The NDKTag to be validated.
+ * @param kind - The kind of list to validate the tag for.
+ * @returns A boolean indicating whether the tag is valid for the specified list kind. If the kind is not found in the ITEM_TYPES_FOR_LIST_KINDS object, returns true.
+ */
+export function validateTagForListKind(tag: NDKTag, kind: number): boolean {
+    const filterItems = ITEM_TYPES_FOR_LIST_KINDS[kind];
+    if (filterItems === undefined) {
+        return true;
+    }
+    return filterItems.includes(tag[0]);
 }
