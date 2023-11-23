@@ -28,7 +28,6 @@ export const SUPPORTED_LIST_KINDS = [
 // What shows up in the feed
 export const FEED_LIST_KINDS = [
     NDKKind.PinList,
-    NDKKind.RelayList,
     NDKKind.BookmarkList,
     NDKKind.CommunityList,
     NDKKind.InterestList,
@@ -36,7 +35,6 @@ export const FEED_LIST_KINDS = [
 
     NDKKind.FollowSet,
     NDKKind.CategorizedBookmarkList,
-    NDKKind.RelaySet,
     NDKKind.BookmarkSet,
     NDKKind.CurationSet,
     NDKKind.InterestSet,
