@@ -4,11 +4,12 @@
     import UrlItem from "./items/UrlItem.svelte";
     import EmojiItem from "./items/EmojiItem.svelte";
     import PreItem from "./items/PreItem.svelte";
+    import TagItem from "./items/TagItem.svelte";
     import type { NDKTag } from "@nostr-dev-kit/ndk";
 
     export let tag: NDKTag;
     export let id: string;
-    export let kind: number | undefined = undefined;
+    export let listKind: number | undefined = undefined;
     export let privateItem: boolean;
     export let unsaved: boolean;
     export let removal: boolean = false;
@@ -41,11 +42,11 @@
             on:removeItem
             on:removeUnsavedItem
         />
-    {:else if type === "r"}
+    {:else if ["r", "relay"].includes(type)}
         <UrlItem
             {type}
             {id}
-            {kind}
+            {listKind}
             {otherTagValues}
             {privateItem}
             {unsaved}
@@ -56,6 +57,17 @@
         />
     {:else if type === "a"}
         <PreItem
+            {type}
+            {id}
+            {privateItem}
+            {unsaved}
+            {removal}
+            {editMode}
+            on:removeItem
+            on:removeUnsavedItem
+        />
+    {:else if type === "t"}
+        <TagItem
             {type}
             {id}
             {privateItem}

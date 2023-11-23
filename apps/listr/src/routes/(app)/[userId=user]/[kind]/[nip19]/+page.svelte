@@ -406,7 +406,7 @@
                         <Item
                             id={item[1]}
                             tag={item}
-                            kind={data.kind}
+                            listKind={data.kind}
                             privateItem={true}
                             unsaved={true}
                             on:removeUnsavedItem={handleRemoveUnsavedItem}
@@ -416,7 +416,7 @@
                         <Item
                             id={item[1]}
                             tag={item}
-                            kind={data.kind}
+                            listKind={data.kind}
                             privateItem={false}
                             unsaved={true}
                             on:removeUnsavedItem={handleRemoveUnsavedItem}
@@ -426,7 +426,7 @@
                         <Item
                             id={item[1]}
                             tag={item}
-                            kind={data.kind}
+                            listKind={data.kind}
                             privateItem={true}
                             unsaved={true}
                             removal={true}
@@ -437,7 +437,7 @@
                         <Item
                             id={item[1]}
                             tag={item}
-                            kind={data.kind}
+                            listKind={data.kind}
                             privateItem={false}
                             unsaved={true}
                             removal={true}
@@ -451,7 +451,7 @@
                 <Item
                     id={item[1]}
                     tag={item}
-                    kind={data.kind}
+                    listKind={data.kind}
                     privateItem={true}
                     unsaved={false}
                     {editMode}
@@ -462,7 +462,7 @@
                 <Item
                     id={item[1]}
                     tag={item}
-                    kind={data.kind}
+                    listKind={data.kind}
                     privateItem={false}
                     unsaved={false}
                     {editMode}

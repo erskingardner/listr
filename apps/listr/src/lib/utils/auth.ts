@@ -46,11 +46,15 @@ export async function signin(
         user.ndk = ndk;
         currentUser.set(user);
         const currentUserStore = get(currentUser);
-        currentUserFollows.set(await fetchUserFollows(currentUserStore as NDKUser));
-        currentUserSettings.set(await fetchUserSettings(currentUserStore as NDKUser));
         document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
         if (window.plausible) pa.addEvent("Log in");
         toast.success("Signed in successfully");
+        try {
+            currentUserFollows.set(await fetchUserFollows(currentUserStore as NDKUser));
+            currentUserSettings.set(await fetchUserSettings(currentUserStore as NDKUser));
+        } catch (error) {
+            console.error(error);
+        }
     }
     return user;
 }
