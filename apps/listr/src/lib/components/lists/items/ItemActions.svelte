@@ -3,6 +3,7 @@
     import { Popover } from "flowbite-svelte";
     import { aTagToNip19, copyToClipboard } from "$lib/utils";
     import { nip19 } from "nostr-tools";
+    import { onMount } from "svelte";
 
     export let type: string;
     export let id: string;
@@ -24,41 +25,57 @@
         naddrId = aTagToNip19([type, id]);
     }
 
-    switch (type) {
-        case "p":
-            itemCopyString = nip19.npubEncode(id);
-            primalUrl = `https://primal.net/p/${itemCopyString}`;
-            break;
-        case "e":
-            itemCopyString = nip19.noteEncode(id);
-            primalUrl = `https://primal.net/e/${itemCopyString}`;
-            break;
-        case "a":
-            itemCopyString = naddrId;
-            primalUrl = undefined;
-            break;
-        case "r":
-            itemCopyString = id;
-            itemCopyName = "URL";
-            primalUrl = undefined;
-            break;
-        case "emoji":
-            itemCopyString = id;
-            itemCopyName = "Name";
-            primalUrl = undefined;
-            break;
-        default:
-            console.error("Unknown ID");
-    }
-
-    async function copyItemId(nip19: string) {
-        copyToClipboard(nip19).then(() => {
+    async function copyItemId() {
+        valuesForItemActions();
+        console.log(type, id, itemCopyString);
+        copyToClipboard(itemCopyString).then(() => {
             copySuccess = true;
             setTimeout(() => {
                 copySuccess = false;
             }, 1500);
         });
     }
+
+    function valuesForItemActions() {
+        switch (type) {
+            case "p":
+                itemCopyString = nip19.npubEncode(id);
+                primalUrl = `https://primal.net/p/${itemCopyString}`;
+                break;
+            case "e":
+                itemCopyString = nip19.noteEncode(id);
+                primalUrl = `https://primal.net/e/${itemCopyString}`;
+                break;
+            case "a":
+                itemCopyString = naddrId;
+                primalUrl = undefined;
+                break;
+            case "r":
+            case "relay":
+                itemCopyString = id;
+                itemCopyName = "URL";
+                primalUrl = undefined;
+                break;
+            case "emoji":
+                itemCopyString = id;
+                itemCopyName = "Name";
+                primalUrl = undefined;
+                break;
+            case "t":
+                itemCopyString = id;
+                itemCopyName = "Tag Name";
+                primalUrl = undefined;
+                break;
+            default:
+                console.error("Unknown ID");
+        }
+    }
+
+    onMount(() => {
+        valuesForItemActions();
+    });
+
+    $: console.log(type, id);
 </script>
 
 {#key id}
@@ -71,7 +88,7 @@
     </button>
     <Popover triggeredBy="#actions-{hashedId ? hashedId : itemCopyString}" placement="left-start">
         <div class="flex flex-col gap-2 items-start grow">
-            <button on:click={() => copyItemId(itemCopyString)} class="popoverActionButton">
+            <button on:click={copyItemId} class="popoverActionButton">
                 {#if copySuccess}
                     <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500 w-5 h-5" />
                 {:else}

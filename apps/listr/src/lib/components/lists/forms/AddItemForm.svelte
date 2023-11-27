@@ -1,9 +1,13 @@
 <script lang="ts">
     import { Check } from "lucide-svelte";
     import { createEventDispatcher } from "svelte";
-    import { NOSTR_BECH32_REGEXP, nip19ToTag } from "$lib/utils";
+    import { stringInputToTag, validateTagForListKind, placeholderForListKind } from "$lib/utils";
+    import { browser } from "$app/environment";
+    import type { NDKTag } from "@nostr-dev-kit/ndk";
 
     const dispatch = createEventDispatcher();
+
+    export let kind: number;
 
     let listItem: string;
     let listItemType: string = "public";
@@ -17,18 +21,33 @@
         addItemError = false;
         addItemErrorMessage = "";
 
-        if (listItem.match(NOSTR_BECH32_REGEXP)) {
-            const tag = nip19ToTag(listItem);
+        if (browser) {
+            // Convert the string input to a NDKTag
+            let tag: NDKTag | undefined;
+            tag = stringInputToTag(listItem);
 
-            dispatch("addListItem", { tag: tag, type: listItemType });
-        } else {
-            addItemError = true;
-            addItemErrorMessage = "Please enter a valid NIP-19 identifier";
+            if (!tag) {
+                // Error if we can't parse the input to a tag
+                addItemError = true;
+                addItemErrorMessage = "Please enter a valid input.";
+            } else if (tag && validateTagForListKind(tag, parseInt(kind.toString()))) {
+                dispatch("addListItem", { tag: tag, type: listItemType });
+            } else {
+                // Error if the type of tag isn't valid for the kind of list
+                addItemError = true;
+                addItemErrorMessage = "This isn't a valid item for this kind of list.";
+                listItem = "";
+            }
+
+            // Clean up the input
+            listItem = "";
+            listItemType = "public";
+            addItemSubmitting = false;
         }
-        listItem = "";
-        listItemType = "public";
-        addItemSubmitting = false;
     }
+
+    let placeholder: string = "";
+    $: placeholder = placeholderForListKind(parseInt(kind.toString()));
 </script>
 
 <form class="mt-2 mb-6">
@@ -40,7 +59,7 @@
             name="listItem"
             bind:value={listItem}
             tabindex="0"
-            placeholder="Identifier (npub..., nprofile..., note..., nevent..., or naddr...)"
+            {placeholder}
             class="border-gray-400 w-full bg-transparent lg:w-auto rounded-md grow disabled:border-gray-200 disabled:bg-gray-100"
             required
         />

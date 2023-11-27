@@ -4,7 +4,12 @@
     import { AlertTriangle, Check, Info } from "lucide-svelte";
     import { Tooltip } from "flowbite-svelte";
     import { browser } from "$app/environment";
-    import { unixTimeNowInSeconds, validateTagForListKind, stringInputToTag } from "$lib/utils";
+    import {
+        unixTimeNowInSeconds,
+        validateTagForListKind,
+        stringInputToTag,
+        placeholderForListKind,
+    } from "$lib/utils";
     import Item from "$lib/components/lists/Item.svelte";
     import { z } from "zod";
     import ndk from "$lib/stores/ndk";
@@ -39,37 +44,6 @@
             }
         },
     });
-
-    function placeholderForListKind(kind: number): string {
-        switch (kind) {
-            case 10000:
-                return "NIP-19 identifier (npub, nprofile, note, nevent), a hashtag (e.g. #NSFW), or a word (e.g. Bitcoin)";
-            case 10001:
-                return "Note NIP-19 identifier (note or nevent)";
-            case 10002:
-            case 10006:
-            case 10007:
-            case 30002:
-                return "Relay NIP-19 identifier (nrelay) or a relay URL (e.g. wss://relay.damus.io)";
-            case 10003:
-            case 30003:
-                return "Note or event NIP-19 identifier (note, nevent, naddr), a hashtag (e.g. #NSFW), or a URL";
-            case 10015:
-                return "NIP-19 identifier (naddr) of an Interest Set (kind 30015) or a hashtag (e.g. #NSFW)";
-            case 10030:
-                return "NIP-19 identifier (naddr) of an Emoji Set (kind 30030) or a comma-separated shortcode and url to an emoji (e.g. :smile:, https://example.com/smile.png)";
-            case 30000:
-                return "NIP-19 pubkey identifier (npub or nprofile)";
-            case 30004:
-                return "Note or event NIP-19 identifier (note, nevent, naddr)";
-            case 30015:
-                return "Hashtag (e.g. #climbing)";
-            case 30030:
-                return "Comma-separated shortcode and url to an emoji (e.g. :smile:, https://example.com/smile.png)";
-            default:
-                return "";
-        }
-    }
 
     async function publishList(): Promise<string> {
         const signer = new NDKNip07Signer();
