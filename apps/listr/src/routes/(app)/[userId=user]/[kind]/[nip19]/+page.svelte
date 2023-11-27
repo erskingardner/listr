@@ -374,7 +374,7 @@
                             <option value="Travel & Places">Travel & Places</option>
                         </select>
                     </form>
-                    <AddItemForm on:addListItem={handleListAddition} />
+                    <AddItemForm kind={data.kind} on:addListItem={handleListAddition} />
                 </div>
             {/if}
 
