@@ -27,7 +27,6 @@
 
     async function copyItemId() {
         valuesForItemActions();
-        console.log(type, id, itemCopyString);
         copyToClipboard(itemCopyString).then(() => {
             copySuccess = true;
             setTimeout(() => {
