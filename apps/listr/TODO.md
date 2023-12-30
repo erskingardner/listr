@@ -40,3 +40,9 @@ A simple app for managing and discovering Nostr lists.
 -   Fork/Copy another persons list `nevent1qqsyynz49v9qgmcss9zjmvjp49u5znad7kuzqa8kevp7p2fsank3ruglj8n7h`
 -   Adding items
 -   Removing items
+
+# Collaborative lists
+
+-   replaceable item gets a tag to reference a collab list event of npubs
+-   collab list event has tasg of npubs (and permissions?)
+-
