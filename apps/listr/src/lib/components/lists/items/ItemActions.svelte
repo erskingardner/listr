@@ -3,7 +3,6 @@
     import { Popover } from "flowbite-svelte";
     import { aTagToNip19, copyToClipboard } from "$lib/utils";
     import { nip19 } from "nostr-tools";
-    import { onMount } from "svelte";
 
     export let type: string;
     export let id: string;
@@ -24,6 +23,8 @@
     if (type === "a") {
         naddrId = aTagToNip19([type, id]);
     }
+
+    valuesForItemActions();
 
     async function copyItemId() {
         valuesForItemActions();
@@ -69,38 +70,30 @@
                 console.error("Unknown ID");
         }
     }
-
-    onMount(() => {
-        valuesForItemActions();
-    });
-
-    $: console.log(type, id);
 </script>
 
-{#key id}
-    <button id="actions-{hashedId ? hashedId : itemCopyString}" class="ml-auto">
-        <MoreVertical
-            strokeWidth="1.5"
-            size="20"
-            class="stroke-gray-500 hover:stroke-black hover:dark:stroke-white w-5 h-5"
-        />
-    </button>
-    <Popover triggeredBy="#actions-{hashedId ? hashedId : itemCopyString}" placement="left-start">
-        <div class="flex flex-col gap-2 items-start grow">
-            <button on:click={copyItemId} class="popoverActionButton">
-                {#if copySuccess}
-                    <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500 w-5 h-5" />
-                {:else}
-                    <Copy strokeWidth="1.5" size="20" class="w-5 h-5" />
-                {/if}
-                Copy {itemCopyName}
-            </button>
-            {#if primalUrl}
-                <a href={primalUrl} target="_blank" class="popoverActionButton shrink-0">
-                    <ExternalLink strokeWidth="1.5" size="20" class="w-5 h-5" />
-                    Open in Primal
-                </a>
+<button id="actions-{hashedId ? hashedId : itemCopyString}" class="ml-auto">
+    <MoreVertical
+        strokeWidth="1.5"
+        size="20"
+        class="stroke-gray-500 hover:stroke-black hover:dark:stroke-white w-5 h-5"
+    />
+</button>
+<Popover triggeredBy="#actions-{hashedId ? hashedId : itemCopyString}" placement="left-start">
+    <div class="flex flex-col gap-2 items-start grow">
+        <button on:click={copyItemId} class="popoverActionButton">
+            {#if copySuccess}
+                <CopyCheck strokeWidth="1.5" size="20" class="stroke-green-500 w-5 h-5" />
+            {:else}
+                <Copy strokeWidth="1.5" size="20" class="w-5 h-5" />
             {/if}
-        </div>
-    </Popover>
-{/key}
+            Copy {itemCopyName}
+        </button>
+        {#if primalUrl}
+            <a href={primalUrl} target="_blank" class="popoverActionButton shrink-0">
+                <ExternalLink strokeWidth="1.5" size="20" class="w-5 h-5" />
+                Open in Primal
+            </a>
+        {/if}
+    </div>
+</Popover>

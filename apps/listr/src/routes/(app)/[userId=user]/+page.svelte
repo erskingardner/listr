@@ -114,10 +114,8 @@
 
 {#if $lists}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {#each $lists as list}
-            {#key list.id}
-                <ListCard npub={user.npub} {list} />
-            {/key}
+        {#each $lists as list (list.id)}
+            <ListCard npub={user.npub} {list} />
         {/each}
     </div>
 {/if}
