@@ -1,6 +1,7 @@
 <script lang="ts">
     import currentUser from "$lib/stores/currentUser";
-    import { superForm, superValidateSync } from "sveltekit-superforms/client";
+    import { superForm, defaults } from "sveltekit-superforms/client";
+    import { zod } from 'sveltekit-superforms/adapters';
     import { AlertTriangle, Check, Info } from "lucide-svelte";
     import { Tooltip } from "flowbite-svelte";
     import { browser } from "$app/environment";
@@ -32,10 +33,19 @@
         privateItems: z.string().array().array().optional(),
     });
 
-    const { form, errors, enhance } = superForm(superValidateSync(newListSchema), {
+    const initialNewList = {
+        kind: "",
+        title: "",
+        description: "",
+        category: "",
+        publicItems: [],
+        privateItems: [],
+    };
+
+    const { form, errors, enhance } = superForm(defaults(initialNewList, zod(newListSchema)), {
         taintedMessage: "Are you sure you want to leave the page? Your changes won't be saved.",
         SPA: true,
-        validators: newListSchema,
+        validators: zod(newListSchema),
         async onUpdate({ form }) {
             if (form.valid) {
                 const nip19Id = await publishList();
