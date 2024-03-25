@@ -1,7 +1,7 @@
 <script lang="ts">
     import currentUser from "$lib/stores/currentUser";
     import { superForm, defaults } from "sveltekit-superforms/client";
-    import { zod } from 'sveltekit-superforms/adapters';
+    import { zod } from "sveltekit-superforms/adapters";
     import { AlertTriangle, Check, Info } from "lucide-svelte";
     import { Tooltip } from "flowbite-svelte";
     import { browser } from "$app/environment";
@@ -10,6 +10,7 @@
         validateTagForListKind,
         stringInputToTag,
         placeholderForListKind,
+        kindIsRelayList,
     } from "$lib/utils";
     import Item from "$lib/components/lists/Item.svelte";
     import { z } from "zod";
@@ -97,16 +98,17 @@
         if (browser) {
             const listItemInputEl = document.getElementById("listItem") as HTMLInputElement;
             const listItemTypeEl = document.getElementById("listItemType") as HTMLInputElement;
+            const relayReadWriteEl = document.getElementById("relayReadWrite") as HTMLSelectElement;
 
             // Convert the string input to a NDKTag
             let tag: NDKTag | undefined;
-            tag = stringInputToTag(listItemInputEl.value);
+            tag = stringInputToTag(listItemInputEl.value, +$form.kind, [relayReadWriteEl.value]);
 
             if (!tag) {
                 // Error if we can't parse the input to a tag
                 addItemError = true;
                 addItemErrorMessage = "Please enter a valid input.";
-            } else if (tag && validateTagForListKind(tag, parseInt($form.kind))) {
+            } else if (tag && validateTagForListKind(tag, +$form.kind)) {
                 if (listItemTypeEl.value === "public")
                     $form.publicItems = $form.publicItems ? [...$form.publicItems, tag] : [tag];
                 if (listItemTypeEl.value === "private")
@@ -335,6 +337,18 @@
                             placeholder={placeholderForListKind(parseInt($form.kind))}
                             class="border-gray-400 bg-transparent rounded-md grow w-full disabled:border-gray-200 disabled:bg-gray-100"
                         />
+                        {#if kindIsRelayList(parseInt($form.kind))}
+                            <select
+                                id="relayReadWrite"
+                                name="relayReadWrite"
+                                tabindex="0"
+                                class="border-gray-400 rounded-md w-full lg:w-auto bg-transparent"
+                            >
+                                <option value="">Read & Write</option>
+                                <option value="read">Read</option>
+                                <option value="write">Write</option>
+                            </select>
+                        {/if}
                         <select
                             id="listItemType"
                             name="listItemType"

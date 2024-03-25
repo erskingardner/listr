@@ -1,4 +1,4 @@
-import type { NDKTag } from "@nostr-dev-kit/ndk";
+import { NDKKind, type NDKTag } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 
 export const NOSTR_BECH32_REGEXP =
@@ -35,25 +35,36 @@ export function nip19ToTag(nip19Id: string): string[] | undefined {
     }
 }
 
-export function stringInputToTag(input: string): NDKTag | undefined {
+export function stringInputToTag(
+    input: string,
+    listKind: number,
+    markers?: string[]
+): NDKTag | undefined {
     if (input.match(NOSTR_BECH32_REGEXP)) {
         return nip19ToTag(input);
     } else {
+        let tag: NDKTag | undefined = undefined;
         // Handle hashtags (e.g. "#bitcoin")
-        if (input.startsWith("#")) return ["t", input.substring(1)];
+        if (input.startsWith("#")) tag = ["t", input.substring(1)];
         // Handle URLs
-        if (input.match(/https?:\/\//)) return ["r", input];
+        if (input.match(/https?:\/\//)) tag = ["r", input];
         // Handle relay URLs
-        if (input.match(/wss?:\/\//)) return ["relay", input];
+        if (input.match(/wss?:\/\//)) {
+            if (listKind !== NDKKind.RelayList) {
+                tag = ["relay", input];
+            } else {
+                tag = ["r", input];
+            }
+        }
         // Handle emojis
         if (input.match(/:.*:,\s?https?:\/\/.*/)) {
             const shortcode = input.split(",")[0].replace(":", "").trim();
             const url = input.split(",")[1].trim();
             return ["emoji", shortcode, url];
         }
-        // Handle bare words (e.g. "bitcoin")
-        // Not sure I want to do this...
-        return undefined;
+        // Add any markers to the tag
+        if (tag && markers && markers.length > 0) tag = [...tag, ...markers];
+        return tag;
     }
 }
 

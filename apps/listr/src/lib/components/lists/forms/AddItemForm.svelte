@@ -1,7 +1,12 @@
 <script lang="ts">
     import { Check } from "lucide-svelte";
     import { createEventDispatcher } from "svelte";
-    import { stringInputToTag, validateTagForListKind, placeholderForListKind } from "$lib/utils";
+    import {
+        stringInputToTag,
+        validateTagForListKind,
+        placeholderForListKind,
+        kindIsRelayList,
+    } from "$lib/utils";
     import { browser } from "$app/environment";
     import type { NDKTag } from "@nostr-dev-kit/ndk";
 
@@ -11,6 +16,7 @@
 
     let listItem: string;
     let listItemType: string = "public";
+    let relayReadWrite: string | undefined = undefined;
 
     let addItemSubmitting: boolean = false;
     let addItemError: boolean = false;
@@ -24,7 +30,11 @@
         if (browser) {
             // Convert the string input to a NDKTag
             let tag: NDKTag | undefined;
-            tag = stringInputToTag(listItem);
+            if (relayReadWrite === "read" || relayReadWrite === "write") {
+                tag = stringInputToTag(listItem, kind, [relayReadWrite]);
+            } else {
+                tag = stringInputToTag(listItem, kind);
+            }
 
             if (!tag) {
                 // Error if we can't parse the input to a tag
@@ -41,6 +51,7 @@
 
             // Clean up the input
             listItem = "";
+            relayReadWrite = undefined;
             listItemType = "public";
             addItemSubmitting = false;
         }
@@ -63,6 +74,19 @@
             class="border-gray-400 w-full bg-transparent lg:w-auto rounded-md grow disabled:border-gray-200 disabled:bg-gray-100"
             required
         />
+        {#if kindIsRelayList(kind) || (listItem && (listItem.startsWith("wss://") || listItem.startsWith("ws://")))}
+            <select
+                id="relayReadWrite"
+                name="relayReadWrite"
+                bind:value={relayReadWrite}
+                tabindex="0"
+                class="border-gray-400 rounded-md w-full lg:w-auto bg-transparent"
+            >
+                <option value="">Read & Write</option>
+                <option value="read">Read</option>
+                <option value="write">Write</option>
+            </select>
+        {/if}
         <select
             id="listItemType"
             name="listItemType"

@@ -65,7 +65,7 @@ type AllowedItemsForListKind = {
 export const ITEM_TYPES_FOR_LIST_KINDS: AllowedItemsForListKind = {
     10000: undefined, // Need to allow everything through because of bare words
     10001: ["e"],
-    10002: ["relay"],
+    10002: ["r"],
     10003: ["e", "a", "t", "r"],
     10004: ["a"],
     10005: ["e"],
@@ -209,4 +209,13 @@ export function placeholderForListKind(kind: number): string {
         default:
             return "";
     }
+}
+
+export function kindIsRelayList(kind: number): boolean {
+    return [
+        NDKKind.RelayList,
+        NDKKind.BlockRelayList,
+        NDKKind.SearchRelayList,
+        NDKKind.RelaySet,
+    ].includes(kind);
 }

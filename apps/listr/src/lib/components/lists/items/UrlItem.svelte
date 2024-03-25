@@ -8,6 +8,7 @@
     import RelayPill from "./RelayPill.svelte";
     import { NDKKind } from "@nostr-dev-kit/ndk";
     import { Database, Link } from "lucide-svelte";
+    import { kindIsRelayList } from "$lib/utils";
 
     export let type: string;
     export let id: string;
@@ -28,7 +29,7 @@
             : 'border-gray-200 dark:border-gray-700'}"
     >
         <div class="flex flex-row gap-2 w-full items-center">
-            {#if listKind && [NDKKind.RelayList, NDKKind.BlockRelayList, NDKKind.SearchRelayList, NDKKind.RelaySet].includes(listKind)}
+            {#if listKind && kindIsRelayList(listKind)}
                 <Database strokeWidth="1.5" size="24" />
                 {id}
                 <RelayPill marker={otherTagValues[0]} />
