@@ -18,10 +18,14 @@ export const ndkStore = new NDKSvelte({
         "wss://nos.lol",
         "wss://relay.snort.social",
         "wss://relay.damus.io",
+        "wss://relay.primal.net",
     ],
-    outboxRelayUrls: ["wss://purplepag.es"],
-    enableOutboxModel: false,
+    outboxRelayUrls: ["wss://purplepag.es", "wss://relay.primal.net"],
+    autoConnectUserRelays: true,
+    autoFetchUserMutelist: true,
+    enableOutboxModel: true,
     cacheAdapter: cacheAdapter,
+    clientName: "Listr",
 });
 
 ndkStore.connect().then(() => console.log("NDK Connected"));

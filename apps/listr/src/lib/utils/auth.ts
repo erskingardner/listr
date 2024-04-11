@@ -44,6 +44,7 @@ export async function signin(
 
     if (user) {
         user.ndk = ndk;
+        ndk.activeUser = user;
         currentUser.set(user);
         const currentUserStore = get(currentUser);
         document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
@@ -146,9 +147,10 @@ async function userFromNip46(ndk: NDK, bunkerNdk: NDK, token?: string): Promise<
 /**
  * Signs the user out.
  */
-export function signout() {
+export function signout(ndk: NDK) {
     currentUser.set(null);
     currentUserFollows.set([]);
+    ndk.activeUser = undefined;
     document.cookie = "listrUserNpub=";
     if (window.plausible) pa.addEvent("Log out");
     toast.success("Signed out");

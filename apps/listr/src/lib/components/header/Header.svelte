@@ -178,8 +178,8 @@
                                 Settings
                             </a>
                             <button
-                                on:click={() => signout()}
-                                on:touchend={() => signout()}
+                                on:click={() => signout($ndk)}
+                                on:touchend={() => signout($ndk)}
                                 class="block w-full text-left px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"
                                 tabindex="-1"

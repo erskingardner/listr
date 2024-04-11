@@ -44,7 +44,7 @@
         "@nostr-dev-kit/ndk-svelte-components": "workspace:*",
         "dayjs": "^1.11.10",
         "lucide-svelte": "^0.363.0",
-        "nostr-tools": "^2.3.2",
+        "nostr-tools": "^2.4.0",
         "svelte-french-toast": "^1.2.0",
         "uuid": "^9.0.1",
         "webln": "^0.3.2",
