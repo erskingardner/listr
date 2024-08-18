@@ -143,6 +143,7 @@
     $: if ($form.kind === "10003") $form.title = "Bookmarks";
     $: if ($form.kind === "10006") $form.title = "Blocked Relays";
     $: if ($form.kind === "10007") $form.title = "Search Relays";
+    $: if ($form.kind === "10050") $form.title = "DM Receive Relays";
     $: if ($form.kind === "10015") $form.title = "Interests";
     $: if ($form.kind === "10030") $form.title = "Emojis";
     $: placeholder = placeholderForListKind(parseInt($form.kind));
@@ -180,6 +181,7 @@
                         <option value="10003">Bookmarks - kind 10003</option>
                         <option value="10006">Blocked Relays - kind 10006</option>
                         <option value="10007">Search Relays - kind 10007</option>
+                        <option value="10050">DM Receive Relays - kind 10050</option>
                         <option value="10015">Interests - kind 10015</option>
                         <option value="10030">Emojis - kind 10030</option>
                         <option value="30000">Named Follow Set - kind 30000</option>

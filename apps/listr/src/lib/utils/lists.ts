@@ -13,13 +13,14 @@ export const SUPPORTED_LIST_KINDS = [
     NDKKind.SearchRelayList,
     NDKKind.InterestList,
     NDKKind.EmojiList,
+    10050, // NIP-17 DM receive relay list
 
     // 30000-39999: Categorized Lists
     NDKKind.FollowSet,
     NDKKind.CategorizedBookmarkList, // Deprecated but we'll keep it around for now
     NDKKind.RelaySet,
     NDKKind.BookmarkSet,
-    NDKKind.CurationSet,
+    NDKKind.ArticleCurationSet,
     NDKKind.InterestSet,
     NDKKind.EmojiSet,
     NDKKind.HighlightSet,
@@ -36,7 +37,7 @@ export const FEED_LIST_KINDS = [
     NDKKind.FollowSet,
     NDKKind.CategorizedBookmarkList,
     NDKKind.BookmarkSet,
-    NDKKind.CurationSet,
+    NDKKind.ArticleCurationSet,
     NDKKind.InterestSet,
     NDKKind.EmojiSet,
     NDKKind.HighlightSet,
@@ -47,7 +48,7 @@ export const DUPLICATABLEABLE_LIST_KINDS = [
     NDKKind.CategorizedBookmarkList,
     NDKKind.RelaySet,
     NDKKind.BookmarkSet,
-    NDKKind.CurationSet,
+    NDKKind.ArticleCurationSet,
     NDKKind.InterestSet,
     NDKKind.EmojiSet,
     NDKKind.HighlightSet,
@@ -73,6 +74,7 @@ export const ITEM_TYPES_FOR_LIST_KINDS: AllowedItemsForListKind = {
     10007: ["relay"],
     10015: ["t", "a"],
     10030: ["emoji", "a"],
+    10050: ["relay"],
     30000: ["p"],
     30001: undefined, // Deprecated, for now just return the full array
     30002: ["relay"],
@@ -91,19 +93,47 @@ export const filterAndSortByTitle = (lists: NDKList[], deletions?: NDKEvent[]) =
     const titleFiltered = userFiltered.filter(
         (list) => list.title && !list.title.match(LIST_FILTER_REGEXP)
     );
+
+    const contactFiltered = filterLatestKind3Events(titleFiltered);
+
     let deleteFiltered;
     if (deletions) {
-        deleteFiltered = titleFiltered.filter(
+        deleteFiltered = contactFiltered.filter(
             (list) =>
                 !deletions
                     .map((event) => event.tagValue("a") || event.tagValue("e"))
                     .includes(list.tagId())
         );
     }
+
     const sorted = (deleteFiltered || titleFiltered).sort((a, b) =>
         a.title!.localeCompare(b.title!)
     );
     return sorted;
+};
+
+const filterLatestKind3Events = (events: NDKList[]): NDKList[] => {
+    let latestKind3Event: NDKList | null = null;
+
+    // Filter out kind:3 events and find the latest one
+    const filteredEvents = events.filter((event) => {
+        if (event.kind !== 3) {
+            return true;
+        }
+
+        if (!latestKind3Event || event.created_at! > latestKind3Event.created_at!) {
+            latestKind3Event = event;
+        }
+
+        return false;
+    });
+
+    // Add the latest kind:3 event if found
+    if (latestKind3Event) {
+        filteredEvents.push(latestKind3Event);
+    }
+
+    return filteredEvents;
 };
 
 export const filteredLists = (
@@ -189,6 +219,7 @@ export function placeholderForListKind(kind: number): string {
         case 10002:
         case 10006:
         case 10007:
+        case 10050:
         case 30002:
             return "Relay NIP-19 identifier (nrelay) or a relay URL (e.g. wss://relay.damus.io)";
         case 10003:
@@ -217,5 +248,6 @@ export function kindIsRelayList(kind: number): boolean {
         NDKKind.BlockRelayList,
         NDKKind.SearchRelayList,
         NDKKind.RelaySet,
+        10050, // NIP-17 DM receive relay list
     ].includes(kind);
 }
