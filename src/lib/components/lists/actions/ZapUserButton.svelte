@@ -27,7 +27,7 @@
         try {
             const webln = await requestProvider();
             webln
-                .sendPayment(zapRequest)
+                .sendPayment(zapRequest as string)
                 .then(() => {
                     toast.success("Zap successful!");
                     popoverOpen = false;

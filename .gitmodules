@@ -1,3 +1,0 @@
-[submodule "packages/ndk"]
-	path = packages/ndk
-	url = https://github.com/nostr-dev-kit/ndk.git

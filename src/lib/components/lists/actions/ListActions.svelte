@@ -1,6 +1,6 @@
 <script lang="ts">
     import currentUser from "$lib/stores/currentUser";
-    import Zap from "./ZapListButton.svelte";
+    // import Zap from "./ZapListButton.svelte";
     import Like from "./Like.svelte";
     import CopyId from "./CopyId.svelte";
     import Duplicate from "./Duplicate.svelte";
@@ -25,7 +25,7 @@
 </script>
 
 <div class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between">
-    <Zap {nip19} {listId} />
+    <!-- <Zap {nip19} {listId} /> -->
     <Like {listId} />
     <!-- <button on:click={() => dispatch("toggleConversationDrawer")}>
         <MessagesSquare strokeWidth="1.5" size="20" />

@@ -3,13 +3,14 @@
     import { Popover } from "flowbite-svelte";
     import ndk from "$lib/stores/ndk";
     import currentUser from "$lib/stores/currentUser";
-    import { NDKNip07Signer, NDKEvent } from "@nostr-dev-kit/ndk";
+    import { NDKNip07Signer, NDKEvent, type NDKZapDetails } from "@nostr-dev-kit/ndk";
     import { zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
     import { onMount, onDestroy, beforeUpdate } from "svelte";
     import { afterNavigate } from "$app/navigation";
     import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { requestProvider } from "webln";
     import toast from "svelte-french-toast";
+    import type { LnPaymentInfo, NDKPaymentConfirmationLN } from "@nostr-dev-kit/ndk";
+    import { requestProvider, type SendPaymentResponse } from "webln";
 
     export let listId: string;
     export let nip19: string;
@@ -40,32 +41,50 @@
         );
     });
 
+    // TODO: THIS IS BROKEN - Fix and add the list zap back again
     async function submitZap() {
         const signer = new NDKNip07Signer();
         $ndk.signer = signer;
         const event = await $ndk.fetchEvent(nip19 as string);
-        let zapRequest = await event?.zap(amount * 1000, comment);
 
-        if (!zapRequest) {
-            console.log("No payment request");
+        if (!event) {
+            console.log("No event to zap");
             return;
         }
+        console.log("Zapping event", event);
 
-        try {
-            const webln = await requestProvider();
-            webln
-                .sendPayment(zapRequest)
-                .then(() => {
+        $ndk.zap(event, amount * 1000, {
+            comment,
+            onLnPay: async (invoice: NDKZapDetails<LnPaymentInfo>) => {
+                const zapRequest = zapInvoiceFromEvent(invoice.target as NDKEvent);
+                try {
+                    const webln = await requestProvider();
+                    const paymentResponse = await webln.sendPayment(JSON.stringify(zapRequest));
+                    console.log("Payment response", paymentResponse);
+                    return { preimage: paymentResponse.preimage } as NDKPaymentConfirmationLN;
+                } catch (error: any) {
+                    console.log("payment error:", error);
+                    toast.error("Zap failed. Please try again.");
+                }
+            },
+            onComplete: (results) => {
+                console.log("Zap results", results);
+                let hasError = false;
+                results.forEach((result, key) => {
+                    if (result instanceof Error) {
+                        hasError = true;
+                        console.error(`Error for ${key}:`, result);
+                    }
+                });
+
+                if (hasError) {
+                    toast.error("Error zapping list. Please check the console for details.");
+                } else {
                     toast.success("Zap successful!");
                     popoverOpen = false;
-                })
-                .catch((err) => {
-                    console.error(err);
-                    toast.error("Zap failed. Please try again.");
-                });
-        } catch (error: any) {
-            console.log(error);
-        }
+                }
+            },
+        });
     }
 
     $: {
