@@ -10,7 +10,6 @@ import {
     NDKPrivateKeySigner,
     type NDKUser,
 } from "@nostr-dev-kit/ndk";
-import { pa } from "@accuser/svelte-plausible-analytics";
 import toast from "svelte-french-toast";
 import { goto } from "$app/navigation";
 
@@ -48,7 +47,6 @@ export async function signin(
         currentUser.set(user);
         const currentUserStore = get(currentUser);
         document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
-        if (window.plausible) pa.addEvent("Log in");
         toast.success("Signed in successfully");
         try {
             currentUserFollows.set(await fetchUserFollows(currentUserStore as NDKUser));
@@ -152,7 +150,6 @@ export function signout(ndk: NDK) {
     currentUserFollows.set([]);
     ndk.activeUser = undefined;
     document.cookie = "listrUserNpub=";
-    if (window.plausible) pa.addEvent("Log out");
     toast.success("Signed out");
     goto("/");
 }

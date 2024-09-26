@@ -4,7 +4,6 @@
     import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
     import Header from "$lib/components/header/Header.svelte";
     import { Toaster } from "svelte-french-toast";
-    import { PlausibleAnalytics } from "@accuser/svelte-plausible-analytics";
     import currentUser from "$lib/stores/currentUser";
     import {
         currentUserFollows,
@@ -52,8 +51,6 @@
         }
     }
 </script>
-
-<PlausibleAnalytics apiHost="/stats" domain="listr.lol" />
 
 <Toaster />
 

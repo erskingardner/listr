@@ -12,10 +12,8 @@ export const load: PageLoad = async () => {
         "32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245", // JB55
         "92de68b21302fa2137b1cbba7259b8ba967b535a05c6d2b0847d9f35ff3cf56a", // SusieBdds
         "bf2376e17ba4ec269d10fcc996a4746b451152be9031fa48e74553dde5526bce", // Carla
-        "6ffe93bb72d4ac788fd8be2dadf5bb4a2f14a330d530b0e68bd733c9744c6619", // Bisq
         "460c25e682fda7832b52d1f22d3d22b3176d972f60dcdc3212ed8c92ef85065c", // Vitor
         "6e468422dfb74a5738702a8823b9b28168abab8655faacb6853cd0ee15deee93", // Gigi
-        "7fa56f5d6962ab1e3cd424e758c3002b8665f7b0d8dcee9fe9e288d7751ac194", // verbiricha
         "cc8d072efdcc676fcbac14f6cd6825edc3576e55eb786a2a975ee034a6a026cb", // Sherry
         "0114bb11dd8eb89bfb40669509b2a5a473d27126e27acae58257f2fd7cd95776", // Laura
         "26bd32c67232bdf16d05e763ec67d883015eb99fd1269025224c20c6cfdb0158", // Marce
@@ -25,6 +23,7 @@ export const load: PageLoad = async () => {
         "58c741aa630c2da35a56a77c1d05381908bd10504fdd2d8b43f725efa6d23196", // Gladstein
         "3d70ec1ea586650a0474d6858454209d222158f4079e8db806f017ef5e30e767", // DJ Val
         "50d94fc2d8580c682b071a542f8b1e31a200b0508bab95a33bef0855df281d63", // Calle
+        "6c6e3e05e1c9d2aae0ed2431544aea411771dd9d81017539af0fd818b2389f28", // Sasha
     ];
 
     const ndkStore = get(ndk);

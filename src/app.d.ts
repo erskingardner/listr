@@ -10,9 +10,6 @@ declare global {
             devMode: boolean;
         }
     }
-    interface Window {
-        plausible;
-    }
 }
 
 export {};
