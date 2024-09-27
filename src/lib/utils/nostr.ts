@@ -1,5 +1,13 @@
-import { NDKKind, type NDKTag } from "@nostr-dev-kit/ndk";
+import { ndkStore } from "$lib/stores/ndk";
+import {
+    NDKKind,
+    type NDKTag,
+    type NDKUser,
+    type NDKUserParams,
+    type NDKUserProfile,
+} from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
+import type { ProfilePointer } from "nostr-tools/nip19";
 
 export const NOSTR_BECH32_REGEXP =
     /^(npub|nprofile|note|nevent|naddr|nrelay)1[023456789acdefghjklmnpqrstuvwxyz]+/;
@@ -77,4 +85,21 @@ export function aTagToNip19(aTag: NDKTag): string {
         pubkey: tagIdSplit[1],
         identifier: tagIdSplit[2],
     });
+}
+
+export async function getUserAndProfile(userIdentifier: string): Promise<{
+    user: NDKUser;
+    profile: NDKUserProfile | null;
+}> {
+    const ndkUserOpts: NDKUserParams = {};
+    if (userIdentifier.match(/^npub1/)) {
+        ndkUserOpts.npub = userIdentifier;
+    } else if (userIdentifier.match(/^nprofile1/)) {
+        const profile = nip19.decode(userIdentifier);
+        ndkUserOpts.pubkey = (profile.data as ProfilePointer).pubkey;
+    }
+
+    const user = ndkStore.getUser(ndkUserOpts);
+    const profile = await user.fetchProfile();
+    return { user, profile };
 }

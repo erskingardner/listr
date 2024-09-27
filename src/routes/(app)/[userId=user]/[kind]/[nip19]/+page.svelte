@@ -4,7 +4,15 @@
     import ListActions from "$lib/components/lists/actions/ListActions.svelte";
     import { Tooltip, Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
     import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
-    import { NDKList, NDKNip07Signer, type NDKTag } from "@nostr-dev-kit/ndk";
+    import {
+        NDKList,
+        NDKNip07Signer,
+        type NDKTag,
+        type NDKUser,
+        type NDKUserProfile,
+        type NDKEvent,
+        type NostrEvent,
+    } from "@nostr-dev-kit/ndk";
     import { slide } from "svelte/transition";
     import { expoInOut } from "svelte/easing";
     import { afterNavigate, beforeNavigate, invalidateAll } from "$app/navigation";
@@ -15,35 +23,110 @@
     import { v4 as uuidv4 } from "uuid";
     import UserListNav from "$lib/components/lists/UserListNav.svelte";
     import toast from "svelte-french-toast";
-    import Drawer from "$lib/components/Drawer.svelte";
+    import { onMount } from "svelte";
+    import { getUserAndProfile } from "$lib/utils/nostr";
+    import { page } from "$app/stores";
+    import { deduplicateItems } from "$lib/utils";
 
-    export let data;
-
-    let privateItems: NDKTag[] = data.privateItems;
-    let publicItems: NDKTag[] = data.items;
+    let user: NDKUser;
+    let profile: NDKUserProfile | null;
+    let listNip19: string;
+    let kind: number;
+    let event: NDKEvent | null;
+    let rawList: NostrEvent;
+    let list: NDKList;
+    let category: string | undefined;
+    let initialPrivateItems: NDKTag[] = [];
+    let initialPublicItems: NDKTag[] = [];
+    let privateItems: NDKTag[] = [];
+    let publicItems: NDKTag[] = [];
     let unsavedPublicItems: NDKTag[] = [];
     let unsavedPrivateItems: NDKTag[] = [];
     let unsavedPublicRemovals: NDKTag[] = [];
     let unsavedPrivateRemovals: NDKTag[] = [];
-
-    let unpublishedChanges: boolean = false;
+    let initialListTitle: string | undefined;
+    let initialListDescription: string | undefined;
+    let initialListCategory: string | undefined;
+    let listTitle: string | undefined;
+    let listDescription: string | undefined;
+    let listCategory: string | undefined;
 
     let publishingChanges: boolean = false;
-
     let editMode: boolean = false;
 
-    let listTitle = data.title;
-    let listDescription = data.description;
-    let listCategory = data.category;
+    // Fetch/update user and profile
+    $: {
+        let userId = $page.params.userId;
+        if (userId && user?.npub !== userId) {
+            getUserAndProfile(userId).then(({ user: tmpUser, profile: tmpProfile }) => {
+                user = tmpUser;
+                profile = tmpProfile;
+            });
+        }
+    }
+
+    // Fetch/update list data
+    $: {
+        listNip19 = $page.params.nip19;
+        kind = parseInt($page.params.kind);
+        $ndk.fetchEvent(listNip19).then((tmpEvent) => {
+            event = tmpEvent;
+            rawList = event?.rawEvent() as NostrEvent;
+            list = NDKList.from(event as NDKEvent);
+
+            try {
+                category = list.tags.filter((tag: NDKTag) => tag[0] === "l")[0][1];
+            } catch (error) {
+                category = undefined;
+            }
+
+            if (!privateItems && list.content.length > 0 && $currentUser?.pubkey === list.pubkey) {
+                list.encryptedTags().then((tags) => {
+                    // Svelte keyed each will blow up if we send lists with duplicate items
+                    privateItems = deduplicateItems(tags);
+                    initialPrivateItems = privateItems;
+                });
+            }
+
+            // Svelte keyed each will blow up if we send lists with duplicate items
+            publicItems = deduplicateItems(list.items);
+            initialPublicItems = publicItems;
+
+            listTitle = list.title;
+            initialListTitle = listTitle;
+            listDescription = list.description;
+            initialListDescription = listDescription;
+            listCategory = list.tags.find((tag: NDKTag) => tag[0] === "l")?.[1] || undefined;
+            initialListCategory = listCategory;
+        });
+    }
 
     $: unpublishedChanges =
         unsavedPrivateItems.length > 0 ||
         unsavedPrivateRemovals.length > 0 ||
         unsavedPublicItems.length > 0 ||
         unsavedPublicRemovals.length > 0 ||
-        listTitle !== data.title ||
-        listDescription !== data.description ||
-        listCategory !== data.category;
+        listTitle !== initialListTitle ||
+        listDescription !== initialListDescription ||
+        listCategory !== initialListCategory;
+
+    $: itemCount =
+        publicItems.filter(
+            (item) =>
+                ![
+                    "L",
+                    "l",
+                    "d",
+                    "image",
+                    "thumb",
+                    "summary",
+                    "alt",
+                    "expiration",
+                    "subject",
+                    "title",
+                    "description",
+                ].includes(item[0])
+        ).length + (privateItems?.length || 0);
 
     beforeNavigate(() => {
         if (unpublishedChanges) {
@@ -54,15 +137,15 @@
     afterNavigate(() => clearTempStores());
 
     function clearTempStores() {
-        privateItems = data.privateItems || [];
-        publicItems = data.items;
+        privateItems = initialPrivateItems || [];
+        publicItems = initialPublicItems;
         unsavedPublicItems = [];
         unsavedPrivateItems = [];
         unsavedPublicRemovals = [];
         unsavedPrivateRemovals = [];
-        listTitle = data.title;
-        listDescription = data.description;
-        listCategory = data.category;
+        listTitle = initialListTitle;
+        listDescription = initialListDescription;
+        listCategory = initialListCategory;
     }
 
     function itemAlreadyIncluded(tag: NDKTag): boolean {
@@ -159,8 +242,8 @@
         }
 
         const list = new NDKList($ndk, {
-            kind: data.rawList.kind,
-            pubkey: data.pubkey,
+            kind: rawList.kind,
+            pubkey: rawList.pubkey,
             created_at: unixTimeNowInSeconds(),
             content: jsonPrivateItems,
             tags: [...publicItems, ...unsavedPublicItems],
@@ -177,8 +260,8 @@
         let newListConfirmation: boolean = true;
         // This will create a new list for older style lists with a name the same as the d tag.
         if (list.kind! >= 30000 && list.kind! <= 40000) {
-            const listTags = data.rawList.tags;
-            const dTagValue = listTags.filter((tag) => tag[0] === "d")[0][1];
+            const listTags = rawList.tags;
+            const dTagValue = listTags.filter((tag: NDKTag) => tag[0] === "d")[0][1];
 
             if (dTagValue === list.title) {
                 newListConfirmation = confirm(
@@ -232,10 +315,11 @@
 
     let displayableName: string;
     $: displayableName =
-        data.profile?.displayName ||
-        data.profile?.name ||
-        data.profile?.nip05 ||
-        `${data.npub.slice(0, 9)}...`;
+        profile?.displayName ||
+        profile?.name ||
+        profile?.nip05 ||
+        `${user?.npub.slice(0, 9)}...` ||
+        "";
 
     let drawerVisible = false;
 
@@ -249,226 +333,222 @@
     <meta name="description" content={`${listTitle} a list on Listr`} />
 </svelte:head>
 
-<!-- <Drawer bind:visible={drawerVisible}>
-    <h3 class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2">
-        Drawer contents
-    </h3>
-</Drawer> -->
-
-<Breadcrumb
-    aria-label="User list breadcrumb"
-    navClass="flex flex-row gap-2 w-full my-6"
-    classOl="flex flex-row gap-2 items-center w-full"
->
-    <BreadcrumbItem
-        href="/feed"
-        homeClass="flex flex-row gap-1.5 items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white "
-        home
+{#if user && list}
+    <Breadcrumb
+        aria-label="User list breadcrumb"
+        navClass="flex flex-row gap-2 w-full my-6"
+        classOl="flex flex-row gap-2 items-center w-full"
     >
-        <svelte:fragment slot="icon">
-            <Home strokeWidth="1.5" size="16" class="w-4 h-4 shrink-0" />
-        </svelte:fragment>
-        Activity Feed
-    </BreadcrumbItem>
-    <BreadcrumbItem href="/{data.npub}" class="flex flex-row gap-1.5 items-center"
-        >{displayableName}</BreadcrumbItem
-    >
-    <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listTitle}</BreadcrumbItem>
-</Breadcrumb>
-
-<!-- List of the user's lists -->
-<div class="flex flex-row gap-6">
-    {#if $currentUser?.pubkey === data.pubkey}
-        <!-- Don't render inside user list nav if it's the current user's list -->
-    {:else}
-        <div
-            class="text-sm hidden lg:flex flex-col gap-2 border border-gray-200 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
+        <BreadcrumbItem
+            href="/feed"
+            homeClass="flex flex-row gap-1.5 items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white "
+            home
         >
-            {#key data.pubkey}
-                <UserListNav userPubkey={data.pubkey} />
-            {/key}
-        </div>
-    {/if}
+            <svelte:fragment slot="icon">
+                <Home strokeWidth="1.5" size="16" class="w-4 h-4 shrink-0" />
+            </svelte:fragment>
+            Activity Feed
+        </BreadcrumbItem>
+        <BreadcrumbItem href="/{user.npub}" class="flex flex-row gap-1.5 items-center"
+            >{displayableName}</BreadcrumbItem
+        >
+        <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listTitle}</BreadcrumbItem>
+    </Breadcrumb>
 
-    <!-- List contents -->
-    <div
-        class="flex flex-col gap-2 border border-gray-30 dark:border-gray-700 rounded-md shadow-md p-4 grow"
-    >
-        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div class="flex flex-col gap-1 w-full lg:w-auto">
-                <div
-                    class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
-                >
-                    {listTitle}
-                    {#if $currentUserSettings?.devMode}
-                        <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
-                        <Tooltip
-                            type="auto"
-                            class="dark:border-gray-800 dark:text-gray-50 shadow-md"
-                        >
-                            k: {data.kind}
-                        </Tooltip>
-                    {/if}
-                    <span class="text-sm font-normal">{data.itemCount} items</span>
-                </div>
-                <span class="text-sm flex gap-2 items-center">
-                    {listDescription ? listDescription : ""}
-                    {#if listCategory}
-                        <span
-                            class="text-2xs text-white md:text-xs px-1.5 md:px-2 md:py-0.5 bg-indigo-600 rounded-full"
-                        >
-                            {listCategory}
-                        </span>
-                    {/if}
-                </span>
+    <!-- List of the user's lists -->
+    <div class="flex flex-row gap-6">
+        {#if $currentUser?.pubkey === rawList.pubkey}
+            <!-- Don't render inside user list nav if it's the current user's list -->
+        {:else}
+            <div
+                class="text-sm hidden lg:flex flex-col gap-2 border border-gray-200 dark:border-gray-700 rounded-md shadow-md p-4 w-[18rem] shrink-0"
+            >
+                {#key rawList.pubkey}
+                    <UserListNav userPubkey={rawList.pubkey} />
+                {/key}
             </div>
-            <ListActions
-                nip19={data.nip19}
-                pubkey={data.pubkey}
-                listId={data.listId}
-                rawList={data.rawList}
-                {editMode}
-                on:listDeleted
-                on:toggleEditMode={toggleEditMode}
-                on:toggleConversationDrawer={toggleDrawerVisible}
-            />
-        </div>
-        <hr class="dark:border-gray-700" />
-        <div class="flex flex-col">
-            {#if $currentUser?.pubkey === data.rawList.pubkey && editMode}
-                <div transition:slide={{ easing: expoInOut }}>
-                    <form class="flex flex-col gap-2">
-                        <label for="listTitle" class="font-medium">Name</label>
-                        <input
-                            type="text"
-                            name="listTitle"
-                            bind:value={listTitle}
-                            class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
-                        />
-                        <label for="listDescription" class="font-medium">Description</label>
-                        <input
-                            type="text"
-                            name="listDescription"
-                            bind:value={listDescription}
-                            class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
-                        />
-                        <label for="listCategory" class="font-medium">Category</label>
-                        <select
-                            name="listCategory"
-                            class="border-gray-400 w-full rounded-md bg-transparent"
-                            tabindex="0"
-                            bind:value={listCategory}
-                        >
-                            <option selected value="">Add a category to your list?</option>
-                            <option value="Books & Literature">Books & Literature</option>
-                            <option value="Finance & Money">Finance & Money</option>
-                            <option value="Food & Drink">Food & Drink</option>
-                            <option value="Gaming & Hobbies">Gaming & Hobbies</option>
-                            <option value="Movies & TV">Movies & TV</option>
-                            <option value="Music">Music</option>
-                            <option value="People">People</option>
-                            <option value="Politics">Politics</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Sports">Sports</option>
-                            <option value="Technology">Technology</option>
-                            <option value="Travel & Places">Travel & Places</option>
-                        </select>
-                    </form>
-                    <AddItemForm kind={data.kind} on:addListItem={handleListAddition} />
-                </div>
-            {/if}
+        {/if}
 
-            {#if unpublishedChanges}
-                <fieldset
-                    class="border border-gray-700 dark:border-gray-300/60 bg-gray-50 dark:bg-gray-700 rounded-md p-2"
-                >
-                    <legend>Unpublished changes</legend>
-                    <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-end">
-                        <ChangesCount
-                            titleChanged={listTitle !== data.title}
-                            descriptionChanged={listDescription !== data.description}
-                            additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
-                            removals={[...unsavedPublicRemovals, ...unsavedPrivateRemovals]}
-                        />
-                        <button
-                            on:click={publishList}
-                            disabled={publishingChanges}
-                            class="flex flex-row gap-2 justify-center items-center border border-green-500 dark:border-green-900 bg-green-100 dark:bg-green-800 hover:bg-green-200 dark:hover:bg-green-700 p-2 px-3 rounded-md text-sm lg:text-base"
-                        >
-                            <HardDriveUpload strokeWidth="1.5" size="20" class="w-5 h-5" />
-                            Publish now
-                        </button>
+        <!-- List contents -->
+        <div
+            class="flex flex-col gap-2 border border-gray-30 dark:border-gray-700 rounded-md shadow-md p-4 grow"
+        >
+            <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <div class="flex flex-col gap-1 w-full lg:w-auto">
+                    <div
+                        class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
+                    >
+                        {listTitle}
+                        {#if $currentUserSettings?.devMode}
+                            <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
+                            <Tooltip
+                                type="auto"
+                                class="dark:border-gray-800 dark:text-gray-50 shadow-md"
+                            >
+                                k: {kind}
+                            </Tooltip>
+                        {/if}
+                        <span class="text-sm font-normal">{itemCount} items</span>
                     </div>
-
-                    <div class="flex flex-col gap-1"></div>
-
-                    {#each unsavedPrivateItems as item (item[1])}
-                        <Item
-                            id={item[1]}
-                            tag={item}
-                            listKind={data.kind}
-                            privateItem={true}
-                            unsaved={true}
-                            on:removeUnsavedItem={handleRemoveUnsavedItem}
-                        />
-                    {/each}
-                    {#each unsavedPublicItems as item (item[1])}
-                        <Item
-                            id={item[1]}
-                            tag={item}
-                            listKind={data.kind}
-                            privateItem={false}
-                            unsaved={true}
-                            on:removeUnsavedItem={handleRemoveUnsavedItem}
-                        />
-                    {/each}
-                    {#each unsavedPrivateRemovals as item (item[1])}
-                        <Item
-                            id={item[1]}
-                            tag={item}
-                            listKind={data.kind}
-                            privateItem={true}
-                            unsaved={true}
-                            removal={true}
-                            on:removeUnsavedItem={handleRemoveUnsavedItem}
-                        />
-                    {/each}
-                    {#each unsavedPublicRemovals as item (item[1])}
-                        <Item
-                            id={item[1]}
-                            tag={item}
-                            listKind={data.kind}
-                            privateItem={false}
-                            unsaved={true}
-                            removal={true}
-                            on:removeUnsavedItem={handleRemoveUnsavedItem}
-                        />
-                    {/each}
-                </fieldset>
-            {/if}
-
-            {#each privateItems || [] as item (item[1])}
-                <Item
-                    id={item[1]}
-                    tag={item}
-                    listKind={data.kind}
-                    privateItem={true}
-                    unsaved={false}
+                    <span class="text-sm flex gap-2 items-center">
+                        {listDescription ? listDescription : ""}
+                        {#if listCategory}
+                            <span
+                                class="text-2xs text-white md:text-xs px-1.5 md:px-2 md:py-0.5 bg-indigo-600 rounded-full"
+                            >
+                                {listCategory}
+                            </span>
+                        {/if}
+                    </span>
+                </div>
+                <ListActions
+                    nip19={listNip19}
+                    pubkey={rawList.pubkey}
+                    listId={list.tagId()}
+                    {rawList}
                     {editMode}
-                    on:removeItem={handleListRemoval}
+                    on:listDeleted
+                    on:toggleEditMode={toggleEditMode}
+                    on:toggleConversationDrawer={toggleDrawerVisible}
                 />
-            {/each}
-            {#each publicItems || [] as item (item[1])}
-                <Item
-                    id={item[1]}
-                    tag={item}
-                    listKind={data.kind}
-                    privateItem={false}
-                    unsaved={false}
-                    {editMode}
-                    on:removeItem={handleListRemoval}
-                />
-            {/each}
+            </div>
+            <hr class="dark:border-gray-700" />
+            <div class="flex flex-col">
+                {#if $currentUser?.pubkey === rawList.pubkey && editMode}
+                    <div transition:slide={{ easing: expoInOut }}>
+                        <form class="flex flex-col gap-2">
+                            <label for="listTitle" class="font-medium">Name</label>
+                            <input
+                                type="text"
+                                name="listTitle"
+                                bind:value={listTitle}
+                                class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                            />
+                            <label for="listDescription" class="font-medium">Description</label>
+                            <input
+                                type="text"
+                                name="listDescription"
+                                bind:value={listDescription}
+                                class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                            />
+                            <label for="listCategory" class="font-medium">Category</label>
+                            <select
+                                name="listCategory"
+                                class="border-gray-400 w-full rounded-md bg-transparent"
+                                tabindex="0"
+                                bind:value={listCategory}
+                            >
+                                <option selected value="">Add a category to your list?</option>
+                                <option value="Books & Literature">Books & Literature</option>
+                                <option value="Finance & Money">Finance & Money</option>
+                                <option value="Food & Drink">Food & Drink</option>
+                                <option value="Gaming & Hobbies">Gaming & Hobbies</option>
+                                <option value="Movies & TV">Movies & TV</option>
+                                <option value="Music">Music</option>
+                                <option value="People">People</option>
+                                <option value="Politics">Politics</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Travel & Places">Travel & Places</option>
+                            </select>
+                        </form>
+                        <AddItemForm {kind} on:addListItem={handleListAddition} />
+                    </div>
+                {/if}
+
+                {#if unpublishedChanges}
+                    <fieldset
+                        class="border border-gray-700 dark:border-gray-300/60 bg-gray-50 dark:bg-gray-700 rounded-md p-2"
+                    >
+                        <legend>Unpublished changes</legend>
+                        <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-end">
+                            <ChangesCount
+                                titleChanged={listTitle !== initialListTitle}
+                                descriptionChanged={listDescription !== initialListDescription}
+                                additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
+                                removals={[...unsavedPublicRemovals, ...unsavedPrivateRemovals]}
+                            />
+                            <button
+                                on:click={publishList}
+                                disabled={publishingChanges}
+                                class="flex flex-row gap-2 justify-center items-center border border-green-500 dark:border-green-900 bg-green-100 dark:bg-green-800 hover:bg-green-200 dark:hover:bg-green-700 p-2 px-3 rounded-md text-sm lg:text-base"
+                            >
+                                <HardDriveUpload strokeWidth="1.5" size="20" class="w-5 h-5" />
+                                Publish now
+                            </button>
+                        </div>
+
+                        <div class="flex flex-col gap-1"></div>
+
+                        {#each unsavedPrivateItems as item (item[1])}
+                            <Item
+                                id={item[1]}
+                                tag={item}
+                                listKind={kind}
+                                privateItem={true}
+                                unsaved={true}
+                                on:removeUnsavedItem={handleRemoveUnsavedItem}
+                            />
+                        {/each}
+                        {#each unsavedPublicItems as item (item[1])}
+                            <Item
+                                id={item[1]}
+                                tag={item}
+                                listKind={kind}
+                                privateItem={false}
+                                unsaved={true}
+                                on:removeUnsavedItem={handleRemoveUnsavedItem}
+                            />
+                        {/each}
+                        {#each unsavedPrivateRemovals as item (item[1])}
+                            <Item
+                                id={item[1]}
+                                tag={item}
+                                listKind={kind}
+                                privateItem={true}
+                                unsaved={true}
+                                removal={true}
+                                on:removeUnsavedItem={handleRemoveUnsavedItem}
+                            />
+                        {/each}
+                        {#each unsavedPublicRemovals as item (item[1])}
+                            <Item
+                                id={item[1]}
+                                tag={item}
+                                listKind={kind}
+                                privateItem={false}
+                                unsaved={true}
+                                removal={true}
+                                on:removeUnsavedItem={handleRemoveUnsavedItem}
+                            />
+                        {/each}
+                    </fieldset>
+                {/if}
+
+                {#each privateItems || [] as item (item[1])}
+                    <Item
+                        id={item[1]}
+                        tag={item}
+                        listKind={kind}
+                        privateItem={true}
+                        unsaved={false}
+                        {editMode}
+                        on:removeItem={handleListRemoval}
+                    />
+                {/each}
+                {#each publicItems || [] as item (item[1])}
+                    <Item
+                        id={item[1]}
+                        tag={item}
+                        listKind={kind}
+                        privateItem={false}
+                        unsaved={false}
+                        {editMode}
+                        on:removeItem={handleListRemoval}
+                    />
+                {/each}
+            </div>
         </div>
     </div>
-</div>
+{/if}

@@ -1,30 +1,29 @@
 <script lang="ts">
-    import ndk from "$lib/stores/ndk";
-    import { afterUpdate, onMount } from "svelte";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import { afterNavigate } from "$app/navigation";
     import UserProfileHeader from "$lib/components/users/UserProfileHeader.svelte";
+    import { page } from "$app/stores";
+    import { getUserAndProfile } from "$lib/utils/nostr";
+    import { onMount } from "svelte";
+    import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 
-    export let data;
+    let user: NDKUser;
+    let profile: NDKUserProfile | null;
 
-    let user: NDKUser = $ndk.getUser({ pubkey: data.pubkey });
-
-    onMount(() => {
-        user = $ndk.getUser({ pubkey: data.pubkey });
-    });
-
-    afterUpdate(() => {
-        if (user.pubkey !== data.pubkey) user = $ndk.getUser({ pubkey: data.pubkey });
-    });
-
-    afterNavigate(() => {
-        if (user.pubkey !== data.pubkey) user = $ndk.getUser({ pubkey: data.pubkey });
-    });
+    $: {
+        let userId = $page.params.userId;
+        if (userId && user?.npub !== userId) {
+            getUserAndProfile(userId).then(({ user: tmpUser, profile: tmpProfile }) => {
+                user = tmpUser;
+                profile = tmpProfile;
+            });
+        }
+    }
 </script>
 
-{#key data.pubkey}
-    <UserProfileHeader pubkey={data.pubkey} />
-{/key}
+{#if user}
+    {#key user.pubkey}
+        <UserProfileHeader pubkey={user.pubkey} />
+    {/key}
+{/if}
 
 <slot />
 

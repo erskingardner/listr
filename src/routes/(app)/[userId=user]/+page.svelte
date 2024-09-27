@@ -1,62 +1,95 @@
 <script lang="ts">
-    import type { PageData } from "./$types";
     import ndk from "$lib/stores/ndk";
     import { onMount, onDestroy } from "svelte";
     import { filterAndSortByTitle } from "$lib/utils";
     import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { type NDKEvent, NDKList, NDKKind, type NDKUserProfile } from "@nostr-dev-kit/ndk";
+    import { type NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
     import { SUPPORTED_LIST_KINDS } from "$lib/utils";
     import ListCard from "$lib/components/lists/ListCard.svelte";
-    import { afterNavigate } from "$app/navigation";
     import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
     import { Home } from "lucide-svelte";
-
-    export let data: PageData;
-    const user = $ndk.getUser({ pubkey: data.pubkey });
-    let userProfile: NDKUserProfile | null;
-    let displayableName: string;
+    import { page } from "$app/stores";
+    import { getUserAndProfile } from "$lib/utils/nostr";
+    import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 
     let lists: NDKEventStore<ExtendedBaseType<NDKList>>;
     let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
+    let user: NDKUser;
+    let profile: NDKUserProfile | null;
+    let displayableName: string;
 
-    onMount(async () => {
-        lists = $ndk.storeSubscribe(
-            {
-                kinds: SUPPORTED_LIST_KINDS,
-                authors: [data.pubkey],
-            },
-            { closeOnEose: false },
-            NDKList
-        );
+    $: {
+        let userId = $page.params.userId;
+        if (userId && user?.npub !== userId) {
+            getUserAndProfile(userId).then(({ user: tmpUser, profile: tmpProfile }) => {
+                user = tmpUser;
+                profile = tmpProfile;
 
-        deletedEvents = $ndk.storeSubscribe({
-            kinds: [NDKKind.EventDeletion],
-            authors: [data.pubkey],
-        });
-    });
+                // Unsubscribe from old lists and deleted events
+                if (lists || deletedEvents) {
+                    lists?.unsubscribe();
+                    deletedEvents?.unsubscribe();
+                }
 
-    afterNavigate(async () => {
-        userProfile = await user.fetchProfile();
-    });
+                // Subscribe to new lists and deleted events
+                lists = $ndk.storeSubscribe(
+                    {
+                        kinds: SUPPORTED_LIST_KINDS,
+                        authors: [user.pubkey],
+                    },
+                    { closeOnEose: false },
+                    NDKList
+                );
+
+                deletedEvents = $ndk.storeSubscribe({
+                    kinds: [NDKKind.EventDeletion],
+                    authors: [user.pubkey],
+                });
+            });
+        }
+    }
+
+    $: displayableName =
+        profile?.displayName ||
+        profile?.name ||
+        profile?.nip05 ||
+        `${user?.npub.slice(0, 9)}...` ||
+        "";
+
+    // onMount(async () => {
+    //     let { user: tmpUser, profile: tmpProfile } = await getUserAndProfile($page.params.userId);
+    //     user = tmpUser;
+    //     profile = tmpProfile;
+
+    //     lists = $ndk.storeSubscribe(
+    //         {
+    //             kinds: SUPPORTED_LIST_KINDS,
+    //             authors: [user.pubkey],
+    //         },
+    //         { closeOnEose: false },
+    //         NDKList
+    //     );
+
+    //     deletedEvents = $ndk.storeSubscribe({
+    //         kinds: [NDKKind.EventDeletion],
+    //         authors: [user.pubkey],
+    //     });
+    // });
 
     onDestroy(() => {
         lists?.unsubscribe();
         deletedEvents?.unsubscribe();
     });
 
-    $: if ($lists) {
-        $lists = filterAndSortByTitle($lists, $deletedEvents);
+    $: {
+        if ($lists) {
+            $lists = filterAndSortByTitle($lists, $deletedEvents);
+        }
     }
-
-    $: displayableName =
-        userProfile?.displayName ||
-        userProfile?.name ||
-        userProfile?.nip05 ||
-        `${user.npub.slice(0, 9)}...`;
 </script>
 
 <svelte:head>
-    {#await user.fetchProfile() then profile}
+    {#if profile}
         <title>{`${displayableName} - Listr`}</title>
         <meta
             name="description"
@@ -89,7 +122,7 @@
             name="twitter:image"
             content={profile?.image || "https://beta.listr.lol/images/open-graph.webp"}
         />
-    {/await}
+    {/if}
 </svelte:head>
 
 <Breadcrumb
@@ -108,7 +141,7 @@
         Activity Feed
     </BreadcrumbItem>
     <BreadcrumbItem class="flex flex-row gap-1.5 items-center">
-        {data.profile?.displayName}
+        {displayableName}
     </BreadcrumbItem>
 </Breadcrumb>
 
