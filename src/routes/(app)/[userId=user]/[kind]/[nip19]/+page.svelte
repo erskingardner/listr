@@ -67,38 +67,44 @@
 
     // Fetch/update list data
     $: {
-        listNip19 = $page.params.nip19;
-        kind = parseInt($page.params.kind);
-        $ndk.fetchEvent(listNip19).then((tmpEvent) => {
-            event = tmpEvent;
-            rawList = event?.rawEvent() as NostrEvent;
-            list = NDKList.from(event as NDKEvent);
+        if (!listNip19 || listNip19 !== $page.params.nip19) {
+            listNip19 = $page.params.nip19;
+            kind = parseInt($page.params.kind);
+            $ndk.fetchEvent(listNip19).then((tmpEvent) => {
+                event = tmpEvent;
+                rawList = event?.rawEvent() as NostrEvent;
+                list = NDKList.from(event as NDKEvent);
 
-            try {
-                category = list.tags.filter((tag: NDKTag) => tag[0] === "l")[0][1];
-            } catch (error) {
-                category = undefined;
-            }
+                try {
+                    category = list.tags.filter((tag: NDKTag) => tag[0] === "l")[0][1];
+                } catch (error) {
+                    category = undefined;
+                }
 
-            if (!privateItems && list.content.length > 0 && $currentUser?.pubkey === list.pubkey) {
-                list.encryptedTags().then((tags) => {
-                    // Svelte keyed each will blow up if we send lists with duplicate items
-                    privateItems = deduplicateItems(tags);
-                    initialPrivateItems = privateItems;
-                });
-            }
+                if (
+                    !privateItems &&
+                    list.content.length > 0 &&
+                    $currentUser?.pubkey === list.pubkey
+                ) {
+                    list.encryptedTags().then((tags) => {
+                        // Svelte keyed each will blow up if we send lists with duplicate items
+                        privateItems = deduplicateItems(tags);
+                        initialPrivateItems = privateItems;
+                    });
+                }
 
-            // Svelte keyed each will blow up if we send lists with duplicate items
-            publicItems = deduplicateItems(list.items);
-            initialPublicItems = publicItems;
+                // Svelte keyed each will blow up if we send lists with duplicate items
+                publicItems = deduplicateItems(list.items);
+                initialPublicItems = publicItems;
 
-            listTitle = list.title;
-            initialListTitle = listTitle;
-            listDescription = list.description;
-            initialListDescription = listDescription;
-            listCategory = list.tags.find((tag: NDKTag) => tag[0] === "l")?.[1] || undefined;
-            initialListCategory = listCategory;
-        });
+                listTitle = list.title;
+                initialListTitle = listTitle;
+                listDescription = list.description;
+                initialListDescription = listDescription;
+                listCategory = list.tags.find((tag: NDKTag) => tag[0] === "l")?.[1] || undefined;
+                initialListCategory = listCategory;
+            });
+        }
     }
 
     $: unpublishedChanges =

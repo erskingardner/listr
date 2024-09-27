@@ -6,7 +6,6 @@
     import RemoveItem from "../actions/RemoveItem.svelte";
     import Unstage from "../actions/Unstage.svelte";
     import RelayPill from "./RelayPill.svelte";
-    import { NDKKind } from "@nostr-dev-kit/ndk";
     import { Database, Link } from "lucide-svelte";
     import { kindIsRelayList } from "$lib/utils";
 

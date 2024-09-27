@@ -161,8 +161,6 @@
                 console.error(error);
                 toast.error("Error merging lists");
             });
-
-        console.log(newList);
     }
 
     async function createDeleteFromListEvent() {

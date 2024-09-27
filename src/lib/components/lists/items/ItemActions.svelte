@@ -13,8 +13,7 @@
     let itemCopyName: string = "ID";
     let primalUrl: string | undefined;
     let hashedId: string | undefined = undefined;
-
-    if (type === "r" || type === "a") {
+    if (type === "r" || type === "a" || type === "relay") {
         hashedId = btoa(id).slice(0, 8);
     }
 
