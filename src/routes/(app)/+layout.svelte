@@ -16,6 +16,8 @@
     import { browser } from "$app/environment";
     import DonateModal from "$lib/components/DonateModal.svelte";
     import NoSignerModal from "$lib/components/NoSignerModal.svelte";
+    import { onMount } from "svelte";
+    import { signout } from "$lib/utils/auth";
 
     export let data: LayoutServerData;
 
@@ -32,6 +34,36 @@
         $currentUser = $ndk.getUser({ npub: data.listrCookie });
         $currentUser.ndk = $ndk;
     }
+
+    onMount(() => {
+        console.log("onMount", window.nostr);
+        if (!window.nostr) {
+            import("nostr-login")
+                .then(async ({ init }) => {
+                    init({
+                        onAuth(npub, options) {
+                            if (options.type == "logout") {
+                                signout($ndk);
+                            } else {
+                                $currentUser = $ndk.getUser({ npub });
+                                $currentUser.ndk = $ndk;
+                                if ($currentUser && $currentUserFollows.length === 0) {
+                                    fetchUserFollows($currentUser).then(
+                                        (follows) => ($currentUserFollows = follows)
+                                    );
+                                }
+                                if ($currentUser && !$currentUserSettings && browser) {
+                                    fetchUserSettings($currentUser).then(
+                                        (settings) => ($currentUserSettings = settings)
+                                    );
+                                }
+                            }
+                        },
+                    });
+                })
+                .catch((error) => console.log("Failed to load nostr-login", error));
+        }
+    });
 
     // Cleans up hack that fixes bg-color on the homepage
     if (browser) {
