@@ -42,6 +42,7 @@
         "@nostr-dev-kit/ndk-svelte-components": "2.2.19",
         "dayjs": "^1.11.13",
         "lucide-svelte": "^0.446.0",
+        "nostr-login": "^1.6.6",
         "nostr-tools": "^2.7.2",
         "svelte-french-toast": "^1.2.0",
         "uuid": "^10.0.0",
