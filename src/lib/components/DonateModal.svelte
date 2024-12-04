@@ -1,46 +1,46 @@
 <script lang="ts">
-    import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
-    import { Zap } from "lucide-svelte";
-    import { Modal } from "flowbite-svelte";
-    import ndk from "$lib/stores/ndk";
-    import { requestProvider } from "webln";
-    import toast from "svelte-french-toast";
+import ndk from "$lib/stores/ndk.svelte";
+import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
+import { Modal } from "flowbite-svelte";
+import { Zap } from "lucide-svelte";
+import toast from "svelte-hot-french-toast";
+import { requestProvider } from "webln";
 
-    const listrUser = $ndk.getUser({
-        npub: "npub1lstr2kmdthkgfuzne8e4cn2nhr646x8jt25szdj7t4wr6xemtuuq3lczsj",
-    });
+const listrUser = ndk.getUser({
+    npub: "npub1lstr2kmdthkgfuzne8e4cn2nhr646x8jt25szdj7t4wr6xemtuuq3lczsj",
+});
 
-    let amount: number = 21000;
-    let comment: string;
+let amount = 21000;
+let comment: string;
 
-    export let modalOpen: boolean;
+export let modalOpen: boolean;
 
-    async function submitZap() {
-        const signer = new NDKNip07Signer();
-        $ndk.signer = signer;
-        let zapRequest = await listrUser.zap(amount * 1000, comment);
+async function submitZap() {
+    const signer = new NDKNip07Signer();
+    ndk.signer = signer;
+    let zapRequest = await listrUser.zap(amount * 1000, comment);
 
-        if (!zapRequest) {
-            console.log("No payment request");
-            return;
-        }
-
-        try {
-            const webln = await requestProvider();
-            webln
-                .sendPayment(zapRequest as string)
-                .then(() => {
-                    toast.success("Zap successful!");
-                    modalOpen = false;
-                })
-                .catch((err) => {
-                    console.error(err);
-                    toast.error("Zap failed. Please try again.");
-                });
-        } catch (error: any) {
-            console.log(error);
-        }
+    if (!zapRequest) {
+        console.log("No payment request");
+        return;
     }
+
+    try {
+        const webln = await requestProvider();
+        webln
+            .sendPayment(zapRequest as string)
+            .then(() => {
+                toast.success("Zap successful!");
+                modalOpen = false;
+            })
+            .catch((err) => {
+                console.error(err);
+                toast.error("Zap failed. Please try again.");
+            });
+    } catch (error) {
+        console.log(error);
+    }
+}
 </script>
 
 <Modal

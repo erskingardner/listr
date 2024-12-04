@@ -1,46 +1,55 @@
 <script lang="ts">
-    import ndk from "$lib/stores/ndk";
-    import { onMount, onDestroy } from "svelte";
-    import { SUPPORTED_LIST_KINDS, filterAndSortByTitle } from "$lib/utils";
-    import type { ExtendedBaseType, NDKEventStore } from "@nostr-dev-kit/ndk-svelte";
-    import { NDKList, NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
-    import { nip19 } from "nostr-tools";
-    import { page } from "$app/stores";
+import { page } from "$app/stores";
+import ndk from "$lib/stores/ndk.svelte";
+import { SUPPORTED_LIST_KINDS, filterAndSortByTitle } from "$lib/utils";
+import { NDKEvent, NDKKind, NDKList, NDKSubscription } from "@nostr-dev-kit/ndk";
+import { nip19 } from "nostr-tools";
+import { onDestroy, onMount } from "svelte";
 
-    export let userPubkey: string;
+let { userPubkey }: { userPubkey: string } = $props();
 
-    let lists: NDKEventStore<ExtendedBaseType<NDKList>>;
-    let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
+let lists: NDKList[] = $state([]);
+let deletedEvents: NDKEvent[] = $state([]);
 
-    onMount(() => {
-        lists = $ndk.storeSubscribe(
-            {
-                kinds: SUPPORTED_LIST_KINDS,
-                authors: [userPubkey],
-            },
-            { closeOnEose: false },
-            NDKList
-        );
+let listsSub: NDKSubscription | null = $state(null);
+let deletedEventsSub: NDKSubscription | null = $state(null);
+let filteredLists: NDKList[] = $derived(filterAndSortByTitle(lists, deletedEvents));
 
-        deletedEvents = $ndk.storeSubscribe({
+onMount(() => {
+    listsSub = ndk.subscribe(
+        {
+            kinds: SUPPORTED_LIST_KINDS,
+            authors: [userPubkey],
+        },
+        { closeOnEose: false }
+    );
+
+    listsSub.on("event", (event: NDKEvent) => {
+        lists = [...lists, NDKList.from(event)];
+    });
+
+    deletedEventsSub = ndk.subscribe(
+        {
             kinds: [NDKKind.EventDeletion],
             authors: [userPubkey],
-        });
-    });
+        },
+        { closeOnEose: false }
+    );
 
-    onDestroy(() => {
-        lists?.unsubscribe();
-        deletedEvents?.unsubscribe();
+    deletedEventsSub.on("event", (event: NDKEvent) => {
+        deletedEvents = [...deletedEvents, event];
     });
+});
 
-    $: if ($lists) {
-        $lists = filterAndSortByTitle($lists, $deletedEvents);
-    }
+onDestroy(() => {
+    listsSub?.stop();
+    deletedEventsSub?.stop();
+});
 </script>
 
 <div class="flex flex-col gap-0.5">
-    {#if $lists}
-        {#each $lists as list}
+    {#if filteredLists.length > 0}
+        {#each filteredLists as list}
             <a
                 href="/{nip19.npubEncode(userPubkey)}/{list.kind}/{list.encode()}"
                 class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold {$page.url

@@ -1,41 +1,42 @@
 <script lang="ts">
-    import currentUser from "$lib/stores/currentUser";
-    import ndk from "$lib/stores/ndk";
-    import { unixTimeNowInSeconds } from "$lib/utils";
-    import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
-    import { Tooltip } from "flowbite-svelte";
-    import { Info } from "lucide-svelte";
-    import { currentUserSettings } from "$lib/stores/currentUser";
-    import toast from "svelte-french-toast";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
+import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
+import { Tooltip } from "flowbite-svelte";
+import { Info } from "lucide-svelte";
+import toast from "svelte-hot-french-toast";
 
-    let devMode: boolean = !!$currentUserSettings?.devMode;
+let currentUser = getCurrentUser();
+let devMode = $state(!!currentUser?.settings?.devMode);
 
-    async function saveSettings() {
-        if (!$currentUser) return;
+async function saveSettings(e: SubmitEvent) {
+    e.preventDefault();
+    if (!currentUser.user) return;
 
-        const settingsObj: App.UserSettings = {
-            devMode: devMode ? devMode : false,
-        };
+    const settingsObj: App.UserSettings = {
+        devMode: devMode ? devMode : false,
+    };
 
-        const settingsEvent = new NDKEvent($ndk, {
-            kind: NDKKind.AppSpecificData,
-            pubkey: $currentUser.pubkey,
-            created_at: unixTimeNowInSeconds(),
-            tags: [["d", "listr/settings/v1"]],
-            content: JSON.stringify(settingsObj),
-        });
+    const settingsEvent = new NDKEvent(ndk, {
+        kind: NDKKind.AppSpecificData,
+        pubkey: currentUser.user.pubkey,
+        created_at: unixTimeNowInSeconds(),
+        tags: [["d", "listr/settings/v1"]],
+        content: JSON.stringify(settingsObj),
+    });
 
-        let signer: NDKNip07Signer;
-        if (!$ndk.signer) {
-            signer = new NDKNip07Signer();
-            $ndk.signer = signer;
-        }
-
-        await settingsEvent.encrypt($currentUser);
-        await settingsEvent.publish();
-        $currentUserSettings = settingsObj;
-        toast.success("Settings updated");
+    let signer: NDKNip07Signer;
+    if (!ndk.signer) {
+        signer = new NDKNip07Signer();
+        ndk.signer = signer;
     }
+
+    await settingsEvent.encrypt(currentUser.user);
+    await settingsEvent.publish();
+    currentUser.settings = settingsObj;
+    toast.success("Settings updated");
+}
 </script>
 
 <svelte:head>
@@ -57,7 +58,7 @@
     </div>
     <hr class="dark:border-gray-700" />
     <div class="">
-        <form on:submit|preventDefault={saveSettings}>
+        <form onsubmit={saveSettings}>
             <div class="flex flex-row gap-2 items-center my-6">
                 <input type="checkbox" id="devMode" bind:checked={devMode} />
                 <label for="devMode">Developer Mode</label>

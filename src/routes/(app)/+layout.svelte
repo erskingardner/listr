@@ -1,105 +1,63 @@
 <script lang="ts">
-    import "../../app.css";
-    import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
-    import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
-    import Header from "$lib/components/header/Header.svelte";
-    import { Toaster } from "svelte-french-toast";
-    import currentUser from "$lib/stores/currentUser";
-    import {
-        currentUserFollows,
-        currentUserSettings,
-        fetchUserSettings,
-        fetchUserFollows,
-    } from "$lib/stores/currentUser";
-    import ndk from "$lib/stores/ndk";
-    import type { LayoutServerData } from "../$types";
-    import { browser } from "$app/environment";
-    import DonateModal from "$lib/components/DonateModal.svelte";
-    import NoSignerModal from "$lib/components/NoSignerModal.svelte";
-    import { onMount } from "svelte";
-    import { signout } from "$lib/utils/auth";
+import "../../app.css";
+import DonateModal from "$lib/components/DonateModal.svelte";
+import Header from "$lib/components/header/Header.svelte";
+import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
+import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
+import { setCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { signout } from "$lib/utils/auth";
+import { onMount } from "svelte";
+import { Toaster } from "svelte-hot-french-toast";
 
-    export let data: LayoutServerData;
+let { data, children } = $props();
 
-    let mobileMenuVisible: boolean = false;
+let mobileMenuVisible = $state(false);
+let donateModal = $state(false);
 
-    function toggleMobileMenu() {
-        mobileMenuVisible = !mobileMenuVisible;
+function toggleMobileMenu() {
+    mobileMenuVisible = !mobileMenuVisible;
+}
+
+if (data.listrCookie) {
+    setCurrentUser(data.listrCookie);
+}
+
+onMount(() => {
+    if (!window.nostr) {
+        import("nostr-login")
+            .then(async ({ init }) => {
+                init({
+                    onAuth(npub, options) {
+                        if (options.type === "logout") {
+                            signout(ndk);
+                        } else {
+                            let user = ndk.getUser({ npub });
+                            setCurrentUser(user.pubkey);
+                        }
+                    },
+                });
+            })
+            .catch((error) => console.log("Failed to load nostr-login", error));
     }
-
-    let signerModal: boolean = false;
-    let donateModal: boolean = false;
-
-    if (data.listrCookie) {
-        $currentUser = $ndk.getUser({ npub: data.listrCookie });
-        $currentUser.ndk = $ndk;
-    }
-
-    onMount(() => {
-        console.log("onMount", window.nostr);
-        if (!window.nostr) {
-            import("nostr-login")
-                .then(async ({ init }) => {
-                    init({
-                        onAuth(npub, options) {
-                            if (options.type == "logout") {
-                                signout($ndk);
-                            } else {
-                                $currentUser = $ndk.getUser({ npub });
-                                $currentUser.ndk = $ndk;
-                                if ($currentUser && $currentUserFollows.length === 0) {
-                                    fetchUserFollows($currentUser).then(
-                                        (follows) => ($currentUserFollows = follows)
-                                    );
-                                }
-                                if ($currentUser && !$currentUserSettings && browser) {
-                                    fetchUserSettings($currentUser).then(
-                                        (settings) => ($currentUserSettings = settings)
-                                    );
-                                }
-                            }
-                        },
-                    });
-                })
-                .catch((error) => console.log("Failed to load nostr-login", error));
-        }
-    });
-
-    // Cleans up hack that fixes bg-color on the homepage
-    if (browser) {
-        document.body.classList.remove("bg-gray-900");
-        document.body.classList.remove("dark:bg-gray-900");
-    }
-
-    $: {
-        if ($currentUser && $currentUserFollows.length === 0) {
-            fetchUserFollows($currentUser).then((follows) => ($currentUserFollows = follows));
-        }
-    }
-
-    $: {
-        if ($currentUser && !$currentUserSettings && browser) {
-            fetchUserSettings($currentUser).then((settings) => ($currentUserSettings = settings));
-        }
-    }
+});
 </script>
 
 <Toaster />
 
 <MobileMenu
     {mobileMenuVisible}
-    on:closeMobileMenu={toggleMobileMenu}
-    on:donateButtonClicked={() => (donateModal = true)}
+    closeMobileMenu={toggleMobileMenu}
+    donateButtonClicked={() => (donateModal = true)}
 />
-<DesktopMenu on:donateButtonClicked={() => (donateModal = true)} />
+<DesktopMenu donateButtonClicked={() => (donateModal = true)} />
 <div class="lg:pl-72">
-    <Header on:openMobileMenu={toggleMobileMenu} />
+    <Header openMobileMenu={toggleMobileMenu} />
     <main class="py-4 sm:py-6 lg:py-10">
         <div class="px-4 sm:px-6 lg:px-8">
-            <slot />
+            {@render children()}
         </div>
     </main>
 </div>
 
 <DonateModal bind:modalOpen={donateModal} />
-<NoSignerModal bind:modalOpen={signerModal} />

@@ -1,73 +1,64 @@
 <script lang="ts">
-    import { Heart } from "lucide-svelte";
-    import { onMount, onDestroy } from "svelte";
-    import { afterNavigate } from "$app/navigation";
-    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { NDKEvent, NDKNip07Signer, NDKKind } from "@nostr-dev-kit/ndk";
-    import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
-    import { unixTimeNowInSeconds } from "$lib/utils";
-    import { Popover } from "flowbite-svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
+import { NDKEvent, NDKKind, NDKNip07Signer, NDKSubscription } from "@nostr-dev-kit/ndk";
+import { Popover } from "flowbite-svelte";
+import { Heart } from "lucide-svelte";
+import { onDestroy, onMount } from "svelte";
 
-    export let listId: string;
+let { listId }: { listId: string } = $props();
 
-    let alreadyLiked: boolean;
-    let likes: NDKEventStore<ExtendedBaseType<NDKEvent>>;
+let currentUser = getCurrentUser();
+let likes: NDKEvent[] = $state([]);
+let likesSub: NDKSubscription | null = $state(null);
+let alreadyLiked = $derived(
+    currentUser.user && likes.map((like) => like.pubkey).includes(currentUser.user.pubkey)
+);
 
-    onMount(() => {
-        likes = $ndk.storeSubscribe(
-            { kinds: [NDKKind.Reaction], "#a": [listId as string] },
-            { closeOnEose: false }
-        );
+onMount(() => {
+    likesSub = ndk.subscribe(
+        { kinds: [NDKKind.Reaction], "#a": [listId as string] },
+        { closeOnEose: false }
+    );
+
+    likesSub.on("event", (event: NDKEvent) => {
+        likes = [...likes, event];
     });
+});
 
-    onDestroy(() => likes?.unsubscribe());
+onDestroy(() => likesSub?.stop());
 
-    afterNavigate(() => {
-        likes = $ndk.storeSubscribe(
-            { kinds: [NDKKind.Reaction], "#a": [listId as string] },
-            { closeOnEose: false }
-        );
-    });
+function likeList() {
+    if (currentUser.user) {
+        if (!ndk.signer) {
+            const signer = new NDKNip07Signer();
+            ndk.signer = signer;
+        }
 
-    $: alreadyLiked =
-        !!$currentUser && $likes?.map((like) => like.pubkey).includes($currentUser?.pubkey);
-
-    function likeList() {
-        if ($currentUser) {
-            if (!$ndk.signer) {
-                const signer = new NDKNip07Signer();
-                $ndk.signer = signer;
-            }
-
-            // For now, don't worry about "unliking" a list.
-            if (!alreadyLiked) {
-                // Create and publish a reaction event (kind 7)
-                const likeEvent = new NDKEvent($ndk, {
-                    kind: 7,
-                    content: "+",
-                    pubkey: $currentUser?.pubkey as string,
-                    created_at: unixTimeNowInSeconds(),
-                    tags: [
-                        ["a", listId as string],
-                        ["p", $currentUser?.pubkey as string],
-                    ],
-                });
-                likeEvent
-                    .publish()
-                    .then(() => {
-                        alreadyLiked = true;
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-            }
+        // For now, don't worry about "unliking" a list.
+        if (!alreadyLiked) {
+            // Create and publish a reaction event (kind 7)
+            const likeEvent = new NDKEvent(ndk, {
+                kind: 7,
+                content: "+",
+                pubkey: currentUser.user.pubkey,
+                created_at: unixTimeNowInSeconds(),
+                tags: [
+                    ["a", listId as string],
+                    ["p", currentUser.user.pubkey],
+                ],
+            });
+            likeEvent.publish().catch((error) => {
+                console.error(error);
+            });
         }
     }
+}
 </script>
 
 <button
-    on:click={likeList}
+    onclick={likeList}
     id="likeButton"
     class="flex flex-row gap-1 items-center text-sm lg:text-base"
 >
@@ -77,9 +68,9 @@
             ? 'fill-red-500 stroke-red-500'
             : 'stroke-gray-500'} hover:fill-red-500 hover:stroke-red-500 w-4 lg:w-5 h-4 lg:h-5"
     />
-    {$likes?.length > 0 ? $likes.length : 0}
+    {likes.length > 0 ? likes.length : 0}
 </button>
-{#if !$currentUser}
+{#if !currentUser.user}
     <Popover
         triggeredBy="#likeButton"
         trigger="click"

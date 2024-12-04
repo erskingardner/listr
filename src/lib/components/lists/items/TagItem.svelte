@@ -1,17 +1,33 @@
 <script lang="ts">
-    import PrivateItemPill from "./PrivateItemPill.svelte";
-    import ItemActions from "./ItemActions.svelte";
-    import RemovalItemPill from "./RemovalItemPill.svelte";
-    import RemoveItem from "../actions/RemoveItem.svelte";
-    import Unstage from "../actions/Unstage.svelte";
-    import { Tag } from "lucide-svelte";
+import type { ListItemParams } from "$lib/types";
+import { Tag } from "lucide-svelte";
+import RemoveItem from "../actions/RemoveItem.svelte";
+import Unstage from "../actions/Unstage.svelte";
+import ItemActions from "./ItemActions.svelte";
+import PrivateItemPill from "./PrivateItemPill.svelte";
+import RemovalItemPill from "./RemovalItemPill.svelte";
 
-    export let type: string;
-    export let id: string;
-    export let privateItem: boolean;
-    export let unsaved: boolean;
-    export let removal: boolean;
-    export let editMode: boolean;
+let {
+    type,
+    id,
+    privateItem,
+    otherTagValues,
+    unsaved,
+    removal,
+    editMode,
+    removeItem,
+    removeUnsavedItem,
+}: {
+    type: string;
+    id: string;
+    privateItem: boolean;
+    otherTagValues: string[] | undefined;
+    unsaved: boolean;
+    removal: boolean;
+    editMode: boolean;
+    removeItem: (params: ListItemParams) => void;
+    removeUnsavedItem: (params: ListItemParams) => void;
+} = $props();
 </script>
 
 {#key id}
@@ -33,18 +49,27 @@
                     {#if removal}
                         <RemovalItemPill />
                     {/if}
-                    <Unstage {type} {id} {privateItem} {unsaved} {removal} on:removeUnsavedItem />
+                    <Unstage
+                        {type}
+                        {id}
+                        {privateItem}
+                        {otherTagValues}
+                        {unsaved}
+                        {removal}
+                        {removeUnsavedItem}
+                    />
                 {:else}
                     <RemoveItem
                         {type}
                         {id}
                         {privateItem}
+                        {otherTagValues}
                         {unsaved}
                         {removal}
                         {editMode}
-                        on:removeItem
+                        {removeItem}
                     />
-                    <ItemActions {type} {id} on:removeItem />
+                    <ItemActions {type} {id} />
                 {/if}
             </div>
         </div>

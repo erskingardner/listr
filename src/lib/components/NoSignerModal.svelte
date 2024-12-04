@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Modal } from "flowbite-svelte";
+import { Modal } from "flowbite-svelte";
 
-    export let modalOpen: boolean;
+let { modalOpen = $bindable() }: { modalOpen: boolean } = $props();
 </script>
 
 <Modal

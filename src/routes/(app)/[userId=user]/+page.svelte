@@ -1,91 +1,66 @@
 <script lang="ts">
-    import ndk from "$lib/stores/ndk";
-    import { onMount, onDestroy } from "svelte";
-    import { filterAndSortByTitle } from "$lib/utils";
-    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { type NDKEvent, NDKList, NDKKind } from "@nostr-dev-kit/ndk";
-    import { SUPPORTED_LIST_KINDS } from "$lib/utils";
-    import ListCard from "$lib/components/lists/ListCard.svelte";
-    import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
-    import { Home } from "lucide-svelte";
-    import { page } from "$app/stores";
-    import { getUserAndProfile } from "$lib/utils/nostr";
-    import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { page } from "$app/stores";
+import ListCard from "$lib/components/lists/ListCard.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { filterAndSortByTitle } from "$lib/utils";
+import { SUPPORTED_LIST_KINDS } from "$lib/utils";
+import { type NDKEvent, NDKKind, NDKList, type NDKSubscription } from "@nostr-dev-kit/ndk";
+import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
+import { Home } from "lucide-svelte";
+import { onDestroy } from "svelte";
 
-    let lists: NDKEventStore<ExtendedBaseType<NDKList>>;
-    let deletedEvents: NDKEventStore<ExtendedBaseType<NDKEvent>>;
-    let user: NDKUser;
-    let profile: NDKUserProfile | null;
-    let displayableName: string;
+let lists: NDKList[] = $state([]);
+let deletedEvents: NDKEvent[] = $state([]);
+let listsSub: NDKSubscription | undefined;
+let deletedEventsSub: NDKSubscription | undefined;
+let userId = $derived($page.params.userId);
+let user: NDKUser = $derived(ndk.getUser({ npub: userId }));
+let profile: NDKUserProfile | null = $state(null);
+let displayableName: string = $state("");
+let filteredLists: NDKList[] = $derived(filterAndSortByTitle(lists, deletedEvents));
 
-    $: {
-        let userId = $page.params.userId;
-        if (userId && user?.npub !== userId) {
-            getUserAndProfile(userId).then(({ user: tmpUser, profile: tmpProfile }) => {
-                user = tmpUser;
-                profile = tmpProfile;
-
-                // Unsubscribe from old lists and deleted events
-                if (lists || deletedEvents) {
-                    lists?.unsubscribe();
-                    deletedEvents?.unsubscribe();
-                }
-
-                // Subscribe to new lists and deleted events
-                lists = $ndk.storeSubscribe(
-                    {
-                        kinds: SUPPORTED_LIST_KINDS,
-                        authors: [user.pubkey],
-                    },
-                    { closeOnEose: false },
-                    NDKList
-                );
-
-                deletedEvents = $ndk.storeSubscribe({
-                    kinds: [NDKKind.EventDeletion],
+$effect(() => {
+    if (user) {
+        if (!profile) {
+            user.fetchProfile().then((fetchedProfile) => {
+                profile = fetchedProfile;
+                displayableName =
+                    profile?.displayName ||
+                    profile?.name ||
+                    profile?.nip05 ||
+                    `${user?.npub.slice(0, 9)}...` ||
+                    "";
+            });
+        }
+        if (!listsSub) {
+            let listsSub = ndk.subscribe(
+                {
+                    kinds: SUPPORTED_LIST_KINDS,
                     authors: [user.pubkey],
-                });
+                },
+                { closeOnEose: false }
+            );
+            listsSub.on("event", (event) => {
+                lists = [...lists, NDKList.from(event)];
+            });
+        }
+        if (!deletedEventsSub) {
+            let deletedEventsSub = ndk.subscribe({
+                kinds: [NDKKind.EventDeletion],
+                authors: [user.pubkey],
+            });
+            deletedEventsSub.on("event", (event) => {
+                deletedEvents = [...deletedEvents, event];
             });
         }
     }
+});
 
-    $: displayableName =
-        profile?.displayName ||
-        profile?.name ||
-        profile?.nip05 ||
-        `${user?.npub.slice(0, 9)}...` ||
-        "";
-
-    // onMount(async () => {
-    //     let { user: tmpUser, profile: tmpProfile } = await getUserAndProfile($page.params.userId);
-    //     user = tmpUser;
-    //     profile = tmpProfile;
-
-    //     lists = $ndk.storeSubscribe(
-    //         {
-    //             kinds: SUPPORTED_LIST_KINDS,
-    //             authors: [user.pubkey],
-    //         },
-    //         { closeOnEose: false },
-    //         NDKList
-    //     );
-
-    //     deletedEvents = $ndk.storeSubscribe({
-    //         kinds: [NDKKind.EventDeletion],
-    //         authors: [user.pubkey],
-    //     });
-    // });
-
-    onDestroy(() => {
-        lists?.unsubscribe();
-        deletedEvents?.unsubscribe();
-    });
-
-    $: {
-        if ($lists) {
-            $lists = filterAndSortByTitle($lists, $deletedEvents);
-        }
-    }
+onDestroy(() => {
+    listsSub?.stop();
+    deletedEventsSub?.stop();
+});
 </script>
 
 <svelte:head>
@@ -145,9 +120,9 @@
     </BreadcrumbItem>
 </Breadcrumb>
 
-{#if $lists}
+{#if lists.length > 0}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {#each $lists as list (list.id)}
+        {#each filteredLists as list (list.id)}
             <ListCard npub={user.npub} {list} />
         {/each}
     </div>

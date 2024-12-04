@@ -1,12 +1,22 @@
 <script lang="ts">
-    import UserDetails from "./UserDetails.svelte";
-    import UserBio from "./UserBio.svelte";
-    import FollowButton from "../lists/actions/FollowButton.svelte";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import AddToListButton from "../lists/actions/AddToListButton.svelte";
-    import { fly } from "svelte/transition";
+import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { fly } from "svelte/transition";
+import AddToListButton from "../lists/actions/AddToListButton.svelte";
+import FollowButton from "../lists/actions/FollowButton.svelte";
+import UserBio from "./UserBio.svelte";
+import UserDetails from "./UserDetails.svelte";
 
-    export let user: NDKUser;
+let { user, userProfile }: { user: NDKUser; userProfile?: NDKUserProfile } = $props();
+
+let profile: NDKUserProfile | null | undefined = $state(userProfile || user.profile);
+
+$effect(() => {
+    if (!profile) {
+        user.fetchProfile().then((userProfile) => {
+            profile = userProfile;
+        });
+    }
+});
 </script>
 
 <div

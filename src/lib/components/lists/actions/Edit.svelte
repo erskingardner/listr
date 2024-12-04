@@ -1,22 +1,28 @@
 <script lang="ts">
-    import { FileEdit, FileX } from "lucide-svelte";
-    import currentUser from "$lib/stores/currentUser";
-    import { createEventDispatcher } from "svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import { FileEdit, FileX } from "lucide-svelte";
 
-    const dispatch = createEventDispatcher();
+let {
+    pubkey,
+    editMode,
+    toggleEditMode,
+}: {
+    pubkey: string;
+    editMode: boolean;
+    toggleEditMode: () => void;
+} = $props();
 
-    export let pubkey: string;
-    export let editMode: boolean;
+let currentUser = getCurrentUser();
 </script>
 
-{#if $currentUser?.pubkey === pubkey}
+{#if currentUser.user?.pubkey === pubkey}
     {#if editMode}
-        <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
+        <button onclick={toggleEditMode} class="primaryActionButton">
             <FileX strokeWidth="1.5" size="20" class="w-5 h-5" />
             Stop editing
         </button>
     {:else}
-        <button on:click={() => dispatch("toggleEditMode")} class="primaryActionButton">
+        <button onclick={toggleEditMode} class="primaryActionButton">
             <FileEdit strokeWidth="1.5" size="20" class="w-5 h-5" />
             Edit
         </button>

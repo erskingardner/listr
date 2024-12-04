@@ -1,20 +1,23 @@
 <script lang="ts">
-    import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-    import { onMount } from "svelte";
+import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 
-    export let user: NDKUser | undefined = undefined;
-    export let userProfile: NDKUserProfile | undefined = undefined;
+let { user, userProfile }: { user: NDKUser; userProfile?: NDKUserProfile } = $props();
 
-    onMount(async () => {
-        if (!userProfile) {
-            await user?.fetchProfile();
-            userProfile = user?.profile;
-        }
-    });
+let profile: NDKUserProfile | null | undefined = $state(userProfile || user.profile);
+
+$effect(() => {
+    if (!profile) {
+        user.fetchProfile().then((userProfile) => {
+            profile = userProfile;
+        });
+    }
+});
+
+let bio = $derived(profile?.bio || profile?.about);
 </script>
 
-{#if userProfile?.bio || userProfile?.about}
+{#if bio}
     <div class="text-sm not-prose leading-relaxed whitespace-normal break-words">
-        {userProfile?.bio || userProfile?.about}
+        {bio}
     </div>
 {/if}

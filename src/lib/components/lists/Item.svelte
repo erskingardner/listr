@@ -1,22 +1,37 @@
 <script lang="ts">
-    import PersonItem from "./items/PersonItem.svelte";
-    import EventItem from "./items/EventItem.svelte";
-    import UrlItem from "./items/UrlItem.svelte";
-    import EmojiItem from "./items/EmojiItem.svelte";
-    import PreItem from "./items/PreItem.svelte";
-    import TagItem from "./items/TagItem.svelte";
-    import type { NDKTag } from "@nostr-dev-kit/ndk";
+import type { ListItemParams } from "$lib/types";
+import type { NDKTag } from "@nostr-dev-kit/ndk";
+import EmojiItem from "./items/EmojiItem.svelte";
+import EventItem from "./items/EventItem.svelte";
+import PersonItem from "./items/PersonItem.svelte";
+import PreItem from "./items/PreItem.svelte";
+import TagItem from "./items/TagItem.svelte";
+import UrlItem from "./items/UrlItem.svelte";
 
-    export let tag: NDKTag;
-    export let id: string;
-    export let listKind: number | undefined = undefined;
-    export let privateItem: boolean;
-    export let unsaved: boolean;
-    export let removal: boolean = false;
-    export let editMode: boolean = false;
+let {
+    tag,
+    id,
+    listKind,
+    privateItem,
+    unsaved,
+    removal,
+    editMode,
+    removeItem,
+    removeUnsavedItem,
+}: {
+    tag: NDKTag;
+    id: string;
+    listKind: number | undefined;
+    privateItem: boolean;
+    unsaved: boolean;
+    removal: boolean;
+    editMode: boolean;
+    removeItem: (params: ListItemParams) => void;
+    removeUnsavedItem: (params: ListItemParams) => void;
+} = $props();
 
-    const type: string = tag[0];
-    const otherTagValues: string[] | undefined = tag.slice(2);
+let type = $derived(tag[0]);
+let otherTagValues = $derived(tag.slice(2));
 </script>
 
 <div>
@@ -25,22 +40,24 @@
             {type}
             pubkey={id}
             {privateItem}
+            {otherTagValues}
             {unsaved}
             {removal}
             {editMode}
-            on:removeItem
-            on:removeUnsavedItem
+            {removeItem}
+            {removeUnsavedItem}
         />
     {:else if type === "e"}
         <EventItem
             {type}
             {id}
             {privateItem}
+            {otherTagValues}
             {unsaved}
             {removal}
             {editMode}
-            on:removeItem
-            on:removeUnsavedItem
+            {removeItem}
+            {removeUnsavedItem}
         />
     {:else if ["r", "relay"].includes(type)}
         <UrlItem
@@ -52,30 +69,32 @@
             {unsaved}
             {removal}
             {editMode}
-            on:removeItem
-            on:removeUnsavedItem
+            {removeItem}
+            {removeUnsavedItem}
         />
     {:else if type === "a"}
         <PreItem
             {type}
             {id}
             {privateItem}
+            {otherTagValues}
             {unsaved}
             {removal}
             {editMode}
-            on:removeItem
-            on:removeUnsavedItem
+            {removeItem}
+            {removeUnsavedItem}
         />
     {:else if type === "t"}
         <TagItem
             {type}
             {id}
             {privateItem}
+            {otherTagValues}
             {unsaved}
             {removal}
             {editMode}
-            on:removeItem
-            on:removeUnsavedItem
+            {removeItem}
+            {removeUnsavedItem}
         />
     {:else if type === "emoji"}
         <EmojiItem
@@ -86,8 +105,8 @@
             {unsaved}
             {removal}
             {editMode}
-            on:removeItem
-            on:removeUnsavedItem
+            {removeItem}
+            {removeUnsavedItem}
         />
     {:else if ["L", "l", "name", "title", "description"].includes(type)}
         <!-- Don't do anything for now -->

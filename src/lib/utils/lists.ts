@@ -1,5 +1,6 @@
 import type { NDKEvent, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 import { NDKKind } from "@nostr-dev-kit/ndk";
+import { NOSTR_PUBKEY_REGEXP } from "./nostr";
 
 export const SUPPORTED_LIST_KINDS = [
     // 10000-19999: Lists
@@ -14,6 +15,7 @@ export const SUPPORTED_LIST_KINDS = [
     NDKKind.InterestList,
     NDKKind.EmojiList,
     10050, // NIP-17 DM receive relay list
+    10051, // NIP-104 Key Package relay list
 
     // 30000-39999: Categorized Lists
     NDKKind.FollowSet,
@@ -75,6 +77,7 @@ export const ITEM_TYPES_FOR_LIST_KINDS: AllowedItemsForListKind = {
     10015: ["t", "a"],
     10030: ["emoji", "a"],
     10050: ["relay"],
+    10051: ["relay"],
     30000: ["p"],
     30001: undefined, // Deprecated, for now just return the full array
     30002: ["relay"],
@@ -89,16 +92,30 @@ export const LIST_MUTE_FILTER_REGEXP = /^mute|Mute/;
 export const LISTR_NPUB = "npub1lstr2kmdthkgfuzne8e4cn2nhr646x8jt25szdj7t4wr6xemtuuq3lczsj";
 
 export const filterAndSortByTitle = (lists: NDKList[], deletions?: NDKEvent[]) => {
+    // Filter blocked users
     const userFiltered = lists.filter((list) => !BLOCKED_PUBKEYS.includes(list.pubkey));
+
+    // Filter by title
     const titleFiltered = userFiltered.filter(
         (list) => list.title && !list.title.match(LIST_FILTER_REGEXP)
     );
 
-    const contactFiltered = filterLatestKind3Events(titleFiltered);
+    // Remove duplicates by list.id (keep the most recent version)
+    const uniqueById = titleFiltered.reduce((acc, current) => {
+        const existing = acc.get(current.id);
+        if (!existing || (current.created_at ?? 0) > (existing.created_at ?? 0)) {
+            acc.set(current.id, current);
+        }
+        return acc;
+    }, new Map<string, NDKList>());
 
-    let deleteFiltered;
+    // Remove duplicates by kind (keep only the most recent version)
+    const uniqueFiltered = filterLatestUniqueKindEvents([...uniqueById.values()]);
+
+    // Filter deletions if provided
+    let deleteFiltered: NDKList[] | undefined;
     if (deletions) {
-        deleteFiltered = contactFiltered.filter(
+        deleteFiltered = uniqueFiltered.filter(
             (list) =>
                 !deletions
                     .map((event) => event.tagValue("a") || event.tagValue("e"))
@@ -106,41 +123,59 @@ export const filterAndSortByTitle = (lists: NDKList[], deletions?: NDKEvent[]) =
         );
     }
 
-    const sorted = (deleteFiltered || titleFiltered).sort((a, b) =>
-        a.title!.localeCompare(b.title!)
+    // Sort by title
+    const sorted = (deleteFiltered || uniqueFiltered).sort((a, b) =>
+        (a.title || "").localeCompare(b.title || "")
     );
+
     return sorted;
 };
 
-const filterLatestKind3Events = (events: NDKList[]): NDKList[] => {
-    let latestKind3Event: NDKList | null = null;
+// Add this constant with the kinds that should be unique
+export const UNIQUE_LIST_KINDS = [
+    NDKKind.Contacts,
+    NDKKind.MuteList,
+    NDKKind.PinList,
+    NDKKind.RelayList,
+    NDKKind.BookmarkList,
+    NDKKind.CommunityList,
+    NDKKind.BlockRelayList,
+    NDKKind.SearchRelayList,
+    NDKKind.InterestList,
+    NDKKind.EmojiList,
+    10050, // NIP-17 DM receive relay list
+    10051, // NIP-104 Key Package relay list
+];
 
-    // Filter out kind:3 events and find the latest one
+function filterLatestUniqueKindEvents(events: NDKList[]): NDKList[] {
+    // Object to store the latest event for each unique kind
+    const latestEventsByKind: { [kind: number]: NDKList } = {};
+
+    // Filter out events of unique kinds and find the latest one for each kind
     const filteredEvents = events.filter((event) => {
-        if (event.kind !== 3) {
+        if (!UNIQUE_LIST_KINDS.includes(event.kind as number)) {
             return true;
         }
 
-        if (!latestKind3Event || event.created_at! > latestKind3Event.created_at!) {
-            latestKind3Event = event;
+        if (
+            !latestEventsByKind[event.kind as number] ||
+            (event.created_at ?? 0) > (latestEventsByKind[event.kind as number].created_at ?? 0)
+        ) {
+            latestEventsByKind[event.kind as number] = event;
         }
 
         return false;
     });
 
-    // Add the latest kind:3 event if found
-    if (latestKind3Event) {
-        filteredEvents.push(latestKind3Event);
+    // Add the latest event for each unique kind back to the filtered list
+    for (const event of Object.values(latestEventsByKind)) {
+        filteredEvents.push(event);
     }
 
     return filteredEvents;
-};
+}
 
-export const filteredLists = (
-    lists: NDKList[],
-    deletions?: NDKEvent[],
-    filterMute: boolean = false
-) => {
+export const filteredLists = (lists: NDKList[], deletions?: NDKEvent[], filterMute = false) => {
     let titleFiltered = lists.filter((list) => list.title && !list.title.match(LIST_FILTER_REGEXP));
 
     if (filterMute) {
@@ -149,7 +184,7 @@ export const filteredLists = (
         );
     }
 
-    let deleteFiltered;
+    let deleteFiltered: NDKList[] | undefined;
     if (deletions) {
         deleteFiltered = titleFiltered.filter(
             (list) =>
@@ -168,13 +203,17 @@ export const filteredLists = (
  */
 export function deduplicateItems(itemsArray: NDKTag[]): NDKTag[] {
     const dedupedArr: NDKTag[] = [];
-    itemsArray.forEach((item) => {
+    for (const item of itemsArray) {
         const dupes = dedupedArr.filter(
             (dedupedItem) => dedupedItem[0] === item[0] && dedupedItem[1] === item[1]
         );
         if (dupes.length === 0) dedupedArr.push(item);
-    });
+    }
     return dedupedArr;
+}
+
+export function ensurePubkeys(itemsArray: NDKTag[]): NDKTag[] {
+    return itemsArray.filter((item) => item[0] === "p" && NOSTR_PUBKEY_REGEXP.test(item[1]));
 }
 
 /**
@@ -220,6 +259,7 @@ export function placeholderForListKind(kind: number): string {
         case 10006:
         case 10007:
         case 10050:
+        case 10051:
         case 30002:
             return "Relay NIP-19 identifier (nrelay) or a relay URL (e.g. wss://relay.damus.io)";
         case 10003:
@@ -249,5 +289,6 @@ export function kindIsRelayList(kind: number): boolean {
         NDKKind.SearchRelayList,
         NDKKind.RelaySet,
         10050, // NIP-17 DM receive relay list
+        10051, // NIP-104 Key Package relay list
     ].includes(kind);
 }

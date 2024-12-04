@@ -1,64 +1,66 @@
 <script lang="ts">
-    import { Check } from "lucide-svelte";
-    import { createEventDispatcher } from "svelte";
-    import {
-        stringInputToTag,
-        validateTagForListKind,
-        placeholderForListKind,
-        kindIsRelayList,
-    } from "$lib/utils";
-    import { browser } from "$app/environment";
-    import type { NDKTag } from "@nostr-dev-kit/ndk";
+import { browser } from "$app/environment";
+import {
+    kindIsRelayList,
+    placeholderForListKind,
+    stringInputToTag,
+    validateTagForListKind,
+} from "$lib/utils";
+import type { NDKTag } from "@nostr-dev-kit/ndk";
+import { Check } from "lucide-svelte";
 
-    const dispatch = createEventDispatcher();
+let {
+    kind,
+    addListItem,
+}: {
+    kind: number;
+    addListItem: (tag: NDKTag, type: string) => void;
+} = $props();
 
-    export let kind: number;
+let listItem = $state("");
+let listItemType = $state("public");
+let relayReadWrite = $state<string | undefined>(undefined);
 
-    let listItem: string;
-    let listItemType: string = "public";
-    let relayReadWrite: string | undefined = undefined;
+let addItemSubmitting = $state(false);
+let addItemError = $state(false);
+let addItemErrorMessage = $state("");
+let placeholder = $derived(placeholderForListKind(Number.parseInt(kind.toString())));
 
-    let addItemSubmitting: boolean = false;
-    let addItemError: boolean = false;
-    let addItemErrorMessage: string = "";
+function handleListAddition(e: MouseEvent) {
+    e.preventDefault();
+    addItemSubmitting = true;
+    addItemError = false;
+    addItemErrorMessage = "";
 
-    function handleListAddition() {
-        addItemSubmitting = true;
-        addItemError = false;
-        addItemErrorMessage = "";
-
-        if (browser) {
-            // Convert the string input to a NDKTag
-            let tag: NDKTag | undefined;
-            if (relayReadWrite === "read" || relayReadWrite === "write") {
-                tag = stringInputToTag(listItem, kind, [relayReadWrite]);
-            } else {
-                tag = stringInputToTag(listItem, kind);
-            }
-
-            if (!tag) {
-                // Error if we can't parse the input to a tag
-                addItemError = true;
-                addItemErrorMessage = "Please enter a valid input.";
-            } else if (tag && validateTagForListKind(tag, parseInt(kind.toString()))) {
-                dispatch("addListItem", { tag: tag, type: listItemType });
-            } else {
-                // Error if the type of tag isn't valid for the kind of list
-                addItemError = true;
-                addItemErrorMessage = "This isn't a valid item for this kind of list.";
-                listItem = "";
-            }
-
-            // Clean up the input
-            listItem = "";
-            relayReadWrite = undefined;
-            listItemType = "public";
-            addItemSubmitting = false;
+    if (browser) {
+        // Convert the string input to a NDKTag
+        let tag: NDKTag | undefined;
+        if (relayReadWrite === "read" || relayReadWrite === "write") {
+            tag = stringInputToTag(listItem, kind, [relayReadWrite]);
+        } else {
+            tag = stringInputToTag(listItem, kind);
         }
-    }
 
-    let placeholder: string = "";
-    $: placeholder = placeholderForListKind(parseInt(kind.toString()));
+        if (!tag) {
+            // Error if we can't parse the input to a tag
+            addItemError = true;
+            addItemErrorMessage = "Please enter a valid input.";
+        } else if (tag && validateTagForListKind(tag, Number.parseInt(kind.toString()))) {
+            addListItem(tag, listItemType);
+        } else {
+            // Error if the type of tag isn't valid for the kind of list
+            addItemError = true;
+            addItemErrorMessage = "This isn't a valid item for this kind of list.";
+            listItem = "";
+        }
+
+        // Clean up the input
+        listItem = "";
+        relayReadWrite = undefined;
+        listItemType = "public";
+        addItemSubmitting = false;
+    }
+}
 </script>
 
 <form class="mt-2 mb-6">
@@ -98,7 +100,7 @@
             <option value="private">Private</option>
         </select>
         <button
-            on:click|preventDefault={handleListAddition}
+            onclick={handleListAddition}
             tabindex="0"
             class="w-full lg:w-auto justify-center lg:justify-start flex flex-row gap-1 items-center border border-indigo-600 bg-indigo-50 dark:bg-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-500 rounded-md p-2 px-3"
             disabled={addItemSubmitting}

@@ -1,17 +1,32 @@
 <script lang="ts">
-    import PrivateItemPill from "./PrivateItemPill.svelte";
-    import ItemActions from "./ItemActions.svelte";
-    import RemovalItemPill from "./RemovalItemPill.svelte";
-    import Unstage from "../actions/Unstage.svelte";
-    import RemoveItem from "../actions/RemoveItem.svelte";
+import type { ListItemParams } from "$lib/types";
+import RemoveItem from "../actions/RemoveItem.svelte";
+import Unstage from "../actions/Unstage.svelte";
+import ItemActions from "./ItemActions.svelte";
+import PrivateItemPill from "./PrivateItemPill.svelte";
+import RemovalItemPill from "./RemovalItemPill.svelte";
 
-    export let type: string;
-    export let id: string;
-    export let otherTagValues: string[];
-    export let privateItem: boolean;
-    export let unsaved: boolean;
-    export let removal: boolean;
-    export let editMode: boolean;
+let {
+    type,
+    id,
+    otherTagValues,
+    privateItem,
+    unsaved,
+    removal,
+    editMode,
+    removeItem,
+    removeUnsavedItem,
+}: {
+    type: string;
+    id: string;
+    otherTagValues: string[];
+    privateItem: boolean;
+    unsaved: boolean;
+    removal: boolean;
+    editMode: boolean;
+    removeItem: (params: ListItemParams) => void;
+    removeUnsavedItem: (params: ListItemParams) => void;
+} = $props();
 </script>
 
 {#key id}
@@ -31,7 +46,7 @@
                 {/if}
                 {#if !editMode && !unsaved}
                     <div class="lg:hidden ml-auto">
-                        <ItemActions {type} {id} on:removeItem />
+                        <ItemActions {type} {id} />
                     </div>
                 {/if}
             </div>
@@ -49,7 +64,7 @@
                         {unsaved}
                         {otherTagValues}
                         {removal}
-                        on:removeUnsavedItem
+                        {removeUnsavedItem}
                     />
                 {:else}
                     <RemoveItem
@@ -60,11 +75,11 @@
                         {unsaved}
                         {removal}
                         {editMode}
-                        on:removeItem
+                        {removeItem}
                     />
                     {#if !editMode}
                         <div class="hidden lg:block">
-                            <ItemActions {type} {id} on:removeItem />
+                            <ItemActions {type} {id} />
                         </div>
                     {/if}
                 {/if}

@@ -1,152 +1,176 @@
 <script lang="ts">
-    import currentUser from "$lib/stores/currentUser";
-    import { superForm, defaults } from "sveltekit-superforms/client";
-    import { zod } from "sveltekit-superforms/adapters";
-    import { AlertTriangle, Check, Info } from "lucide-svelte";
-    import { Tooltip } from "flowbite-svelte";
-    import { browser } from "$app/environment";
-    import {
-        unixTimeNowInSeconds,
-        validateTagForListKind,
-        stringInputToTag,
-        placeholderForListKind,
-        kindIsRelayList,
-    } from "$lib/utils";
-    import Item from "$lib/components/lists/Item.svelte";
-    import { z } from "zod";
-    import ndk from "$lib/stores/ndk";
-    import { NDKList, NDKNip07Signer, type NDKTag } from "@nostr-dev-kit/ndk";
-    import { goto } from "$app/navigation";
-    import toast from "svelte-french-toast";
-    import { v4 as uuidv4 } from "uuid";
+import { browser } from "$app/environment";
+import { goto } from "$app/navigation";
+import Item from "$lib/components/lists/Item.svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import {
+    kindIsRelayList,
+    placeholderForListKind,
+    stringInputToTag,
+    unixTimeNowInSeconds,
+    validateTagForListKind,
+} from "$lib/utils";
+import { NDKList, NDKNip07Signer, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
+import { Tooltip } from "flowbite-svelte";
+import { AlertTriangle, Check, Info } from "lucide-svelte";
+import toast from "svelte-hot-french-toast";
+import { zod } from "sveltekit-superforms/adapters";
+import { defaults, superForm } from "sveltekit-superforms/client";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 
-    let nameInputDisabled: boolean = true;
-    let addItemSubmitting: boolean = false;
-    let addItemError: boolean = false;
-    let addItemErrorMessage: string = "";
+let addItemSubmitting = $state(false);
+let addItemError = $state(false);
+let addItemErrorMessage = $state("");
+let currentUser = getCurrentUser();
 
-    const newListSchema = z.object({
-        kind: z.string().min(5, "Please select a kind"),
-        title: z.string().min(1, "Please give your list a name"),
-        description: z.string().optional(),
-        category: z.string().optional(),
-        publicItems: z.string().array().array().optional(),
-        privateItems: z.string().array().array().optional(),
+const newListSchema = z.object({
+    kind: z.string().min(5, "Please select a kind"),
+    title: z.string().min(1, "Please give your list a name"),
+    description: z.string().optional(),
+    category: z.string().optional(),
+    publicItems: z.string().array().array().optional(),
+    privateItems: z.string().array().array().optional(),
+});
+
+const initialNewList = {
+    kind: "",
+    title: "",
+    description: "",
+    category: "",
+    publicItems: [],
+    privateItems: [],
+};
+
+const { form, errors, enhance } = superForm(defaults(initialNewList, zod(newListSchema)), {
+    taintedMessage: "Are you sure you want to leave the page? Your changes won't be saved.",
+    SPA: true,
+    validators: zod(newListSchema),
+    async onUpdate({ form }) {
+        if (form.valid) {
+            const nip19Id = await publishList();
+            await goto(`/${currentUser.user?.npub}/${form.data.kind}/${nip19Id}`);
+        }
+    },
+});
+
+async function publishList(): Promise<string> {
+    const signer = new NDKNip07Signer();
+    ndk.signer = signer;
+
+    const list = new NDKList(ndk, {
+        kind: Number.parseInt($form.kind),
+        pubkey: currentUser.user?.pubkey as string,
+        created_at: unixTimeNowInSeconds(),
+        content: JSON.stringify($form.privateItems),
+        tags: $form.publicItems as NDKTag[],
     });
 
-    const initialNewList = {
-        kind: "",
-        title: "",
-        description: "",
-        category: "",
-        publicItems: [],
-        privateItems: [],
-    };
+    list.title = $form.title.trim();
+    list.description = $form.description?.trim();
 
-    const { form, errors, enhance } = superForm(defaults(initialNewList, zod(newListSchema)), {
-        taintedMessage: "Are you sure you want to leave the page? Your changes won't be saved.",
-        SPA: true,
-        validators: zod(newListSchema),
-        async onUpdate({ form }) {
-            if (form.valid) {
-                const nip19Id = await publishList();
-                // eslint-disable-next-line svelte/valid-compile
-                await goto(`/${$currentUser!.npub}/${$form.kind}/${nip19Id}`);
-            }
-        },
-    });
-
-    async function publishList(): Promise<string> {
-        const signer = new NDKNip07Signer();
-        $ndk.signer = signer;
-
-        const list = new NDKList($ndk, {
-            kind: parseInt($form.kind),
-            pubkey: $currentUser!.pubkey,
-            created_at: unixTimeNowInSeconds(),
-            content: JSON.stringify($form.privateItems),
-            tags: $form.publicItems as NDKTag[],
-        });
-
-        list.title = $form.title.trim();
-        list.description = $form.description?.trim();
-
-        // Only add a "d" tag if needed
-        if (list.kind! >= 30000 && list.kind! <= 40000) {
-            const uuid = uuidv4();
-            list.tags.push(["d", `listr-${uuid}`]);
-        }
-
-        if ($form.category) {
-            list.tags.push(["L", "lol.listr.ontology"]);
-            list.tags.push(["l", $form.category]);
-        }
-
-        // Encrypt if we need to
-        if (list.content) await list.encrypt($currentUser!);
-        // Publish
-        await list.publish().then(() => toast.success("New list successfully published"));
-
-        return list.encode();
+    // Only add a "d" tag if needed
+    if (list.kind && list.kind >= 30000 && list.kind <= 40000) {
+        const uuid = uuidv4();
+        list.tags.push(["d", `listr-${uuid}`]);
     }
 
-    function handleListAddition() {
-        addItemSubmitting = true;
-        addItemError = false;
-        addItemErrorMessage = "";
-
-        if (browser) {
-            const listItemInputEl = document.getElementById("listItem") as HTMLInputElement;
-            const listItemTypeEl = document.getElementById("listItemType") as HTMLInputElement;
-            const relayReadWriteEl = document.getElementById("relayReadWrite") as HTMLSelectElement;
-
-            // Convert the string input to a NDKTag
-            let tag: NDKTag | undefined;
-            tag = stringInputToTag(listItemInputEl.value, +$form.kind, [relayReadWriteEl.value]);
-
-            if (!tag) {
-                // Error if we can't parse the input to a tag
-                addItemError = true;
-                addItemErrorMessage = "Please enter a valid input.";
-            } else if (tag && validateTagForListKind(tag, +$form.kind)) {
-                if (listItemTypeEl.value === "public")
-                    $form.publicItems = $form.publicItems ? [...$form.publicItems, tag] : [tag];
-                if (listItemTypeEl.value === "private")
-                    $form.privateItems = $form.privateItems ? [...$form.privateItems, tag] : [tag];
-            } else {
-                // Error if the type of tag isn't valid for the kind of list
-                addItemError = true;
-                addItemErrorMessage = "This isn't a valid item for this kind of list.";
-                listItemInputEl.value = "";
-            }
-
-            // Clean up the input
-            listItemInputEl.value = "";
-            addItemSubmitting = false;
-        }
+    if ($form.category) {
+        list.tags.push(["L", "lol.listr.ontology"]);
+        list.tags.push(["l", $form.category]);
     }
 
-    function handleListRemoval(item: string[], privateItem: boolean) {
-        if (privateItem) {
-            $form.privateItems = $form.privateItems?.filter((listItem) => listItem !== item);
+    // Encrypt if we need to
+    if (list.content) await list.encrypt(currentUser.user as NDKUser);
+    // Publish
+    await list.publish().then(() => toast.success("New list successfully published"));
+
+    return list.encode();
+}
+
+function handleListAddition(e: MouseEvent) {
+    e.preventDefault();
+    addItemSubmitting = true;
+    addItemError = false;
+    addItemErrorMessage = "";
+
+    if (browser) {
+        const listItemInputEl = document.getElementById("listItem") as HTMLInputElement;
+        const listItemTypeEl = document.getElementById("listItemType") as HTMLInputElement;
+        const relayReadWriteEl = document.getElementById("relayReadWrite") as HTMLSelectElement;
+
+        // Convert the string input to a NDKTag
+        let tag: NDKTag | undefined;
+        tag = stringInputToTag(listItemInputEl.value, +$form.kind, [relayReadWriteEl.value]);
+
+        if (!tag) {
+            // Error if we can't parse the input to a tag
+            addItemError = true;
+            addItemErrorMessage = "Please enter a valid input.";
+        } else if (tag && validateTagForListKind(tag, +$form.kind)) {
+            if (listItemTypeEl.value === "public")
+                $form.publicItems = $form.publicItems ? [...$form.publicItems, tag] : [tag];
+            if (listItemTypeEl.value === "private")
+                $form.privateItems = $form.privateItems ? [...$form.privateItems, tag] : [tag];
         } else {
-            $form.publicItems = $form.publicItems?.filter((listItem) => listItem !== item);
+            // Error if the type of tag isn't valid for the kind of list
+            addItemError = true;
+            addItemErrorMessage = "This isn't a valid item for this kind of list.";
+            listItemInputEl.value = "";
         }
+
+        // Clean up the input
+        listItemInputEl.value = "";
+        addItemSubmitting = false;
     }
+}
 
-    let placeholder: string = "";
+function handleListRemoval(item: string[], privateItem: boolean) {
+    if (privateItem) {
+        $form.privateItems = $form.privateItems?.filter((listItem) => listItem !== item);
+    } else {
+        $form.publicItems = $form.publicItems?.filter((listItem) => listItem !== item);
+    }
+}
 
-    $: nameInputDisabled = parseInt($form.kind) < 30000;
-    $: if ($form.kind === "10000") $form.title = "Mute";
-    $: if ($form.kind === "10001") $form.title = "Pin";
-    $: if ($form.kind === "10002") $form.title = "Relays";
-    $: if ($form.kind === "10003") $form.title = "Bookmarks";
-    $: if ($form.kind === "10006") $form.title = "Blocked Relays";
-    $: if ($form.kind === "10007") $form.title = "Search Relays";
-    $: if ($form.kind === "10050") $form.title = "DM Receive Relays";
-    $: if ($form.kind === "10015") $form.title = "Interests";
-    $: if ($form.kind === "10030") $form.title = "Emojis";
-    $: placeholder = placeholderForListKind(parseInt($form.kind));
+let placeholder = $derived(placeholderForListKind(Number.parseInt($form.kind)));
+let nameInputDisabled = $derived(Number.parseInt($form.kind) < 30000);
+
+$effect(() => {
+    switch (Number.parseInt($form.kind)) {
+        case 10000:
+            $form.title = "Mute";
+            break;
+        case 10001:
+            $form.title = "Pin";
+            break;
+        case 10002:
+            $form.title = "Relays";
+            break;
+        case 10003:
+            $form.title = "Bookmarks";
+            break;
+        case 10006:
+            $form.title = "Blocked Relays";
+            break;
+        case 10007:
+            $form.title = "Search Relays";
+            break;
+        case 10015:
+            $form.title = "Interests";
+            break;
+        case 10030:
+            $form.title = "Emojis";
+            break;
+        case 10050:
+            $form.title = "DM Receive Relays";
+            break;
+        case 10051:
+            $form.title = "MLS Key Package Relays";
+            break;
+    }
+});
 </script>
 
 <svelte:head>
@@ -162,7 +186,7 @@
 >
     <div class="text-lg font-bold">Create a new list</div>
     <hr class="dark:border-gray-700" />
-    {#if $currentUser}
+    {#if currentUser.user}
         <form class="py-4 flex flex-col gap-4" method="POST" use:enhance>
             <div class="flex flex-col gap-0 relative">
                 <label for="kind">What type of list is this?</label>
@@ -304,8 +328,11 @@
                                             id={privateItem[1]}
                                             listKind={parseInt($form.kind)}
                                             privateItem={true}
+                                            removal={false}
+                                            editMode={true}
                                             unsaved={true}
-                                            on:removeUnsavedItem={() =>
+                                            removeItem={() => {}}
+                                            removeUnsavedItem={() =>
                                                 handleListRemoval(privateItem, true)}
                                         />
                                     </div>
@@ -322,7 +349,10 @@
                                             listKind={parseInt($form.kind)}
                                             privateItem={false}
                                             unsaved={true}
-                                            on:removeUnsavedItem={() =>
+                                            removal={false}
+                                            editMode={true}
+                                            removeItem={() => {}}
+                                            removeUnsavedItem={() =>
                                                 handleListRemoval(publicItem, false)}
                                         />
                                     </div>
@@ -361,7 +391,7 @@
                             <option value="private">Private</option>
                         </select>
                         <button
-                            on:click|preventDefault={handleListAddition}
+                            onclick={handleListAddition}
                             tabindex="0"
                             class="w-full lg:w-auto flex bg-transparent justify-center border border-gray-400 bg-green-50 hover:bg-green-200 rounded-md p-2 disabled:border-gray-200 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:text-gray-500"
                             disabled={addItemSubmitting}

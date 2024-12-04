@@ -1,56 +1,58 @@
 <script lang="ts">
-    import { page } from "$app/stores";
-    import ndk from "$lib/stores/ndk";
-    import { SUPPORTED_LIST_KINDS } from "$lib/utils";
-    import { onDestroy } from "svelte";
-    import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
-    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import UserSearchResult from "$lib/components/search/UserSearchResult.svelte";
-    import ListSearchResult from "$lib/components/search/ListSearchResult.svelte";
-    import Loader from "$lib/components/Loader.svelte";
+import { page } from "$app/stores";
+import Loader from "$lib/components/Loader.svelte";
+import ListSearchResult from "$lib/components/search/ListSearchResult.svelte";
+import UserSearchResult from "$lib/components/search/UserSearchResult.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { SUPPORTED_LIST_KINDS } from "$lib/utils";
+import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet, type NDKSubscription } from "@nostr-dev-kit/ndk";
+import { onDestroy } from "svelte";
 
-    let query: string | null = $page.url.searchParams.get("q");
-    let searchResults: NDKEventStore<ExtendedBaseType<NDKEvent>>;
-    let eoseReceived: boolean = false;
-    const searchRelays: NDKRelaySet = new NDKRelaySet(new Set(), $ndk);
-    searchRelays.addRelay(new NDKRelay("wss://relay.nostr.band"));
-    searchRelays.addRelay(new NDKRelay("wss://nostr.wine"));
-    searchRelays.addRelay(new NDKRelay("wss://relay.noswhere.com"));
-    searchRelays.addRelay(new NDKRelay("wss://purplepag.es"));
-    searchRelays.addRelay(new NDKRelay("wss://search.nos.today"));
+const searchRelayUrls = [
+    "wss://relay.nostr.band",
+    "wss://relay.primal.net",
+    "wss://relay.noswhere.com",
+    "wss://purplepag.es",
+    "wss://search.nos.today",
+];
 
+const searchRelays: NDKRelaySet = new NDKRelaySet(new Set(), ndk);
+for (const url of searchRelayUrls) {
+    searchRelays.addRelay(new NDKRelay(url));
+}
+
+let query: string | null = $derived($page.url.searchParams.get("q"));
+let sub: NDKSubscription | null = $state(null);
+let searchResults: NDKEvent[] = $state([]);
+let userResults: NDKEvent[] = $state([]);
+let listResults: NDKEvent[] = $state([]);
+let eoseReceived = $state(false);
+
+$effect(() => {
     if (query) {
-        searchResults = $ndk.storeSubscribe({ search: query });
+        sub = ndk.subscribe({ search: query, limit: 50 }, {}, searchRelays);
     }
 
-    function queryChanged() {
-        query = $page.url.searchParams.get("q");
-        if (query) {
-            searchResults = $ndk.storeSubscribe({ search: query }, { relaySet: searchRelays });
-            setTimeout(() => {
-                eoseReceived = true;
-            }, 7000);
-        }
+    if (sub) {
+        sub.on("eose", () => {
+            eoseReceived = true;
+        });
+        sub.on("event", (event: NDKEvent) => {
+            searchResults = [...searchResults, event];
+        });
     }
 
-    onDestroy(() => {
-        if (searchResults) searchResults.unsubscribe();
-    });
-
-    let userResults: NDKEvent[] = [];
-    let listResults: NDKEvent[] = [];
-
-    $: {
-        if ($searchResults) {
-            userResults = $searchResults.filter((event) => event.kind === NDKKind.Metadata);
-            listResults = $searchResults.filter((event) =>
-                SUPPORTED_LIST_KINDS.includes(event.kind as number)
-            );
-        }
+    if (searchResults.length > 0) {
+        userResults = searchResults.filter((event) => event.kind === NDKKind.Metadata);
+        listResults = searchResults.filter((event) =>
+            SUPPORTED_LIST_KINDS.includes(event.kind as number)
+        );
     }
+});
 
-    $: if (searchResults) searchResults.onEose(() => (eoseReceived = true));
-    $: $page.url.searchParams.get("q") && queryChanged();
+onDestroy(() => {
+    sub?.stop();
+});
 </script>
 
 <svelte:head>
@@ -77,12 +79,12 @@
             {/each}
         {/if}
 
-        {#if eoseReceived && $searchResults.length === 0}
+        {#if eoseReceived && searchResults.length === 0}
             No search results
         {:else if eoseReceived}
             <!-- Loading finished -->
         {:else}
-            <Loader class="mx-auto my-6" />
+            <Loader extraClasses="mx-auto my-6" />
         {/if}
     {:else}
         Search for something

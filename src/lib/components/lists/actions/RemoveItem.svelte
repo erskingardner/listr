@@ -1,33 +1,35 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
-    import { expoInOut } from "svelte/easing";
-    import { createEventDispatcher } from "svelte";
-    import { X } from "lucide-svelte";
+import type { ListItemParams } from "$lib/types";
+import { X } from "lucide-svelte";
+import { expoInOut } from "svelte/easing";
+import { fly } from "svelte/transition";
 
-    const dispatch = createEventDispatcher();
-
-    export let editMode: boolean = false;
-    export let type: string;
-    export let id: string;
-    export let privateItem: boolean;
-    export let otherTagValues: string[] | undefined = undefined;
-    export let unsaved: boolean;
-    export let removal: boolean;
+let {
+    editMode,
+    type,
+    id,
+    privateItem,
+    otherTagValues,
+    unsaved,
+    removal,
+    removeItem,
+}: {
+    editMode: boolean;
+    type: string;
+    id: string;
+    privateItem: boolean;
+    otherTagValues?: string[];
+    unsaved: boolean;
+    removal: boolean;
+    removeItem: (params: ListItemParams) => void;
+} = $props();
 </script>
 
 {#if editMode}
     <button
         transition:fly={{ x: -200, duration: 300, easing: expoInOut }}
         class="primaryActionButton"
-        on:click={() =>
-            dispatch("removeItem", {
-                type,
-                id,
-                privateItem,
-                otherTagValues,
-                unsaved,
-                removal,
-            })}
+        onclick={() => removeItem({ type, id, privateItem, otherTagValues, unsaved, removal })}
     >
         <X strokeWidth="1.5" size="20" class="w-5 h-5" />
         Remove item

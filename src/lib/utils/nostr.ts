@@ -1,4 +1,4 @@
-import { ndkStore } from "$lib/stores/ndk";
+import { ndkStore } from "$lib/stores/ndk.svelte";
 import {
     NDKKind,
     type NDKTag,
@@ -10,7 +10,8 @@ import { nip19 } from "nostr-tools";
 import type { ProfilePointer } from "nostr-tools/nip19";
 
 export const NOSTR_BECH32_REGEXP =
-    /^(npub|nprofile|note|nevent|naddr|nrelay)1[023456789acdefghjklmnpqrstuvwxyz]+/;
+    /^(npub|nprofile|note|nevent|naddr)1[023456789acdefghjklmnpqrstuvwxyz]+/;
+export const NOSTR_PUBKEY_REGEXP = /^[0-9a-fA-F]{64}$/;
 
 export function nip19ToTag(nip19Id: string): string[] | undefined {
     const decoded = nip19.decode(nip19Id);
@@ -37,9 +38,6 @@ export function nip19ToTag(nip19Id: string): string[] | undefined {
                 tag.push(decoded.data.relays[0]);
             }
             return tag;
-        case "nrelay":
-            tag = ["relay", decoded.data];
-            return tag;
     }
 }
 
@@ -50,30 +48,30 @@ export function stringInputToTag(
 ): NDKTag | undefined {
     if (input.match(NOSTR_BECH32_REGEXP)) {
         return nip19ToTag(input);
-    } else {
-        let tag: NDKTag | undefined = undefined;
-        // Handle hashtags (e.g. "#bitcoin")
-        if (input.startsWith("#")) tag = ["t", input.substring(1)];
-        // Handle URLs
-        if (input.match(/https?:\/\//)) tag = ["r", input];
-        // Handle relay URLs
-        if (input.match(/wss?:\/\//)) {
-            if (listKind !== NDKKind.RelayList) {
-                tag = ["relay", input];
-            } else {
-                tag = ["r", input];
-            }
-        }
-        // Handle emojis
-        if (input.match(/:.*:,\s?https?:\/\/.*/)) {
-            const shortcode = input.split(",")[0].replace(":", "").trim();
-            const url = input.split(",")[1].trim();
-            return ["emoji", shortcode, url];
-        }
-        // Add any markers to the tag
-        if (tag && markers && markers.length > 0) tag = [...tag, ...markers];
-        return tag;
     }
+
+    let tag: NDKTag | undefined = undefined;
+    // Handle hashtags (e.g. "#bitcoin")
+    if (input.startsWith("#")) tag = ["t", input.substring(1)];
+    // Handle URLs
+    if (input.match(/https?:\/\//)) tag = ["r", input];
+    // Handle relay URLs
+    if (input.match(/wss?:\/\//)) {
+        if (listKind !== NDKKind.RelayList) {
+            tag = ["relay", input];
+        } else {
+            tag = ["r", input];
+        }
+    }
+    // Handle emojis
+    if (input.match(/:.*:,\s?https?:\/\/.*/)) {
+        const shortcode = input.split(",")[0].replace(":", "").trim();
+        const url = input.split(",")[1].trim();
+        return ["emoji", shortcode, url];
+    }
+    // Add any markers to the tag
+    if (tag && markers && markers.length > 0) tag = [...tag, ...markers];
+    return tag;
 }
 
 export function aTagToNip19(aTag: NDKTag): string {
@@ -81,7 +79,7 @@ export function aTagToNip19(aTag: NDKTag): string {
     const tagIdSplit = aTag[1].split(":");
 
     return nip19.naddrEncode({
-        kind: parseInt(tagIdSplit[0]),
+        kind: Number.parseInt(tagIdSplit[0]),
         pubkey: tagIdSplit[1],
         identifier: tagIdSplit[2],
     });

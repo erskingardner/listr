@@ -1,46 +1,46 @@
 <script lang="ts">
-    import { CopyPlus } from "lucide-svelte";
-    import { NDKList, NDKNip07Signer, type NostrEvent } from "@nostr-dev-kit/ndk";
-    import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
-    import { unixTimeNowInSeconds } from "$lib/utils";
-    import { Popover } from "flowbite-svelte";
-    import toast from "svelte-french-toast";
-    import { v4 as uuidv4 } from "uuid";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
+import { NDKList, NDKNip07Signer, type NostrEvent } from "@nostr-dev-kit/ndk";
+import { Popover } from "flowbite-svelte";
+import { CopyPlus } from "lucide-svelte";
+import toast from "svelte-hot-french-toast";
+import { v4 as uuidv4 } from "uuid";
 
-    export let rawList: NostrEvent;
+let currentUser = getCurrentUser();
 
-    let title: string;
-    let description: string;
+let { rawList }: { rawList: NostrEvent } = $props();
 
-    async function createDuplicateList() {
-        if (!$ndk.signer) {
-            const signer = new NDKNip07Signer();
-            $ndk.signer = signer;
-        }
+let title: string = $state("");
+let description: string = $state("");
 
-        const tags = rawList.tags.filter(
-            (tag) => !["d", "name", "title", "description"].includes(tag[0])
-        );
-        // Only add a "d" tag if needed
-        const uuid = uuidv4();
-        tags.push(["d", `listr-${uuid}`]);
+async function createDuplicateList(e: Event) {
+    e.preventDefault();
+    if (!currentUser) return;
 
-        const duplicateList = new NDKList($ndk, {
-            pubkey: $currentUser!.pubkey,
-            kind: rawList.kind,
-            content: "",
-            created_at: unixTimeNowInSeconds(),
-            tags: tags,
-        });
-        duplicateList.title = title;
-        duplicateList.description = description;
+    const tags = rawList.tags.filter(
+        (tag) => !["d", "name", "title", "description"].includes(tag[0])
+    );
+    // Only add a "d" tag if needed
+    const uuid = uuidv4();
+    tags.push(["d", `listr-${uuid}`]);
 
-        duplicateList
-            .publish()
-            .then(() => toast.success("New list created & published"))
-            .catch((error) => console.error("Error publishing list", error));
-    }
+    const duplicateList = new NDKList(ndk, {
+        pubkey: currentUser.user?.pubkey as string,
+        kind: rawList.kind,
+        content: "",
+        created_at: unixTimeNowInSeconds(),
+        tags: tags,
+    });
+    duplicateList.title = title;
+    duplicateList.description = description;
+
+    duplicateList
+        .publish()
+        .then(() => toast.success("New list created & published"))
+        .catch((error) => console.error("Error publishing list", error));
+}
 </script>
 
 <button id="duplicateButton" class="primaryActionButton">
@@ -57,7 +57,7 @@
 >
     <div class="panel-contents flex flex-col gap-2">
         <form
-            on:submit|preventDefault={createDuplicateList}
+            onsubmit={createDuplicateList}
             class="flex flex-col gap-2 justify-start items-start"
         >
             <label for="title" class="w-full">

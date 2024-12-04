@@ -1,44 +1,64 @@
 <script lang="ts">
-    import ndk from "$lib/stores/ndk";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import { NDKArticle } from "@nostr-dev-kit/ndk";
-    import PrivateItemPill from "./PrivateItemPill.svelte";
-    import RemovalItemPill from "./RemovalItemPill.svelte";
-    import ItemActions from "./ItemActions.svelte";
-    import CommunityItem from "./CommunityItem.svelte";
-    import Unstage from "../actions/Unstage.svelte";
-    import RemoveItem from "../actions/RemoveItem.svelte";
-    import { Smile } from "lucide-svelte";
-    import { onMount } from "svelte";
-    import { Name } from "@nostr-dev-kit/ndk-svelte-components";
-    import { formattedDate } from "$lib/utils";
+import UserName from "$lib/components/users/UserName.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import type { ListItemParams } from "$lib/types";
+import { formattedDate } from "$lib/utils";
+import type { NDKUser } from "@nostr-dev-kit/ndk";
+import { NDKArticle } from "@nostr-dev-kit/ndk";
+import { Smile } from "lucide-svelte";
+import RemoveItem from "../actions/RemoveItem.svelte";
+import Unstage from "../actions/Unstage.svelte";
+import CommunityItem from "./CommunityItem.svelte";
+import ItemActions from "./ItemActions.svelte";
+import PrivateItemPill from "./PrivateItemPill.svelte";
+import RemovalItemPill from "./RemovalItemPill.svelte";
 
-    export let type: string;
-    export let id: string;
-    export let privateItem: boolean;
-    export let unsaved: boolean;
-    export let removal: boolean;
-    export let editMode: boolean;
+let {
+    type,
+    id,
+    privateItem,
+    otherTagValues,
+    unsaved,
+    removal,
+    editMode,
+    removeItem,
+    removeUnsavedItem,
+}: {
+    type: string;
+    id: string;
+    privateItem: boolean;
+    otherTagValues: string[] | undefined;
+    unsaved: boolean;
+    removal: boolean;
+    editMode: boolean;
+    removeItem: (params: ListItemParams) => void;
+    removeUnsavedItem: (params: ListItemParams) => void;
+} = $props();
 
-    const tagIdSplit = id.split(":");
-    const kind: number = parseInt(tagIdSplit[0]);
-    const creator: NDKUser = $ndk.getUser({ pubkey: tagIdSplit[1] });
-    const name: string = tagIdSplit[2];
+const tagIdSplit = id.split(":");
+const kind: number = Number.parseInt(tagIdSplit[0]);
+const creator: NDKUser = ndk.getUser({ pubkey: tagIdSplit[1] });
+const name: string = tagIdSplit[2];
 
-    let article: NDKArticle | undefined = undefined;
+let article: NDKArticle | undefined = $state(undefined);
 
-    onMount(async () => {
-        if (kind === 30023) {
-            const articleEvent = await $ndk.fetchEvent({
-                kinds: [kind],
-                authors: [creator.pubkey],
-                "#d": [name],
+$effect(() => {
+    if (kind === 30023) {
+        ndk.fetchEvent({
+            kinds: [kind],
+            authors: [creator.pubkey],
+            "#d": [name],
+        })
+            .then((articleEvent) => {
+                if (articleEvent) {
+                    article = NDKArticle.from(articleEvent);
+                }
+            })
+            .catch((error) => {
+                console.error(error);
             });
-            if (articleEvent) {
-                article = NDKArticle.from(articleEvent);
-            }
-        }
-    });
+    }
+});
 </script>
 
 {#key id}
@@ -66,11 +86,11 @@
                         </div>
                         <div class="flex flex-row gap-2 items-center text-sm">
                             <span class="italic"
-                                >Published {formattedDate(article.published_at)}</span
+                                >Published {formattedDate(article.published_at as number)}</span
                             >
                             <span class="italic">
                                 by <a href="/{creator.npub}" class="hover:underline">
-                                    <Name ndk={$ndk} user={creator} />
+                                    <UserName user={creator} />
                                 </a>
                             </span>
                         </div>
@@ -88,18 +108,19 @@
                     {#if removal}
                         <RemovalItemPill />
                     {/if}
-                    <Unstage {type} {id} {privateItem} {unsaved} {removal} on:removeUnsavedItem />
+                    <Unstage {type} {id} {privateItem} {otherTagValues} {unsaved} {removal} {removeUnsavedItem} />
                 {:else}
                     <RemoveItem
                         {type}
                         {id}
                         {privateItem}
+                        {otherTagValues}
                         {unsaved}
                         {removal}
                         {editMode}
-                        on:removeItem
+                        {removeItem}
                     />
-                    <ItemActions {type} {id} on:removeItem />
+                    <ItemActions {type} {id} />
                 {/if}
             </div>
         </div>

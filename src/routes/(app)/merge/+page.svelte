@@ -1,202 +1,197 @@
 <script lang="ts">
-    import { NDKKind, NDKList, NDKNip07Signer, type NDKTag } from "@nostr-dev-kit/ndk";
-    import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
-    import { onMount } from "svelte";
-    import {
-        SUPPORTED_LIST_KINDS,
-        filterAndSortByTitle,
-        filteredItemsForListKind,
-        deduplicateItems,
-        unixTimeNowInSeconds,
-    } from "$lib/utils";
-    import toast from "svelte-french-toast";
-    import { invalidateAll } from "$app/navigation";
+import { invalidateAll } from "$app/navigation";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import {
+    SUPPORTED_LIST_KINDS,
+    deduplicateItems,
+    filterAndSortByTitle,
+    filteredItemsForListKind,
+    unixTimeNowInSeconds,
+} from "$lib/utils";
+import { NDKKind, NDKList, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
+import { onMount } from "svelte";
+import toast from "svelte-hot-french-toast";
 
-    type ListOption = {
-        id: string;
-        title: string;
-        kind: number;
-        count: number;
-    };
+type ListOption = {
+    id: string;
+    title: string;
+    kind: number;
+    count: number;
+};
 
-    let lists: NDKList[];
-    let options: ListOption[] = [];
-    let showKindMismatchWarning = false;
+let currentUser = getCurrentUser();
 
-    let mergeFromId: string | undefined = undefined;
-    let fromList: NDKList | undefined = undefined;
-    let mergeToId: string | undefined = undefined;
-    let toList: NDKList | undefined = undefined;
-    let deleteFromList = false;
+let lists: NDKList[];
+let options: ListOption[] = [];
+let showKindMismatchWarning = false;
 
-    onMount(async () => {
-        if (!$currentUser) return;
+let mergeFromId: string | undefined = undefined;
+let fromList: NDKList | undefined = undefined;
+let mergeToId: string | undefined = undefined;
+let toList: NDKList | undefined = undefined;
+let deleteFromList = false;
 
-        const userLists = await $ndk.fetchEvents({
-            kinds: SUPPORTED_LIST_KINDS,
-            authors: [$currentUser.pubkey],
-        });
+onMount(async () => {
+    if (!currentUser) return;
 
-        const deletedEvents = await $ndk.fetchEvents({
-            kinds: [NDKKind.EventDeletion],
-            authors: [$currentUser.pubkey],
-        });
-
-        lists = filterAndSortByTitle(
-            Array.from(userLists).map((event) => NDKList.from(event)),
-            Array.from(deletedEvents)
-        );
-
-        options = await Promise.all(
-            lists.map(async (list): Promise<ListOption> => {
-                const option = await buildListOption(list);
-                return option;
-            })
-        );
+    const userLists = await ndk.fetchEvents({
+        kinds: SUPPORTED_LIST_KINDS,
+        authors: [currentUser.user?.pubkey as string],
     });
 
-    function resetTempStores() {
-        mergeFromId = undefined;
-        mergeToId = undefined;
-        fromList = undefined;
-        toList = undefined;
-        deleteFromList = false;
+    const deletedEvents = await ndk.fetchEvents({
+        kinds: [NDKKind.EventDeletion],
+        authors: [currentUser.user?.pubkey as string],
+    });
+
+    lists = filterAndSortByTitle(
+        Array.from(userLists).map((event) => NDKList.from(event)),
+        Array.from(deletedEvents)
+    );
+
+    options = await Promise.all(
+        lists.map(async (list): Promise<ListOption> => {
+            const option = await buildListOption(list);
+            return option;
+        })
+    );
+});
+
+function resetTempStores() {
+    mergeFromId = undefined;
+    mergeToId = undefined;
+    fromList = undefined;
+    toList = undefined;
+    deleteFromList = false;
+}
+
+async function buildListOption(list: NDKList): Promise<ListOption> {
+    let privateItems: NDKTag[] = [];
+    // Decrypt private items if needed
+    if (list.content.length > 0 && list.kind !== NDKKind.Contacts) {
+        privateItems = await list.encryptedTags(true);
+    }
+    // Get public items
+    const publicItems = list.items.filter((item) => !["L", "l"].includes(item[0]));
+    const count = privateItems.length + publicItems.length;
+
+    return {
+        id: list.id,
+        title: list.title as string,
+        kind: list.kind as number,
+        count,
+    };
+}
+
+async function mergeLists() {
+    if (!fromList || !toList) {
+        toast.error("Please select two lists to merge");
+        return;
     }
 
-    async function buildListOption(list: NDKList): Promise<ListOption> {
-        let privateItems: NDKTag[] = [];
+    // Filter and deduplicate public items to merge
+    const filteredFrom = fromList?.items.filter((item) => !["L", "l"].includes(item[0]));
+    const filteredTo = toList?.items.filter((item) => !["L", "l"].includes(item[0]));
+    const dedupedTags = deduplicateItems([...filteredFrom, ...filteredTo]);
+
+    // Put the tags back in
+    // Title and description handled below to make sure we adjust for deprecated "name"
+    const toTagsToReplace = toList?.tags.filter((item) =>
+        ["L", "l", "d", "image", "thumb", "summary", "alt", "expiration", "subject"].includes(
+            item[0]
+        )
+    );
+
+    // Filter items for compatability with list kind
+    const filteredForListKind = filteredItemsForListKind(dedupedTags, toList?.kind as number);
+
+    // Replace labels, d tags, etc.
+    if (toTagsToReplace && toTagsToReplace.length > 0) {
+        for (const tag of toTagsToReplace) {
+            filteredForListKind.push(tag);
+        }
+    }
+
+    // Deal with private items
+    let privateTags: NDKTag[] = [];
+    if (fromList.content || toList.content) {
         // Decrypt private items if needed
-        if (list.content.length > 0 && list.kind !== NDKKind.Contacts) {
-            if (!$ndk.signer) {
-                const signer = new NDKNip07Signer();
-                $ndk.signer = signer;
-            }
-            privateItems = await list.encryptedTags(true);
-        }
-        // Get public items
-        const publicItems = list.items.filter((item) => !["L", "l"].includes(item[0]));
-        const count = privateItems.length + publicItems.length;
-
-        return {
-            id: list.id,
-            title: list.title as string,
-            kind: list.kind as number,
-            count,
-        };
-    }
-
-    async function mergeLists() {
-        if (!fromList || !toList) {
-            toast.error("Please select two lists to merge");
-            return;
-        }
-
-        // Filter and deduplicate public items to merge
-        const filteredFrom = fromList?.items.filter((item) => !["L", "l"].includes(item[0]));
-        const filteredTo = toList?.items.filter((item) => !["L", "l"].includes(item[0]));
-        const dedupedTags = deduplicateItems([...filteredFrom!, ...filteredTo!]);
-
-        // Put the tags back in
-        // Title and description handled below to make sure we adjust for deprecated "name"
-        const toTagsToReplace = toList?.tags.filter((item) =>
-            ["L", "l", "d", "image", "thumb", "summary", "alt", "expiration", "subject"].includes(
-                item[0]
-            )
+        const privateFromList = await fromList.encryptedTags();
+        const privateToList = await toList.encryptedTags();
+        privateTags = filteredItemsForListKind(
+            deduplicateItems([...privateFromList, ...privateToList]),
+            toList?.kind as number
         );
+    }
 
-        // Filter items for compatability with list kind
-        const filteredForListKind = filteredItemsForListKind(dedupedTags, toList?.kind! as number);
+    // Build new (merged) list
+    const newList = new NDKList(ndk, {
+        kind: toList?.kind as number,
+        tags: filteredForListKind,
+        content: privateTags.length > 0 ? JSON.stringify(privateTags) : "",
+        created_at: unixTimeNowInSeconds(),
+        pubkey: toList.pubkey,
+    });
 
-        // Replace labels, d tags, etc.
-        if (toTagsToReplace && toTagsToReplace.length > 0) {
-            toTagsToReplace.forEach((tag) => filteredForListKind.push(tag));
-        }
+    // Add back title and description
+    newList.title = toList.title;
+    newList.description = toList.description;
 
-        // Deal with private items
-        let privateTags: NDKTag[] = [];
-        if (fromList.content || toList.content) {
-            // Decrypt private items if needed
-            if (!$ndk.signer) {
-                const signer = new NDKNip07Signer();
-                $ndk.signer = signer;
-            }
+    // Encrypt the new list if needed
+    if (newList.content) {
+        await newList.encrypt(currentUser?.user as NDKUser, ndk.signer);
+    }
 
-            const privateFromList = await fromList.encryptedTags();
-            const privateToList = await toList.encryptedTags();
-            privateTags = filteredItemsForListKind(
-                deduplicateItems([...privateFromList, ...privateToList]),
-                toList?.kind! as number
-            );
-        }
-
-        // Build new (merged) list
-        const newList = new NDKList($ndk, {
-            kind: toList?.kind! as number,
-            tags: filteredForListKind,
-            content: privateTags.length > 0 ? JSON.stringify(privateTags) : "",
-            created_at: unixTimeNowInSeconds(),
-            pubkey: toList.pubkey,
+    // Publish the new list
+    newList
+        .publish()
+        .then(async () => {
+            toast.success("Your lists were merged");
+            invalidateAll();
+            resetTempStores();
+            if (deleteFromList) await createDeleteFromListEvent();
+        })
+        .catch((error) => {
+            console.error(error);
+            toast.error("Error merging lists");
         });
+}
 
-        // Add back title and description
-        newList.title = toList.title;
-        newList.description = toList.description;
+async function createDeleteFromListEvent() {
+    if (!fromList) return;
 
-        // Encrypt the new list if needed
-        if (newList.content) {
-            await newList.encrypt($currentUser!, $ndk.signer!);
-        }
+    const deleteEvent = new NDKList(ndk, {
+        kind: NDKKind.EventDeletion,
+        content: "List deleted by owner",
+        tags: fromList.referenceTags(),
+        created_at: unixTimeNowInSeconds(),
+        pubkey: fromList.pubkey,
+    });
 
-        // Publish the new list
-        newList
-            .publish()
-            .then(async () => {
-                toast.success("Your lists were merged");
-                invalidateAll();
-                resetTempStores();
-                if (deleteFromList) await createDeleteFromListEvent();
-            })
-            .catch((error) => {
-                console.error(error);
-                toast.error("Error merging lists");
-            });
-    }
-
-    async function createDeleteFromListEvent() {
-        if (!fromList) return;
-
-        const deleteEvent = new NDKList($ndk, {
-            kind: NDKKind.EventDeletion,
-            content: "List deleted by owner",
-            tags: fromList.referenceTags(),
-            created_at: unixTimeNowInSeconds(),
-            pubkey: fromList.pubkey,
+    deleteEvent
+        .publish()
+        .then(() => {
+            toast.success(`"Merge from" list deleted`);
+            invalidateAll();
+        })
+        .catch((error) => {
+            console.error(error);
+            toast.error(`Error deleting "Merge from" list`);
         });
+}
 
-        deleteEvent
-            .publish()
-            .then(() => {
-                toast.success(`"Merge from" list deleted`);
-                invalidateAll();
-            })
-            .catch((error) => {
-                console.error(error);
-                toast.error(`Error deleting "Merge from" list`);
-            });
-    }
+$: if (mergeFromId) {
+    fromList = lists?.find((list) => list.id === mergeFromId);
+}
 
-    $: if (mergeFromId) {
-        fromList = lists?.find((list) => list.id === mergeFromId);
-    }
+$: if (mergeToId) {
+    toList = lists?.find((list) => list.id === mergeToId);
+}
 
-    $: if (mergeToId) {
-        toList = lists?.find((list) => list.id === mergeToId);
-    }
-
-    $: if (fromList && toList) {
-        showKindMismatchWarning = fromList.kind !== toList.kind ? true : false;
-    }
+$: if (fromList && toList) {
+    showKindMismatchWarning = fromList.kind !== toList.kind;
+}
 </script>
 
 <svelte:head>

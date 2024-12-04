@@ -1,8 +1,10 @@
 <script lang="ts">
-    import { DarkMode } from "flowbite-svelte";
-    import { SunMoon } from "lucide-svelte";
-    import Logo from "./Logo.svelte";
-    import NavMenu from "./NavMenu.svelte";
+import { DarkMode } from "flowbite-svelte";
+import { SunMoon } from "lucide-svelte";
+import Logo from "./Logo.svelte";
+import NavMenu from "./NavMenu.svelte";
+
+let { donateButtonClicked }: { donateButtonClicked: () => void } = $props();
 </script>
 
 <!-- Static sidebar for desktop -->
@@ -23,6 +25,6 @@
                 </svelte:fragment>
             </DarkMode>
         </div>
-        <NavMenu on:donateButtonClicked />
+        <NavMenu {donateButtonClicked} />
     </div>
 </div>

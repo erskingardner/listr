@@ -1,11 +1,16 @@
 <script lang="ts">
-    import { Zap } from "lucide-svelte";
-    import { createEventDispatcher } from "svelte";
+import { Zap } from "lucide-svelte";
 
-    const dispatch = createEventDispatcher();
+let {
+    donateButtonClicked,
+    extraClasses,
+}: { donateButtonClicked: () => void; extraClasses: string } = $props();
 </script>
 
-<button on:click={() => dispatch("donateButtonClicked")} class={$$props.class}>
+<button
+    onclick={donateButtonClicked}
+    class={extraClasses}
+>
     <Zap strokeWidth="1.5" size="20" class="w-5 h-5" />
     Zap Listr
 </button>

@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { NDKList, type NDKEvent } from "@nostr-dev-kit/ndk";
-    import ListSummary from "../lists/ListSummary.svelte";
+import { type NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
+import ListSummary from "../lists/ListSummary.svelte";
 
-    export let event: NDKEvent;
+let { event }: { event: NDKEvent } = $props();
 
-    const list = NDKList.from(event);
+let list = $derived(NDKList.from(event));
 </script>
 
 <ListSummary

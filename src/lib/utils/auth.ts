@@ -1,8 +1,6 @@
 import { browser } from "$app/environment";
-import { get } from "svelte/store";
-import currentUser from "$lib/stores/currentUser";
-import { currentUserFollows, currentUserSettings } from "$lib/stores/currentUser";
-import { fetchUserFollows, fetchUserSettings } from "$lib/stores/currentUser";
+import { goto } from "$app/navigation";
+import { setCurrentUser } from "$lib/stores/currentUser.svelte";
 import type NDK from "@nostr-dev-kit/ndk";
 import {
     NDKNip07Signer,
@@ -10,8 +8,7 @@ import {
     NDKPrivateKeySigner,
     type NDKUser,
 } from "@nostr-dev-kit/ndk";
-import toast from "svelte-french-toast";
-import { goto } from "$app/navigation";
+import toast from "svelte-hot-french-toast";
 
 export enum SigninMethod {
     Nip07 = "nip07",
@@ -35,8 +32,8 @@ export async function signin(
     // Default to NIP-07 if we don't know
     if (nostrSigninMethod === SigninMethod.PK) {
         user = await userFromPrivateKey(ndk);
-    } else if (nostrSigninMethod === SigninMethod.Nip46) {
-        user = await userFromNip46(ndk, bunkerNDK!, token);
+    } else if (nostrSigninMethod === SigninMethod.Nip46 && bunkerNDK) {
+        user = await userFromNip46(ndk, bunkerNDK, token);
     } else {
         user = await userFromNip07(ndk);
     }
@@ -44,22 +41,16 @@ export async function signin(
     if (user) {
         user.ndk = ndk;
         ndk.activeUser = user;
-        currentUser.set(user);
-        const currentUserStore = get(currentUser);
+        setCurrentUser(user.pubkey);
         document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
         toast.success("Signed in successfully");
-        try {
-            currentUserFollows.set(await fetchUserFollows(currentUserStore as NDKUser));
-            currentUserSettings.set(await fetchUserSettings(currentUserStore as NDKUser));
-        } catch (error) {
-            console.error(error);
-        }
     }
     return user;
 }
 
 /**
- * Retrieves a user object using a private key stored in local storage ☠️
+ * Retrieves a user object using a private key stored in local storage
+ * Don't use this.
  * @async
  * @param ndk - An instance of the NDK class.
  * @returns A Promise that resolves to an NDKUser object if the private key is found, or null otherwise.
@@ -116,7 +107,7 @@ async function userFromNip46(ndk: NDK, bunkerNdk: NDK, token?: string): Promise<
             console.log("stored key and target npub");
             localSigner = new NDKPrivateKeySigner(storedKey);
             const targetUser = ndk.getUser({ npub: targetNpub });
-            const remoteSigner = new NDKNip46Signer(bunkerNdk, targetUser!.pubkey, localSigner);
+            const remoteSigner = new NDKNip46Signer(bunkerNdk, targetUser.pubkey, localSigner);
             ndk.signer = remoteSigner;
             await remoteSigner.blockUntilReady();
             user = await remoteSigner.user();
@@ -146,8 +137,7 @@ async function userFromNip46(ndk: NDK, bunkerNdk: NDK, token?: string): Promise<
  * Signs the user out.
  */
 export function signout(ndk: NDK) {
-    currentUser.set(null);
-    currentUserFollows.set([]);
+    setCurrentUser(null);
     ndk.activeUser = undefined;
     document.cookie = "listrUserNpub=";
     toast.success("Signed out");
