@@ -33,7 +33,10 @@ onMount(() => {
                             signout(ndk);
                         } else {
                             let user = ndk.getUser({ npub });
+                            user.ndk = ndk;
+                            ndk.activeUser = user;
                             setCurrentUser(user.pubkey);
+                            document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
                         }
                     },
                 });
