@@ -19,7 +19,7 @@ const otherItems = $derived(list.items.filter((item) => !["p", "e", "a"].include
 >
     <div class="flex flex-row gap-2 items-center">
         <h3 class="text-lg font-bold">{list.title}</h3>
-        {#if currentUser.settings?.devMode}
+        {#if currentUser?.settings?.devMode}
             <Info strokeWidth="1.5" size="16" />
             <Tooltip
                 type="auto"

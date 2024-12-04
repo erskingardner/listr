@@ -202,7 +202,7 @@ onDestroy(() => {
                                         >{list.title?.slice(0, 1).toUpperCase()}</span
                                     >
                                     <span class="truncate">{list.title}</span>
-                                    {#if currentUser.settings?.devMode}
+                                    {#if currentUser?.settings?.devMode}
                                         <Tooltip
                                             type="custom"
                                             placement="right"
