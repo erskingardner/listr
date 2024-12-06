@@ -18,7 +18,7 @@ import { type SendPaymentResponse, requestProvider } from "webln";
 
 let { listId, nip19 }: { listId: string; nip19: string } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 let amount = $state(21);
 let comment = $state("");
 

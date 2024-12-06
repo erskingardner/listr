@@ -15,14 +15,17 @@ let { data, children } = $props();
 
 let mobileMenuVisible = $state(false);
 let donateModal = $state(false);
+let listrCookie = $derived(data.listrCookie);
 
 function toggleMobileMenu() {
     mobileMenuVisible = !mobileMenuVisible;
 }
 
-if (data.listrCookie) {
-    setCurrentUser(data.listrCookie);
-}
+$effect(() => {
+    if (listrCookie) {
+        setCurrentUser(listrCookie);
+    }
+});
 
 onMount(() => {
     if (!window.nostr) {

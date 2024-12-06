@@ -11,7 +11,7 @@ import toast from "svelte-hot-french-toast";
 let { listId, pubkey, listDeleted }: { listId: string; pubkey: string; listDeleted: () => void } =
     $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
 async function deleteList() {
     if (!currentUser) return;

@@ -12,7 +12,7 @@ let {
     extraClasses?: string;
 } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 async function handleAddToList() {
     if (currentUser.user !== user) {
         console.log("Soon™");

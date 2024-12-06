@@ -7,7 +7,7 @@ import toast from "svelte-hot-french-toast";
 
 let { user, buttonClasses }: { user: NDKUser; buttonClasses?: string } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 let followingButtonText = $state("Following");
 
 async function handleFollow() {

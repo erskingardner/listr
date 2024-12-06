@@ -12,7 +12,7 @@ import SigninSelector from "./SigninSelector.svelte";
 
 let { openMobileMenu }: { openMobileMenu: () => void } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
 let profileMenuVisible = $state(false);
 let relayMenuVisible = $state(false);

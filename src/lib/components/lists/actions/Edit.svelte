@@ -12,7 +12,7 @@ let {
     toggleEditMode: () => void;
 } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 </script>
 
 {#if currentUser.user?.pubkey === pubkey}

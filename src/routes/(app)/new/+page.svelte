@@ -23,7 +23,7 @@ import { z } from "zod";
 let addItemSubmitting = $state(false);
 let addItemError = $state(false);
 let addItemErrorMessage = $state("");
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
 const newListSchema = z.object({
     kind: z.string().min(5, "Please select a kind"),

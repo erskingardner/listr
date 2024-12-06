@@ -9,7 +9,7 @@ import { onDestroy, onMount } from "svelte";
 
 let { listId }: { listId: string } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 let likes: NDKEvent[] = $state([]);
 let likesSub: NDKSubscription | null = $state(null);
 let alreadyLiked = $derived(

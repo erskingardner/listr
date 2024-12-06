@@ -7,7 +7,7 @@ import { Tooltip } from "flowbite-svelte";
 import { Info } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 let devMode = $state(!!currentUser?.settings?.devMode);
 
 async function saveSettings(e: SubmitEvent) {

@@ -20,17 +20,26 @@ type ListOption = {
     count: number;
 };
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
-let lists: NDKList[];
-let options: ListOption[] = [];
-let showKindMismatchWarning = false;
+let lists: NDKList[] = $state([]);
+let options: ListOption[] = $state([]);
+let showKindMismatchWarning = $derived.by(() => {
+    if (fromList && toList) {
+        return fromList.kind !== toList.kind;
+    }
+    return false;
+});
 
-let mergeFromId: string | undefined = undefined;
-let fromList: NDKList | undefined = undefined;
-let mergeToId: string | undefined = undefined;
-let toList: NDKList | undefined = undefined;
-let deleteFromList = false;
+let deleteFromList = $state(false);
+let mergeFromId: string | undefined = $state(undefined);
+let mergeToId: string | undefined = $state(undefined);
+let fromList: NDKList | undefined = $derived(
+    mergeFromId ? lists?.find((list) => list.id === mergeFromId) : undefined
+);
+let toList: NDKList | undefined = $derived(
+    mergeToId ? lists?.find((list) => list.id === mergeToId) : undefined
+);
 
 onMount(async () => {
     if (!currentUser) return;
@@ -61,8 +70,6 @@ onMount(async () => {
 function resetTempStores() {
     mergeFromId = undefined;
     mergeToId = undefined;
-    fromList = undefined;
-    toList = undefined;
     deleteFromList = false;
 }
 
@@ -84,7 +91,8 @@ async function buildListOption(list: NDKList): Promise<ListOption> {
     };
 }
 
-async function mergeLists() {
+async function mergeLists(e: Event) {
+    e.preventDefault();
     if (!fromList || !toList) {
         toast.error("Please select two lists to merge");
         return;
@@ -180,18 +188,6 @@ async function createDeleteFromListEvent() {
             toast.error(`Error deleting "Merge from" list`);
         });
 }
-
-$: if (mergeFromId) {
-    fromList = lists?.find((list) => list.id === mergeFromId);
-}
-
-$: if (mergeToId) {
-    toList = lists?.find((list) => list.id === mergeToId);
-}
-
-$: if (fromList && toList) {
-    showKindMismatchWarning = fromList.kind !== toList.kind;
-}
 </script>
 
 <svelte:head>
@@ -262,7 +258,7 @@ $: if (fromList && toList) {
             </span>
             <span></span>
             <button
-                on:click|preventDefault={mergeLists}
+                onclick={mergeLists}
                 type="submit"
                 class="flex gap-x-3 rounded-md items-center p-2 text-center justify-center font-semibold leading-6 text-gray-200 bg-indigo-600 hover:bg-indigo-500 hover:text-white"
             >

@@ -8,7 +8,7 @@ import { NDKList } from "@nostr-dev-kit/ndk";
 import { TabItem, Tabs } from "flowbite-svelte";
 import { onMount } from "svelte";
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 let loading = $state(true);
 let globalLists: NDKList[] | null = $state(null);
 let followingLists: NDKList[] | null = $state(null);

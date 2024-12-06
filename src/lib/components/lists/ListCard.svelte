@@ -6,7 +6,7 @@ import { BoxSelect, Info, MenuSquare, UserSquare } from "lucide-svelte";
 
 let { list, npub }: { list: NDKList; npub: string } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 const nip19 = $derived(list.encode());
 const peopleItems = $derived(list.items.filter((item) => item[0] === "p"));
 const eventItems = $derived(list.items.filter((item) => ["e", "a"].includes(item[0])));

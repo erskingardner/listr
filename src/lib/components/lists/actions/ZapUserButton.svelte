@@ -10,7 +10,7 @@ import { requestProvider } from "webln";
 
 let { user, extraClasses }: { user: NDKUser; extraClasses?: string } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 let profile: NDKUserProfile | null = $state(null);
 let amount = $state(21);
 let comment: string = $state("");

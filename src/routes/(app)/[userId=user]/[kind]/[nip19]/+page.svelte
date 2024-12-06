@@ -28,7 +28,7 @@ import { expoInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
 import { v4 as uuidv4 } from "uuid";
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
 let profile: NDKUserProfile | null = $state(null);
 let event: NDKEvent | null = $state(null);

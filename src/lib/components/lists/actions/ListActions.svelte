@@ -12,7 +12,7 @@ import Edit from "./Edit.svelte";
 import Like from "./Like.svelte";
 import Share from "./Share.svelte";
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
 let {
     nip19,

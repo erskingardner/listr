@@ -8,7 +8,7 @@ import { CopyPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { v4 as uuidv4 } from "uuid";
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
 let { rawList }: { rawList: NostrEvent } = $props();
 

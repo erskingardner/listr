@@ -16,7 +16,7 @@ let {
     donateButtonClicked,
 }: { closeMobileMenu?: () => void; donateButtonClicked: () => void } = $props();
 
-let currentUser = getCurrentUser();
+let currentUser = $derived(getCurrentUser());
 
 let currentUserLists: NDKList[] = $state([]);
 let deletedEvents: NDKEvent[] = $state([]);

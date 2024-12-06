@@ -1,6 +1,6 @@
 import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
-import { setCurrentUser } from "$lib/stores/currentUser.svelte";
+import { getCurrentUser, setCurrentUser } from "$lib/stores/currentUser.svelte";
 import type NDK from "@nostr-dev-kit/ndk";
 import {
     NDKNip07Signer,
@@ -35,14 +35,15 @@ export async function signin(
     if (nostrSigninMethod === SigninMethod.Nip07) {
         signedInUser = await userFromNip07(ndk);
     }
-
-    console.log("signedInUser", signedInUser);
     if (signedInUser) {
         signedInUser.ndk = ndk;
         ndk.activeUser = signedInUser;
+        const alreadySignedIn = !!getCurrentUser();
         setCurrentUser(signedInUser.npub);
         document.cookie = `listrUserNpub=${signedInUser.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
-        toast.success("Signed in successfully");
+        if (!alreadySignedIn) {
+            toast.success("Signed in successfully");
+        }
     }
     return signedInUser;
 }
