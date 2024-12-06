@@ -50,7 +50,7 @@ const { form, errors, enhance } = superForm(defaults(initialNewList, zod(newList
     async onUpdate({ form }) {
         if (form.valid) {
             const nip19Id = await publishList();
-            await goto(`/${currentUser.user?.npub}/${form.data.kind}/${nip19Id}`);
+            await goto(`/${currentUser?.user?.npub}/${form.data.kind}/${nip19Id}`);
         }
     },
 });
@@ -61,7 +61,7 @@ async function publishList(): Promise<string> {
 
     const list = new NDKList(ndk, {
         kind: Number.parseInt($form.kind),
-        pubkey: currentUser.user?.pubkey as string,
+        pubkey: currentUser?.user?.pubkey as string,
         created_at: unixTimeNowInSeconds(),
         content: JSON.stringify($form.privateItems),
         tags: $form.publicItems as NDKTag[],
@@ -82,7 +82,7 @@ async function publishList(): Promise<string> {
     }
 
     // Encrypt if we need to
-    if (list.content) await list.encrypt(currentUser.user as NDKUser);
+    if (list.content) await list.encrypt(currentUser?.user as NDKUser);
     // Publish
     await list.publish().then(() => toast.success("New list successfully published"));
 
@@ -186,7 +186,7 @@ $effect(() => {
 >
     <div class="text-lg font-bold">Create a new list</div>
     <hr class="dark:border-gray-700" />
-    {#if currentUser.user}
+    {#if currentUser?.user}
         <form class="py-4 flex flex-col gap-4" method="POST" use:enhance>
             <div class="flex flex-col gap-0 relative">
                 <label for="kind">What type of list is this?</label>
