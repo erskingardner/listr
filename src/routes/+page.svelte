@@ -1,12 +1,12 @@
 <script lang="ts">
-    import "../app.css";
-    import Logo from "$lib/components/sidebar/Logo.svelte";
-    import { browser } from "$app/environment";
+import "../app.css";
+import { browser } from "$app/environment";
+import Logo from "$lib/components/sidebar/Logo.svelte";
 
-    if (browser) {
-        document.body.classList.add("bg-gray-900");
-        document.body.classList.add("dark:bg-gray-900");
-    }
+if (browser) {
+    document.body.classList.add("bg-gray-900");
+    document.body.classList.add("dark:bg-gray-900");
+}
 </script>
 
 <svelte:head>

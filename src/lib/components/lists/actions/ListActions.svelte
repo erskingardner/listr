@@ -1,27 +1,36 @@
 <script lang="ts">
-    import currentUser from "$lib/stores/currentUser";
-    // import Zap from "./ZapListButton.svelte";
-    import Like from "./Like.svelte";
-    import CopyId from "./CopyId.svelte";
-    import Duplicate from "./Duplicate.svelte";
-    import Share from "./Share.svelte";
-    import Delete from "./Delete.svelte";
-    import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
-    import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
-    import { MessagesSquare, MoreVertical } from "lucide-svelte";
-    import { Popover } from "flowbite-svelte";
-    import Edit from "./Edit.svelte";
-    import { createEventDispatcher } from "svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
+import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
+import { Popover } from "flowbite-svelte";
+import { MessagesSquare, MoreVertical } from "lucide-svelte";
+import CopyId from "./CopyId.svelte";
+import Delete from "./Delete.svelte";
+import Duplicate from "./Duplicate.svelte";
+import Edit from "./Edit.svelte";
+// import Zap from "./ZapListButton.svelte";
+import Like from "./Like.svelte";
+import Share from "./Share.svelte";
 
-    const dispatch = createEventDispatcher();
+let currentUser = $derived(getCurrentUser());
 
-    export let nip19: string;
-    export let listId: string;
-    export let pubkey: string;
-    export let rawList: NostrEvent;
-    export let editMode: boolean;
+let {
+    nip19,
+    listId,
+    pubkey,
+    rawList,
+    editMode,
+    toggleEditMode,
+}: {
+    nip19: string;
+    listId: string;
+    pubkey: string;
+    rawList: NostrEvent;
+    editMode: boolean;
+    toggleEditMode: () => void;
+} = $props();
 
-    const listKind: NDKKind = rawList.kind as NDKKind;
+const listKind: NDKKind = $derived(rawList.kind as NDKKind);
 </script>
 
 <div class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between">
@@ -32,12 +41,12 @@
     </button> -->
 
     <Share {pubkey} {rawList} {nip19} />
-    {#if $currentUser}
-        {#if $currentUser && pubkey !== $currentUser.pubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
+    {#if currentUser.user}
+        {#if currentUser.user.pubkey !== pubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
             <Duplicate {rawList} />
         {/if}
 
-        <Edit {pubkey} {editMode} on:toggleEditMode />
+        <Edit {pubkey} {editMode} {toggleEditMode} />
         <button id="listActionsButton" class="lg:ml-auto">
             <MoreVertical
                 strokeWidth="1.5"

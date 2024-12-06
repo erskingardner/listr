@@ -1,39 +1,56 @@
 <script lang="ts">
-    import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
-    import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
-    import ndk from "$lib/stores/ndk";
-    import { timeAgo } from "$lib/utils";
-    import PrivateItemPill from "./PrivateItemPill.svelte";
-    import ItemActions from "./ItemActions.svelte";
-    import RemovalItemPill from "./RemovalItemPill.svelte";
-    import UserDetails from "$lib/components/users/UserDetails.svelte";
-    import RemoveItem from "../actions/RemoveItem.svelte";
-    import Unstage from "../actions/Unstage.svelte";
-    import AdditionItemPill from "./AdditionItemPill.svelte";
+import UserDetails from "$lib/components/users/UserDetails.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import type { ListItemParams } from "$lib/types";
+import { timeAgo } from "$lib/utils";
+import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
+import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+import RemoveItem from "../actions/RemoveItem.svelte";
+import Unstage from "../actions/Unstage.svelte";
+import AdditionItemPill from "./AdditionItemPill.svelte";
+import ItemActions from "./ItemActions.svelte";
+import PrivateItemPill from "./PrivateItemPill.svelte";
+import RemovalItemPill from "./RemovalItemPill.svelte";
 
-    export let type: string;
-    export let id: string;
-    export let privateItem: boolean;
-    export let unsaved: boolean;
-    export let removal: boolean;
-    export let editMode: boolean;
+let {
+    type,
+    id,
+    privateItem,
+    otherTagValues,
+    unsaved,
+    removal,
+    editMode,
+    removeItem,
+    removeUnsavedItem,
+}: {
+    type: string;
+    id: string;
+    privateItem: boolean;
+    otherTagValues: string[] | undefined;
+    unsaved: boolean;
+    removal: boolean;
+    editMode: boolean;
+    removeItem: (params: ListItemParams) => void;
+    removeUnsavedItem: (params: ListItemParams) => void;
+} = $props();
 
-    let event: NDKEvent | null;
-    let user: NDKUser | null;
+let event: NDKEvent | null = $state(null);
+let user: NDKUser | null = $state(null);
+let createdTime: number | undefined = $state(undefined);
 
-    let createdTime: number;
-
-    async function fetchEventAndUser() {
-        event = await $ndk.fetchEvent(id);
-        user = $ndk.getUser({ pubkey: event?.pubkey });
-        createdTime = event?.created_at as number;
-    }
-
-    fetchEventAndUser();
+$effect(() => {
+    ndk.fetchEvent(id).then((fetchedEvent: NDKEvent | null) => {
+        event = fetchedEvent;
+        if (fetchedEvent) {
+            user = ndk.getUser({ pubkey: fetchedEvent.pubkey });
+            createdTime = fetchedEvent.created_at;
+        }
+    });
+});
 </script>
 
 {#key id}
-    {#if event && user}
+    {#if event && user && createdTime}
         <div
             class="flex flex-col gap-6 border rounded-md p-2 my-2
             {unsaved
@@ -58,27 +75,29 @@
                             {type}
                             {id}
                             {privateItem}
+                            {otherTagValues}
                             {unsaved}
                             {removal}
-                            on:removeUnsavedItem
+                            {removeUnsavedItem}
                         />
                     {:else}
                         <RemoveItem
                             {type}
                             {id}
                             {privateItem}
+                            {otherTagValues}
                             {unsaved}
                             {removal}
                             {editMode}
-                            on:removeItem
+                            {removeItem}
                         />
                         <div title={`${new Date(createdTime)}`}>{timeAgo(createdTime)}</div>
-                        <ItemActions {type} {id} on:removeItem />
+                        <ItemActions {type} {id} />
                     {/if}
                 </div>
             </div>
             <div class="break-words lg:w-2/3">
-                <EventContent ndk={$ndk} {event} />
+                <EventContent {ndk} {event} />
             </div>
         </div>
     {/if}

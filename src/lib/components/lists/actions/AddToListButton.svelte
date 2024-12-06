@@ -1,21 +1,28 @@
 <script lang="ts">
-    import currentUser from "$lib/stores/currentUser";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import { Tooltip } from "flowbite-svelte";
-    import { ListPlus } from "lucide-svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import type { NDKUser } from "@nostr-dev-kit/ndk";
+import { Tooltip } from "flowbite-svelte";
+import { ListPlus } from "lucide-svelte";
 
-    export let user: NDKUser;
+let {
+    user,
+    extraClasses,
+}: {
+    user: NDKUser;
+    extraClasses?: string;
+} = $props();
 
-    async function handleAddToList() {
-        if ($currentUser !== user) {
-            console.log("Soon™");
-        }
+let currentUser = $derived(getCurrentUser());
+async function handleAddToList() {
+    if (currentUser.user !== user) {
+        console.log("Soon™");
     }
+}
 </script>
 
 <button
-    on:click={handleAddToList}
-    class="primaryActionButton w-full justify-center whitespace-nowrap {$$props.class}"
+    onclick={handleAddToList}
+    class="primaryActionButton w-full justify-center whitespace-nowrap {extraClasses}"
 >
     <ListPlus size="20" strokeWidth="1.5" class="w-5 h-5" />
     Add to list

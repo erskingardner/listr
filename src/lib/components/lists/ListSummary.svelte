@@ -1,16 +1,19 @@
 <script lang="ts">
-    import ndk from "$lib/stores/ndk";
-    import { timeAgo } from "$lib/utils";
-    import UserDetails from "../users/UserDetails.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { timeAgo } from "$lib/utils";
+import UserDetails from "../users/UserDetails.svelte";
 
-    export let title: string | undefined;
-    export let kind: number | undefined;
-    export let date: number | undefined;
-    export let listNip19: string;
-    export let authorPubkey: string;
+let {
+    title,
+    kind,
+    date,
+    listNip19,
+    authorPubkey,
+}: { title?: string; kind?: number; date?: number; listNip19: string; authorPubkey: string } =
+    $props();
 
-    const timeInPast = timeAgo(date as number);
-    const user = $ndk.getUser({ pubkey: authorPubkey });
+const timeInPast = timeAgo(date as number);
+const user = ndk.getUser({ pubkey: authorPubkey });
 </script>
 
 <div

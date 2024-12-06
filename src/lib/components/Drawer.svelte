@@ -1,25 +1,25 @@
 <script lang="ts">
-    import { fly, fade } from "svelte/transition";
-    import { quintInOut } from "svelte/easing";
+import { type Snippet } from "svelte";
+import { quintInOut } from "svelte/easing";
+import { fade, fly } from "svelte/transition";
 
-    export let visible: boolean;
+let { visible, children }: { visible: boolean; children: Snippet } = $props();
 
-    function toggleVisible() {
-        visible = !visible;
-    }
+function toggleVisible() {
+    visible = !visible;
+}
 </script>
 
 {#if visible}
-    <!-- Overlay -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
         transition:fade={{ duration: 50 }}
         role="region"
         tabindex="-1"
-        on:click={toggleVisible}
+        onclick={toggleVisible}
         class="fixed bg-black/40 z-40 top-0 left-0 w-full h-full"
-    />
+    ></div>
 
     <!-- Drawer -->
 
@@ -28,6 +28,6 @@
         out:fly={{ duration: 100, x: 320, easing: quintInOut }}
         class="fixed top-0 z-50 h-full p-4 right-0 w-72 shadow-3xl border-l dark:border-gray-950 dark:bg-gray-800"
     >
-        <slot />
+        {@render children()}
     </div>
 {/if}

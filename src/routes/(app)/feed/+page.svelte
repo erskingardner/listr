@@ -1,53 +1,58 @@
 <script lang="ts">
-    import ListSummary from "$lib/components/lists/ListSummary.svelte";
-    import { onDestroy } from "svelte";
-    import { filteredLists, FEED_LIST_KINDS, unixTimeNowInSeconds } from "$lib/utils";
-    import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
-    import { NDKList, NDKUser } from "@nostr-dev-kit/ndk";
-    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import { Tabs, TabItem } from "flowbite-svelte";
-    import Loader from "$lib/components/Loader.svelte";
+import Loader from "$lib/components/Loader.svelte";
+import ListSummary from "$lib/components/lists/ListSummary.svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { FEED_LIST_KINDS, filteredLists, unixTimeNowInSeconds } from "$lib/utils";
+import { NDKList } from "@nostr-dev-kit/ndk";
+import { TabItem, Tabs } from "flowbite-svelte";
+import { onMount } from "svelte";
 
-    const globalLists = $ndk.storeSubscribe(
-        {
+let currentUser = $derived(getCurrentUser());
+let loading = $state(true);
+let globalLists: NDKList[] | null = $state(null);
+let followingLists: NDKList[] | null = $state(null);
+
+onMount(async () => {
+    ndk.fetchEvents({
+        kinds: FEED_LIST_KINDS,
+        limit: 50,
+        since: unixTimeNowInSeconds() - 60 * 60 * 96,
+    })
+        .then((events) => {
+            globalLists = filteredLists(
+                Array.from(events).map((event) => NDKList.from(event)),
+                undefined,
+                true
+            );
+        })
+        .catch((e) => {
+            console.error("Error fetching global lists", e);
+        })
+        .finally(() => {
+            loading = false;
+        });
+
+    // TODO: This isn't ever returning anything from the fetchEvents call
+    if (currentUser && currentUser.follows.length > 0) {
+        ndk.fetchEvents({
             kinds: FEED_LIST_KINDS,
+            authors: currentUser.follows,
             limit: 50,
             since: unixTimeNowInSeconds() - 60 * 60 * 96,
-        },
-        { closeOnEose: false },
-        NDKList
-    );
-
-    let followingLists: NDKEventStore<ExtendedBaseType<NDKList>>;
-
-    async function followsListReady(): Promise<boolean> {
-        if ($currentUser) {
-            const followers = await $currentUser.follows();
-
-            followingLists = $ndk.storeSubscribe(
-                {
-                    kinds: FEED_LIST_KINDS,
-                    authors: Array.from(followers).map((user: NDKUser) => user.pubkey),
-                    limit: 50,
-                    since: unixTimeNowInSeconds() - 60 * 60 * 96,
-                },
-                { closeOnEose: false },
-                NDKList
-            );
-            return true;
-        } else {
-            return false;
-        }
+        })
+            .then((events) => {
+                followingLists = filteredLists(
+                    Array.from(events).map((event) => NDKList.from(event)),
+                    undefined,
+                    true
+                );
+            })
+            .catch((e) => {
+                console.error("Error fetching following lists", e);
+            });
     }
-
-    onDestroy(() => {
-        globalLists.unsubscribe();
-        if (followingLists) followingLists.unsubscribe();
-    });
-
-    $: if ($globalLists) $globalLists = filteredLists($globalLists, undefined, true);
-    $: if ($followingLists) $followingLists = filteredLists($followingLists, undefined, true);
+});
 </script>
 
 <svelte:head>
@@ -73,47 +78,29 @@
     </div>
     <hr class="dark:border-gray-700" />
     <div class="flex flex-col gap-2">
-        {#if $currentUser}
-            {#await followsListReady()}
-                <div class="flex flex-row items-center justify-center my-12">
-                    <Loader />
-                </div>
-            {:then followsListAvailable}
-                {#if followsListAvailable}
-                    <Tabs
-                        class="border-b border-b-gray-300"
-                        contentClass="p-0 rounded-lg dark:bg-gray-800 mt-4"
-                        inactiveClasses="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
+        {#if loading}
+            <div class="flex flex-row items-center justify-center my-12">
+                <Loader />
+            </div>
+        {:else}
+            {#if currentUser && followingLists && followingLists.length > 0 && globalLists && globalLists.length > 0}
+            <Tabs
+                class="border-b border-b-gray-300"
+                contentClass="p-0 rounded-lg dark:bg-gray-800 mt-4"
+                inactiveClasses="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
+            >
+                    <TabItem
+                        open
+                        title="Following"
+                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
+                        defaultClass="text-base"
                     >
-                        <TabItem
-                            open
-                            title="Following"
-                            activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                            defaultClass="text-base"
-                        >
-                            {#if $followingLists.length === 0}
-                                <div class="flex flex-row items-center justify-center my-12">
-                                    <Loader />
-                                </div>
-                            {:else}
-                                {#each $followingLists as list}
-                                    <ListSummary
-                                        title={list.title}
-                                        kind={list.kind}
-                                        date={list.created_at}
-                                        authorPubkey={list.pubkey}
-                                        listNip19={list.encode()}
-                                    />
-                                {/each}
-                            {/if}
-                        </TabItem>
-                        <TabItem
-                            title="Global"
-                            style="underline"
-                            activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                            defaultClass="text-base"
-                        >
-                            {#each $globalLists as list}
+                        {#if followingLists.length === 0}
+                            <div class="flex flex-row items-center justify-center my-12">
+                                <Loader />
+                            </div>
+                        {:else}
+                            {#each followingLists as list}
                                 <ListSummary
                                     title={list.title}
                                     kind={list.kind}
@@ -122,30 +109,36 @@
                                     listNip19={list.encode()}
                                 />
                             {/each}
-                        </TabItem>
-                    </Tabs>
-                {:else}
-                    {#each $globalLists as list}
-                        <ListSummary
-                            title={list.title}
-                            kind={list.kind}
-                            date={list.created_at}
-                            authorPubkey={list.pubkey}
-                            listNip19={list.encode()}
-                        />
-                    {/each}
-                {/if}
-            {/await}
-        {:else}
-            {#each $globalLists as list}
-                <ListSummary
-                    title={list.title}
-                    kind={list.kind}
-                    date={list.created_at}
-                    authorPubkey={list.pubkey}
-                    listNip19={list.encode()}
-                />
-            {/each}
+                        {/if}
+                    </TabItem>
+                    <TabItem
+                        title="Global"
+                        style="underline"
+                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
+                        defaultClass="text-base"
+                    >
+                        {#each globalLists as list}
+                            <ListSummary
+                                title={list.title}
+                                kind={list.kind}
+                                date={list.created_at}
+                                authorPubkey={list.pubkey}
+                                listNip19={list.encode()}
+                            />
+                        {/each}
+                    </TabItem>
+                </Tabs>
+            {:else if globalLists && globalLists.length > 0}
+                {#each globalLists as list}
+                    <ListSummary
+                        title={list.title}
+                        kind={list.kind}
+                        date={list.created_at}
+                        authorPubkey={list.pubkey}
+                        listNip19={list.encode()}
+                    />
+                {/each}
+            {/if}
         {/if}
     </div>
 </div>

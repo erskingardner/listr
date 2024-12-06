@@ -1,29 +1,30 @@
 <script lang="ts">
-    import { Search, Menu, Server } from "lucide-svelte";
-    import { createEventDispatcher } from "svelte";
-    import { scale } from "svelte/transition";
-    import { expoInOut } from "svelte/easing";
-    import currentUser from "$lib/stores/currentUser";
-    import ndk from "$lib/stores/ndk";
-    import { Avatar, Name, RelayList } from "@nostr-dev-kit/ndk-svelte-components";
-    import NewListButton from "../NewListButton.svelte";
-    import SigninSelector from "./SigninSelector.svelte";
-    import { signout } from "$lib/utils/auth";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { signout } from "$lib/utils/auth";
+import { Menu, Search } from "lucide-svelte";
+import { expoInOut } from "svelte/easing";
+import { scale } from "svelte/transition";
+import NewListButton from "../NewListButton.svelte";
+import UserAvatar from "../users/UserAvatar.svelte";
+import UserName from "../users/UserName.svelte";
+import SigninSelector from "./SigninSelector.svelte";
 
-    const dispatch = createEventDispatcher();
+let { openMobileMenu }: { openMobileMenu: () => void } = $props();
 
-    let profileMenuVisible: boolean = false;
-    let relayMenuVisible: boolean = false;
+let currentUser = $derived(getCurrentUser());
 
-    let searchQuery: string;
+let profileMenuVisible = $state(false);
+let relayMenuVisible = $state(false);
+let searchQuery = $state("");
 
-    function toggleProfileMenu() {
-        profileMenuVisible = !profileMenuVisible;
-    }
+function toggleProfileMenu() {
+    profileMenuVisible = !profileMenuVisible;
+}
 
-    function toggleRelayMenu() {
-        relayMenuVisible = !relayMenuVisible;
-    }
+function toggleRelayMenu() {
+    relayMenuVisible = !relayMenuVisible;
+}
 </script>
 
 <div
@@ -32,7 +33,7 @@
     <button
         type="button"
         class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-        on:click={() => dispatch("openMobileMenu")}
+        onclick={openMobileMenu}
     >
         <span class="sr-only">Open sidebar</span>
         <Menu strokeWidth="1.5" size="24" class="text-gray-400 hover:text-gray-500" />
@@ -76,42 +77,13 @@
                 </button>
             {/if} -->
 
-            <NewListButton buttonText="New list" class="py-1 hidden lg:flex" />
-
-            <!-- Relay dropdown -->
-            <div class="relative">
-                <button
-                    on:click={toggleRelayMenu}
-                    type="button"
-                    class="-m-1.5 flex items-center p-1.5 text-gray-400 hover:text-gray-500"
-                    id="user-menu-button"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                >
-                    <Server strokeWidth="1.5" />
-                </button>
-                {#if relayMenuVisible}
-                    <!-- Dropdown relay menu -->
-                    <div
-                        on:pointerleave={toggleRelayMenu}
-                        in:scale={{ duration: 100, easing: expoInOut, start: 0.95 }}
-                        out:scale={{ duration: 75, easing: expoInOut, start: 0.95 }}
-                        class="absolute text-sm right-0 z-10 mt-2.5 w-72 p-4 origin-top-right rounded-md bg-white dark:bg-gray-700 dark:text-gray-50 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
-                        role="menu"
-                        aria-orientation="vertical"
-                        aria-labelledby="user-menu-button"
-                        tabindex="-1"
-                    >
-                        <RelayList ndk={$ndk} />
-                    </div>
-                {/if}
-            </div>
+            <NewListButton buttonText="New list" extraClasses="py-1 hidden lg:flex" />
 
             <!-- Profile dropdown -->
-            {#if $currentUser}
+            {#if currentUser?.user}
                 <div class="relative">
                     <button
-                        on:click={toggleProfileMenu}
+                        onclick={toggleProfileMenu}
                         type="button"
                         class="-m-1.5 flex items-center p-1.5"
                         id="user-menu-button"
@@ -119,18 +91,13 @@
                         aria-haspopup="true"
                     >
                         <span class="sr-only">Open user menu</span>
-                        <Avatar ndk={$ndk} user={$currentUser} class="w-8 h-8 rounded-full" />
+                        <UserAvatar user={currentUser.user} extraClasses="w-8 h-8 rounded-full" />
                         <span class="hidden lg:flex lg:items-center">
                             <span
-                                class="ml-4 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
+                                class="ml-2 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
                                 aria-hidden="true"
                             >
-                                <Name
-                                    ndk={$ndk}
-                                    user={$currentUser}
-                                    npubMaxLength={9}
-                                    on:click={toggleProfileMenu}
-                                />
+                                <UserName user={currentUser.user} npubMaxLength={9} />
                             </span>
                             <svg
                                 class="ml-2 h-5 w-5 text-gray-400"
@@ -150,7 +117,7 @@
                     {#if profileMenuVisible}
                         <!-- Dropdown profile menu -->
                         <div
-                            on:pointerleave={toggleProfileMenu}
+                            onpointerleave={toggleProfileMenu}
                             in:scale={{ duration: 100, easing: expoInOut, start: 0.95 }}
                             out:scale={{ duration: 75, easing: expoInOut, start: 0.95 }}
                             class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 dark:text-gray-50 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
@@ -160,7 +127,7 @@
                             tabindex="-1"
                         >
                             <a
-                                href={`/${$currentUser.npub}`}
+                                href={`/${currentUser.user.npub}`}
                                 class="block px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"
                                 tabindex="-1"
@@ -178,8 +145,8 @@
                                 Settings
                             </a>
                             <button
-                                on:click={() => signout($ndk)}
-                                on:touchend={() => signout($ndk)}
+                                onclick={() => signout(ndk)}
+                                ontouchend={() => signout(ndk)}
                                 class="block w-full text-left px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"
                                 tabindex="-1"
@@ -191,7 +158,7 @@
                     {/if}
                 </div>
             {:else}
-                <SigninSelector dropdownClass="w-56" />
+                <SigninSelector />
             {/if}
         </div>
     </div>

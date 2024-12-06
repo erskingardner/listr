@@ -1,105 +1,106 @@
 <script lang="ts">
-    import { Zap } from "lucide-svelte";
-    import { Popover } from "flowbite-svelte";
-    import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
-    import { NDKNip07Signer, NDKEvent, type NDKZapDetails } from "@nostr-dev-kit/ndk";
-    import { zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
-    import { onMount, onDestroy, beforeUpdate } from "svelte";
-    import { afterNavigate } from "$app/navigation";
-    import type { NDKEventStore, ExtendedBaseType } from "@nostr-dev-kit/ndk-svelte";
-    import toast from "svelte-french-toast";
-    import type { LnPaymentInfo, NDKPaymentConfirmationLN } from "@nostr-dev-kit/ndk";
-    import { requestProvider, type SendPaymentResponse } from "webln";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import {
+    type LnPaymentInfo,
+    NDKEvent,
+    NDKNip07Signer,
+    type NDKPaymentConfirmationLN,
+    type NDKSubscription,
+    type NDKZapDetails,
+} from "@nostr-dev-kit/ndk";
+import { zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
+import { Popover } from "flowbite-svelte";
+import { Zap } from "lucide-svelte";
+import { onDestroy, onMount } from "svelte";
+import toast from "svelte-hot-french-toast";
+import { type SendPaymentResponse, requestProvider } from "webln";
 
-    export let listId: string;
-    export let nip19: string;
-    let amount: number = 21;
-    let comment: string;
+let { listId, nip19 }: { listId: string; nip19: string } = $props();
 
-    let popoverOpen: boolean = false;
-    let totalZaps = 0;
-    let alreadyZapped = false;
-    let zaps: NDKEventStore<ExtendedBaseType<NDKEvent>>;
+let currentUser = $derived(getCurrentUser());
+let amount = $state(21);
+let comment = $state("");
 
-    zaps = $ndk.storeSubscribe({ kinds: [9735], "#a": [listId as string] }, { closeOnEose: true });
-    onMount(() => {
-        zaps = $ndk.storeSubscribe(
-            { kinds: [9735], "#a": [listId as string] },
-            { closeOnEose: true }
-        );
+let popoverOpen = $state(false);
+let totalZaps = $state(0);
+let alreadyZapped = $state(false);
+
+let zaps: NDKEvent[] = $state([]);
+let zapsSub: NDKSubscription | null = $state(null);
+
+onMount(() => {
+    zapsSub = ndk.subscribe({ kinds: [9735], "#a": [listId as string] }, { closeOnEose: false });
+
+    zapsSub.on("event", (event: NDKEvent) => {
+        zaps = [...zaps, event];
     });
+});
 
-    beforeUpdate(() => zaps?.unsubscribe());
-    onDestroy(() => zaps?.unsubscribe());
+onDestroy(() => zapsSub?.stop());
 
-    afterNavigate(() => {
-        alreadyZapped = false;
-        zaps = $ndk.storeSubscribe(
-            { kinds: [9735], "#a": [listId as string] },
-            { closeOnEose: true }
-        );
+$effect(() => {
+    totalZaps = zaps
+        .map((event: NDKEvent) => {
+            const zapInvoice = zapInvoiceFromEvent(event);
+            if (currentUser.user) {
+                alreadyZapped = zapInvoice?.zappee === currentUser.user.pubkey;
+            }
+            return (zapInvoice?.amount || 0) / 1000;
+        })
+        .reduce((subTotal, value) => subTotal + value, 0);
+});
+
+// TODO: THIS IS BROKEN - Fix and add the list zap back again
+async function submitZap(e: Event) {
+    e.preventDefault();
+    const signer = new NDKNip07Signer();
+    ndk.signer = signer;
+    const event = await ndk.fetchEvent(nip19 as string);
+
+    if (!event) {
+        console.log("No event to zap");
+        return;
+    }
+    console.log("Zapping event", event);
+
+    ndk.zap(event, amount * 1000, {
+        comment,
+        onLnPay: async (invoice: NDKZapDetails<LnPaymentInfo>) => {
+            const zapRequest = zapInvoiceFromEvent(invoice.target as NDKEvent);
+            try {
+                const webln = await requestProvider();
+                const paymentResponse = await webln.sendPayment(JSON.stringify(zapRequest));
+                console.log("Payment response", paymentResponse);
+                return { preimage: paymentResponse.preimage } as NDKPaymentConfirmationLN;
+            } catch (error) {
+                console.log("payment error:", error);
+                toast.error("Zap failed. Please try again.");
+            }
+        },
+        onComplete: (results) => {
+            console.log("Zap results", results);
+            let hasError = false;
+            results.forEach((result, key) => {
+                if (result instanceof Error) {
+                    hasError = true;
+                    console.error(`Error for ${key}:`, result);
+                }
+            });
+
+            if (hasError) {
+                toast.error("Error zapping list. Please check the console for details.");
+            } else {
+                toast.success("Zap successful!");
+                popoverOpen = false;
+            }
+        },
     });
-
-    // TODO: THIS IS BROKEN - Fix and add the list zap back again
-    async function submitZap() {
-        const signer = new NDKNip07Signer();
-        $ndk.signer = signer;
-        const event = await $ndk.fetchEvent(nip19 as string);
-
-        if (!event) {
-            console.log("No event to zap");
-            return;
-        }
-        console.log("Zapping event", event);
-
-        $ndk.zap(event, amount * 1000, {
-            comment,
-            onLnPay: async (invoice: NDKZapDetails<LnPaymentInfo>) => {
-                const zapRequest = zapInvoiceFromEvent(invoice.target as NDKEvent);
-                try {
-                    const webln = await requestProvider();
-                    const paymentResponse = await webln.sendPayment(JSON.stringify(zapRequest));
-                    console.log("Payment response", paymentResponse);
-                    return { preimage: paymentResponse.preimage } as NDKPaymentConfirmationLN;
-                } catch (error: any) {
-                    console.log("payment error:", error);
-                    toast.error("Zap failed. Please try again.");
-                }
-            },
-            onComplete: (results) => {
-                console.log("Zap results", results);
-                let hasError = false;
-                results.forEach((result, key) => {
-                    if (result instanceof Error) {
-                        hasError = true;
-                        console.error(`Error for ${key}:`, result);
-                    }
-                });
-
-                if (hasError) {
-                    toast.error("Error zapping list. Please check the console for details.");
-                } else {
-                    toast.success("Zap successful!");
-                    popoverOpen = false;
-                }
-            },
-        });
-    }
-
-    $: {
-        totalZaps = $zaps
-            .map((event) => {
-                const zapInvoice = zapInvoiceFromEvent(event as unknown as NDKEvent);
-                alreadyZapped = zapInvoice?.zappee === $currentUser?.pubkey;
-                return (zapInvoice?.amount || 0) / 1000;
-            })
-            .reduce((subTotal, value) => subTotal + value, 0);
-    }
+}
 </script>
 
 <button
-    on:click={() => (popoverOpen = true)}
+    onclick={() => (popoverOpen = true)}
     class="flex flex-row gap-1 items-center text-sm lg:text-base"
 >
     <Zap
@@ -117,9 +118,9 @@
     class="dark:text-gray-50 dark:bg-gray-700 z-30"
 >
     <div class="panel-contents flex flex-col gap-2">
-        {#if $currentUser}
+        {#if currentUser.user}
             <form
-                on:submit|preventDefault={submitZap}
+                onsubmit={submitZap}
                 class="flex flex-col gap-2 justify-start items-start"
             >
                 <label for="amount"

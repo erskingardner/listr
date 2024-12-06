@@ -1,5 +1,13 @@
+<script lang="ts">
+let {
+    extraClasses,
+}: {
+    extraClasses?: string;
+} = $props();
+</script>
+
 <span
-    class="loader border-4 border-gray-200 border-t-indigo-600 rounded-full w-12 h-12 {$$props.class}"
+    class="loader border-4 border-gray-200 border-t-indigo-600 rounded-full w-12 h-12 {extraClasses}"
 ></span>
 
 <style lang="postcss">

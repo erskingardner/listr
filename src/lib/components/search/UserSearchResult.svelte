@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { NDKEvent } from "@nostr-dev-kit/ndk";
-    import PersonItem from "../lists/items/PersonItem.svelte";
+import type { NDKEvent } from "@nostr-dev-kit/ndk";
+import PersonItem from "../lists/items/PersonItem.svelte";
 
-    export let event: NDKEvent;
+let { event }: { event: NDKEvent } = $props();
 </script>
 
 <PersonItem

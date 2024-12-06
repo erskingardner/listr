@@ -1,3 +1,3 @@
 <script lang="ts">
-    // Not implemented
+// Not implemented
 </script>

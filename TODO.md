@@ -14,13 +14,13 @@ A simple app for managing and discovering Nostr lists.
 
 #### Other stuff
 
--   NsecBunker login
 -   Commenting on lists
 
 ### 👨🏼‍💻 In Progress
 
 ### ✅ Done
 
+-   Nostr login
 -   Set up develop on beta.listr.lol
 -   Add "Contacts" name to NDKList so contact lists show up in Listr
 -   Search relay integration

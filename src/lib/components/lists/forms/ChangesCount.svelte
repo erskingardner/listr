@@ -1,10 +1,17 @@
 <script lang="ts">
-    import type { NDKTag } from "@nostr-dev-kit/ndk";
+import type { NDKTag } from "@nostr-dev-kit/ndk";
 
-    export let additions: Array<NDKTag>;
-    export let removals: Array<NDKTag>;
-    export let titleChanged: boolean;
-    export let descriptionChanged: boolean;
+let {
+    additions,
+    removals,
+    titleChanged,
+    descriptionChanged,
+}: {
+    additions: NDKTag[];
+    removals: NDKTag[];
+    titleChanged: boolean;
+    descriptionChanged: boolean;
+} = $props();
 </script>
 
 <div class="text-sm">

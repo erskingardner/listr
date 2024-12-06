@@ -1,15 +1,20 @@
 <script lang="ts">
-    import { X, SunMoon } from "lucide-svelte";
-    import { DarkMode } from "flowbite-svelte";
-    import Logo from "./Logo.svelte";
-    import NavMenu from "./NavMenu.svelte";
-    import { fade, fly } from "svelte/transition";
-    import { expoInOut } from "svelte/easing";
-    import { createEventDispatcher } from "svelte";
+import { DarkMode } from "flowbite-svelte";
+import { SunMoon, X } from "lucide-svelte";
+import { expoInOut } from "svelte/easing";
+import { fade, fly } from "svelte/transition";
+import Logo from "./Logo.svelte";
+import NavMenu from "./NavMenu.svelte";
 
-    const dispatch = createEventDispatcher();
-
-    export let mobileMenuVisible: boolean;
+let {
+    mobileMenuVisible,
+    closeMobileMenu,
+    donateButtonClicked,
+}: {
+    mobileMenuVisible: boolean;
+    closeMobileMenu: () => void;
+    donateButtonClicked: () => void;
+} = $props();
 </script>
 
 {#if mobileMenuVisible}
@@ -32,7 +37,7 @@
                 >
                     <button
                         type="button"
-                        on:click={() => dispatch("closeMobileMenu")}
+                        onclick={closeMobileMenu}
                         class="-m-2.5 p-2.5"
                     >
                         <span class="sr-only">Close sidebar</span>
@@ -60,7 +65,10 @@
                             </svelte:fragment>
                         </DarkMode>
                     </div>
-                    <NavMenu on:closeMobileMenu on:donateButtonClicked />
+                    <NavMenu
+                        {closeMobileMenu}
+                        {donateButtonClicked}
+                    />
                 </div>
             </div>
         </div>

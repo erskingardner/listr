@@ -1,17 +1,16 @@
 <script lang="ts">
-    import { currentUserSettings } from "$lib/stores/currentUser";
-    import type { NDKList } from "@nostr-dev-kit/ndk";
-    import { Tooltip } from "flowbite-svelte";
-    import { BoxSelect, Info, MenuSquare, UserSquare } from "lucide-svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import type { NDKList } from "@nostr-dev-kit/ndk";
+import { Tooltip } from "flowbite-svelte";
+import { BoxSelect, Info, MenuSquare, UserSquare } from "lucide-svelte";
 
-    export let list: NDKList;
-    export let npub: string;
+let { list, npub }: { list: NDKList; npub: string } = $props();
 
-    const nip19 = list.encode();
-
-    const peopleItems = list.items.filter((item) => item[0] === "p");
-    const eventItems = list.items.filter((item) => ["e", "a"].includes(item[0]));
-    const otherItems = list.items.filter((item) => !["p", "e", "a"].includes(item[0]));
+let currentUser = $derived(getCurrentUser());
+const nip19 = $derived(list.encode());
+const peopleItems = $derived(list.items.filter((item) => item[0] === "p"));
+const eventItems = $derived(list.items.filter((item) => ["e", "a"].includes(item[0])));
+const otherItems = $derived(list.items.filter((item) => !["p", "e", "a"].includes(item[0])));
 </script>
 
 <a
@@ -20,7 +19,7 @@
 >
     <div class="flex flex-row gap-2 items-center">
         <h3 class="text-lg font-bold">{list.title}</h3>
-        {#if $currentUserSettings?.devMode}
+        {#if currentUser?.settings?.devMode}
             <Info strokeWidth="1.5" size="16" />
             <Tooltip
                 type="auto"

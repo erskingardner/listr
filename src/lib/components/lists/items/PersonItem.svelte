@@ -1,23 +1,39 @@
 <script lang="ts">
-    import ndk from "$lib/stores/ndk";
-    import PrivateItemPill from "./PrivateItemPill.svelte";
-    import ItemActions from "./ItemActions.svelte";
-    import RemovalItemPill from "./RemovalItemPill.svelte";
-    import UserDetails from "$lib/components/users/UserDetails.svelte";
-    import FollowButton from "../actions/FollowButton.svelte";
-    import AddToListButton from "../actions/AddToListButton.svelte";
-    import AdditionItemPill from "./AdditionItemPill.svelte";
-    import RemoveItem from "../actions/RemoveItem.svelte";
-    import Unstage from "../actions/Unstage.svelte";
+import UserDetails from "$lib/components/users/UserDetails.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import type { ListItemParams } from "$lib/types";
+import AddToListButton from "../actions/AddToListButton.svelte";
+import FollowButton from "../actions/FollowButton.svelte";
+import RemoveItem from "../actions/RemoveItem.svelte";
+import Unstage from "../actions/Unstage.svelte";
+import AdditionItemPill from "./AdditionItemPill.svelte";
+import ItemActions from "./ItemActions.svelte";
+import PrivateItemPill from "./PrivateItemPill.svelte";
+import RemovalItemPill from "./RemovalItemPill.svelte";
 
-    export let type: string;
-    export let pubkey: string;
-    export let privateItem: boolean;
-    export let unsaved: boolean;
-    export let removal: boolean;
-    export let editMode: boolean;
+let {
+    type,
+    pubkey,
+    privateItem,
+    otherTagValues,
+    unsaved,
+    removal,
+    editMode,
+    removeItem,
+    removeUnsavedItem,
+}: {
+    type: string;
+    pubkey: string;
+    privateItem: boolean;
+    otherTagValues: string[] | undefined;
+    unsaved: boolean;
+    removal: boolean;
+    editMode: boolean;
+    removeItem: (params: ListItemParams) => void;
+    removeUnsavedItem: (params: ListItemParams) => void;
+} = $props();
 
-    const user = $ndk.getUser({ pubkey: pubkey });
+let user = $derived(ndk.getUser({ pubkey: pubkey }));
 </script>
 
 <div
@@ -39,22 +55,31 @@
         {/if}
     </div>
     {#if unsaved}
-        <Unstage {type} id={pubkey} {privateItem} {unsaved} {removal} on:removeUnsavedItem />
+        <Unstage
+            {type}
+            id={pubkey}
+            {privateItem}
+            {otherTagValues}
+            {unsaved}
+            {removal}
+            {removeUnsavedItem}
+        />
     {:else}
         <div class="w-full lg:w-auto lg:ml-auto flex flex-row gap-2 lg:items-center">
             <RemoveItem
                 {type}
                 id={pubkey}
                 {privateItem}
+                {otherTagValues}
                 {unsaved}
                 {removal}
                 {editMode}
-                on:removeItem
+                {removeItem}
             />
             {#if !editMode}
                 <FollowButton {user} />
                 <AddToListButton {user} />
-                <ItemActions {type} id={pubkey} on:removeItem />
+                <ItemActions {type} id={pubkey} />
             {/if}
         </div>
     {/if}

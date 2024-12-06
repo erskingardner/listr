@@ -1,7 +1,11 @@
 <script lang="ts">
-    import { capitalize } from "$lib/utils";
+import { capitalize } from "$lib/utils";
 
-    export let marker: string | undefined;
+let {
+    marker,
+}: {
+    marker: string | undefined;
+} = $props();
 </script>
 
 <span class="text-2xs text-white md:text-xs px-1.5 md:px-2 md:py-0.5 bg-blue-600 rounded-full">

@@ -1,24 +1,32 @@
 <script lang="ts">
-    import { Copy, CopyCheck } from "lucide-svelte";
-    import { copyToClipboard } from "$lib/utils";
+import { copyToClipboard } from "$lib/utils";
+import { Copy, CopyCheck } from "lucide-svelte";
 
-    export let nip19: string;
-    export let size: string = "20";
-    export let showText: boolean = true;
+let {
+    nip19,
+    size = "20",
+    showText = true,
+    extraClasses,
+}: {
+    nip19: string;
+    size?: string;
+    showText?: boolean;
+    extraClasses?: string;
+} = $props();
 
-    let copySuccess: boolean = false;
+let copySuccess = $state(false);
 
-    async function copyListId() {
-        copyToClipboard(nip19).then(() => {
-            copySuccess = true;
-            setTimeout(() => {
-                copySuccess = false;
-            }, 1500);
-        });
-    }
+async function copyListId() {
+    copyToClipboard(nip19).then(() => {
+        copySuccess = true;
+        setTimeout(() => {
+            copySuccess = false;
+        }, 1500);
+    });
+}
 </script>
 
-<button on:click={copyListId} class="popoverActionButton dark:text-white {$$props.class}">
+<button onclick={copyListId} class="popoverActionButton dark:text-white {extraClasses}">
     {#if copySuccess}
         <CopyCheck strokeWidth="1.5" {size} class="stroke-green-500" />
     {:else}

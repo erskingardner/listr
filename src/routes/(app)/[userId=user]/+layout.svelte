@@ -1,22 +1,12 @@
 <script lang="ts">
-    import UserProfileHeader from "$lib/components/users/UserProfileHeader.svelte";
-    import { page } from "$app/stores";
-    import { getUserAndProfile } from "$lib/utils/nostr";
-    import { onMount } from "svelte";
-    import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { page } from "$app/stores";
+import UserProfileHeader from "$lib/components/users/UserProfileHeader.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import type { NDKUser } from "@nostr-dev-kit/ndk";
 
-    let user: NDKUser;
-    let profile: NDKUserProfile | null;
+let { children } = $props();
 
-    $: {
-        let userId = $page.params.userId;
-        if (userId && user?.npub !== userId) {
-            getUserAndProfile(userId).then(({ user: tmpUser, profile: tmpProfile }) => {
-                user = tmpUser;
-                profile = tmpProfile;
-            });
-        }
-    }
+let user: NDKUser = $derived(ndk.getUser({ npub: $page.params.userId }));
 </script>
 
 {#if user}
@@ -25,7 +15,7 @@
     {/key}
 {/if}
 
-<slot />
+{@render children()}
 
 <style lang="postcss">
     * > :global(.userCard--avatar) {

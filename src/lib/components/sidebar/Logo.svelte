@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Listr from "$lib/icons/Listr.svelte";
+import Listr from "$lib/icons/Listr.svelte";
 </script>
 
 <Listr class="text:black dark:text-white w-6 h-6" />

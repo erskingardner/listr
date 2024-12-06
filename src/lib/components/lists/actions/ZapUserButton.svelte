@@ -1,54 +1,71 @@
 <script lang="ts">
-    import { type NDKUser, NDKNip07Signer } from "@nostr-dev-kit/ndk";
-    import { Zap } from "lucide-svelte";
-    import { Popover } from "flowbite-svelte";
-    import ndk from "$lib/stores/ndk";
-    import currentUser from "$lib/stores/currentUser";
-    import { requestProvider } from "webln";
-    import toast from "svelte-french-toast";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { NDKNip07Signer, type NDKUser, type NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { Popover } from "flowbite-svelte";
+import { Zap } from "lucide-svelte";
+import { decrypt } from "nostr-tools/nip04";
+import toast from "svelte-hot-french-toast";
+import { requestProvider } from "webln";
 
-    export let user: NDKUser;
+let { user, extraClasses }: { user: NDKUser; extraClasses?: string } = $props();
 
-    let amount: number = 21;
-    let comment: string;
+let currentUser = $derived(getCurrentUser());
+let profile: NDKUserProfile | null = $state(null);
+let amount = $state(21);
+let comment: string = $state("");
+let popoverOpen = $state(false);
 
-    let popoverOpen: boolean = false;
+$effect(() => {
+    if (!profile) {
+        user.fetchProfile().then((fetchedProfile) => {
+            profile = fetchedProfile;
+        });
+    }
+});
 
-    async function submitZap() {
-        const signer = new NDKNip07Signer();
-        $ndk.signer = signer;
-        let zapRequest = await user.zap(amount * 1000, comment);
+async function submitZap(e: SubmitEvent) {
+    e.preventDefault();
+    const signer = new NDKNip07Signer();
+    ndk.signer = signer;
+    let zapRequest = await user.zap(amount * 1000, comment);
 
-        if (!zapRequest) {
-            console.log("No payment request");
-            return;
-        }
-
-        try {
-            const webln = await requestProvider();
-            webln
-                .sendPayment(zapRequest as string)
-                .then(() => {
-                    toast.success("Zap successful!");
-                    popoverOpen = false;
-                })
-                .catch((err) => {
-                    console.error(err);
-                    toast.error("Zap failed. Please try again.");
-                });
-        } catch (error: any) {
-            console.log(error);
-        }
+    if (!zapRequest) {
+        console.log("No payment request");
+        return;
     }
 
-    const displayableName =
-        user.profile?.displayName ||
-        user.profile?.name ||
-        user.profile?.nip05 ||
-        `${user.npub.slice(0, 9)}...`;
+    try {
+        const webln = await requestProvider();
+        webln
+            .sendPayment(zapRequest as string)
+            .then(() => {
+                toast.success("Zap successful!");
+                popoverOpen = false;
+            })
+            .catch((err) => {
+                console.error(err);
+                toast.error("Zap failed. Please try again.");
+            });
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+let displayableName = $derived.by(() => {
+    if (profile || user) {
+        return (
+            profile?.displayName ||
+            profile?.name ||
+            profile?.nip05 ||
+            `${user?.npub.slice(0, 9)}...`
+        );
+    }
+    return "";
+});
 </script>
 
-<button on:click={() => (popoverOpen = true)} class={$$props.class}>
+<button onclick={() => (popoverOpen = true)} class={extraClasses}>
     <Zap size="20" strokeWidth="1.5" class="w-5 h-5" />
     Zap
 </button>
@@ -59,9 +76,9 @@
     class="dark:text-gray-50 dark:bg-gray-700"
 >
     <div class="panel-contents flex flex-col gap-2">
-        {#if $currentUser}
+        {#if currentUser?.user}
             <form
-                on:submit|preventDefault={submitZap}
+                onsubmit={submitZap}
                 class="flex flex-col gap-2 justify-start items-start"
             >
                 <label for="amount"

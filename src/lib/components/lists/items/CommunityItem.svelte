@@ -1,10 +1,8 @@
 <script lang="ts">
-    import ndk from "$lib/stores/ndk";
-    import type { NDKUser } from "@nostr-dev-kit/ndk";
-    import { Name } from "@nostr-dev-kit/ndk-svelte-components";
+import UserName from "$lib/components/users/UserName.svelte";
+import type { NDKUser } from "@nostr-dev-kit/ndk";
 
-    export let name: string;
-    export let creator: NDKUser;
+let { name, creator }: { name: string; creator: NDKUser } = $props();
 </script>
 
 {#key name}
@@ -12,7 +10,7 @@
         <span class="font-semibold">{name}</span>
         <span class="italic text-sm">created by</span>
         <a href="/{creator.npub}" class="hover:underline">
-            <Name ndk={$ndk} user={creator} />
+            <UserName user={creator} />
         </a>
     </span>
 {/key}
