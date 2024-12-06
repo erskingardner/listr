@@ -1,12 +1,13 @@
 <script lang="ts">
 import "../../app.css";
+import { browser } from "$app/environment";
 import DonateModal from "$lib/components/DonateModal.svelte";
 import Header from "$lib/components/header/Header.svelte";
 import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
 import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
 import { setCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
-import { signout } from "$lib/utils/auth";
+import { SigninMethod, signin, signout } from "$lib/utils/auth";
 import { onMount } from "svelte";
 import { Toaster } from "svelte-hot-french-toast";
 
@@ -33,10 +34,7 @@ onMount(() => {
                             signout(ndk);
                         } else {
                             let user = ndk.getUser({ npub });
-                            user.ndk = ndk;
-                            ndk.activeUser = user;
-                            setCurrentUser(user.pubkey);
-                            document.cookie = `listrUserNpub=${user.npub}; max-age=1209600; SameSite=Lax; Secure; path=/`;
+                            signin(ndk, undefined, SigninMethod.NostrLogin, undefined, user);
                         }
                     },
                 });

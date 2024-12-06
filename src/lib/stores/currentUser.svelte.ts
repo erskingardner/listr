@@ -20,8 +20,8 @@ class CurrentUser {
     /** User settings and preferences for the Listr app */
     settings: App.UserSettings | null = $state(null);
 
-    constructor(pubkey: string) {
-        this.user = ndk.getUser({ npub: pubkey });
+    constructor(npub: string) {
+        this.user = ndk.getUser({ npub });
         if (this.user) {
             this.fetchUserFollows();
             this.fetchUserSettings();
@@ -89,7 +89,7 @@ export function getCurrentUser(): CurrentUser | null {
     return currentUser;
 }
 
-export function setCurrentUser(pubkey: string | null): CurrentUser | null {
-    currentUser = pubkey ? new CurrentUser(pubkey) : null;
+export function setCurrentUser(npub: string | null): CurrentUser | null {
+    currentUser = npub ? new CurrentUser(npub) : null;
     return currentUser;
 }
