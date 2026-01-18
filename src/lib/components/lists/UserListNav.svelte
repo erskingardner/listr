@@ -1,51 +1,33 @@
 <script lang="ts">
-import type { NDKSubscription } from "@nostr-dev-kit/ndk";
-import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+import { type NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
-import { onDestroy, onMount } from "svelte";
 import { page } from "$app/stores";
 import ndk from "$lib/stores/ndk.svelte";
 import { filterAndSortByTitle, getListDisplayTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 
 let { userPubkey }: { userPubkey: string } = $props();
 
-let lists: NDKList[] = $state([]);
-let deletedEvents: NDKEvent[] = $state([]);
-
-let listsSub: NDKSubscription | null = $state(null);
-let deletedEventsSub: NDKSubscription | null = $state(null);
-let filteredLists: NDKList[] = $derived(filterAndSortByTitle(lists, deletedEvents));
-
-onMount(() => {
-    listsSub = ndk.subscribe(
+let listsSub = ndk.$subscribe(() => ({
+    filters: [
         {
             kinds: SUPPORTED_LIST_KINDS,
             authors: [userPubkey],
         },
-        { closeOnEose: false }
-    );
+    ],
+}));
 
-    listsSub.on("event", (event: NDKEvent) => {
-        lists = [...lists, NDKList.from(event)];
-    });
-
-    deletedEventsSub = ndk.subscribe(
+let deletedEventsSub = ndk.$subscribe(() => ({
+    filters: [
         {
             kinds: [NDKKind.EventDeletion],
             authors: [userPubkey],
         },
-        { closeOnEose: false }
-    );
+    ],
+}));
 
-    deletedEventsSub.on("event", (event: NDKEvent) => {
-        deletedEvents = [...deletedEvents, event];
-    });
-});
-
-onDestroy(() => {
-    listsSub?.stop();
-    deletedEventsSub?.stop();
-});
+let lists = $derived(listsSub.events.map((e: NDKEvent) => NDKList.from(e)));
+let deletedEvents = $derived(deletedEventsSub.events);
+let filteredLists: NDKList[] = $derived(filterAndSortByTitle(lists, deletedEvents));
 </script>
 
 <div class="flex flex-col gap-0.5">

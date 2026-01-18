@@ -4,7 +4,6 @@ import { TabItem, Tabs } from "flowbite-svelte";
 import { onMount } from "svelte";
 import Loader from "$lib/components/Loader.svelte";
 import ListSummary from "$lib/components/lists/ListSummary.svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import {
     FEED_LIST_KINDS,
@@ -16,7 +15,8 @@ import {
 /** Maximum number of authors to include in a single relay filter request */
 const MAX_AUTHORS_PER_QUERY = 400;
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
+let follows = $derived(ndk.$follows);
 let loading = $state(true);
 let globalLists: NDKList[] | null = $state(null);
 let followingLists: NDKList[] | null = $state(null);
@@ -65,8 +65,8 @@ onMount(async () => {
         });
 
     // Fetch lists from followed users, limiting authors to avoid relay filter size limits
-    if (currentUser && currentUser.follows.length > 0) {
-        const followsToQuery = currentUser.follows.slice(0, MAX_AUTHORS_PER_QUERY);
+    if (currentUser && follows.length > 0) {
+        const followsToQuery = follows.slice(0, MAX_AUTHORS_PER_QUERY);
         ndk.fetchEvents({
             kinds: FEED_LIST_KINDS,
             authors: followsToQuery,

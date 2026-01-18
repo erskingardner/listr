@@ -1,0 +1,11 @@
+{
+    "$schema": "https://unpkg.com/jsrepo@2/schemas/project-config.json",
+    "repos": ["@ndk/svelte"],
+    "includeTests": false,
+    "paths": {
+        "*": "./src/lib/ndk",
+        "ui": "./src/lib/ndk/ui",
+        "utils": "./src/lib/ndk/utils",
+        "builders": "./src/lib/ndk/builders"
+    }
+}

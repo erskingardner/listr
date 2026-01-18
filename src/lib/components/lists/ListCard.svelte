@@ -2,12 +2,10 @@
 import type { NDKList } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { BoxSelect, Info, MenuSquare, UserSquare } from "lucide-svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import { getListDisplayTitle } from "$lib/utils/lists";
 
 let { list, npub }: { list: NDKList; npub: string } = $props();
 
-let currentUser = $derived(getCurrentUser());
 const nip19 = $derived(list.encode());
 const displayTitle = $derived(getListDisplayTitle(list));
 const peopleItems = $derived(list.items.filter((item) => item[0] === "p"));
@@ -21,14 +19,6 @@ const otherItems = $derived(list.items.filter((item) => !["p", "e", "a"].include
 >
     <div class="flex flex-row gap-2 items-center">
         <h3 class="text-lg font-bold truncate">{displayTitle}</h3>
-        {#if currentUser?.settings?.devMode}
-            <Info strokeWidth="1.5" size="16" />
-            <Tooltip
-                type="auto"
-                class="dark:border-gray-800 dark:text-gray-50 shadow-md whitespace-nowrap"
-                >k: {list.kind}</Tooltip
-            >
-        {/if}
     </div>
     {#if list.description}
         <p class="opacity-80 italic">{list.description}</p>

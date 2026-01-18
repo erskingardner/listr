@@ -3,16 +3,17 @@ import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { UserRoundMinus, UserRoundPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
 
 let { user, buttonClasses }: { user: NDKUser; buttonClasses?: string } = $props();
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
+let isFollowing = $derived(ndk.$follows.has(user.pubkey));
 let followingButtonText = $state("Following");
 
 async function handleFollow() {
-    if (!currentUser?.user) return;
-    const followResult = await currentUser.follow(user);
+    if (!currentUser) return;
+    const followResult = await ndk.$follows.add(user.pubkey);
     if (followResult) {
         toast.success("Successfully followed");
     } else {
@@ -21,8 +22,8 @@ async function handleFollow() {
 }
 
 async function handleUnfollow() {
-    if (!currentUser?.user) return;
-    const unfollowResult = await currentUser.unfollow(user);
+    if (!currentUser) return;
+    const unfollowResult = await ndk.$follows.remove(user.pubkey);
     if (unfollowResult) {
         toast.success("Successfully unfollowed");
     } else {
@@ -32,8 +33,8 @@ async function handleUnfollow() {
 </script>
 
 {#key user.pubkey}
-    {#if currentUser?.user}
-        {#if currentUser.follows.includes(user.pubkey)}
+    {#if currentUser}
+        {#if isFollowing}
             <button
                 onclick={handleUnfollow}
                 onmouseenter={() => (followingButtonText = "Unfollow")}

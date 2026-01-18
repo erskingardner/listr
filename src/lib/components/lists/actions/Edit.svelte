@@ -1,6 +1,6 @@
 <script lang="ts">
 import { FileEdit, FileX } from "lucide-svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
 
 let {
     pubkey,
@@ -12,10 +12,10 @@ let {
     toggleEditMode: () => void;
 } = $props();
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 </script>
 
-{#if currentUser?.user?.pubkey === pubkey}
+{#if currentUser?.pubkey === pubkey}
     {#if editMode}
         <button onclick={toggleEditMode} class="primaryActionButton">
             <FileX strokeWidth="1.5" size="20" class="w-5 h-5" />

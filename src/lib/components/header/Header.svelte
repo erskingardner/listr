@@ -1,29 +1,26 @@
 <script lang="ts">
+import type { NDKSvelte } from "@nostr-dev-kit/svelte";
 import { Menu, Search } from "lucide-svelte";
 import { expoInOut } from "svelte/easing";
 import { scale } from "svelte/transition";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import { User } from "$lib/ndk/ui/user";
 import ndk from "$lib/stores/ndk.svelte";
 import { signout } from "$lib/utils/auth";
 import NewListButton from "../NewListButton.svelte";
-import UserAvatar from "../users/UserAvatar.svelte";
-import UserName from "../users/UserName.svelte";
 import SigninSelector from "./SigninSelector.svelte";
 
 let { openMobileMenu }: { openMobileMenu: () => void } = $props();
 
-let currentUser = $derived(getCurrentUser());
+// Cast ndk to NDKSvelte for component compatibility
+const ndkSvelte = ndk as unknown as NDKSvelte;
+
+let currentUser = $derived(ndk.$currentUser);
 
 let profileMenuVisible = $state(false);
-let relayMenuVisible = $state(false);
 let searchQuery = $state("");
 
 function toggleProfileMenu() {
     profileMenuVisible = !profileMenuVisible;
-}
-
-function toggleRelayMenu() {
-    relayMenuVisible = !relayMenuVisible;
 }
 </script>
 
@@ -70,17 +67,10 @@ function toggleRelayMenu() {
             <!-- Separator -->
             <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" aria-hidden="true"></div>
 
-            <!-- {#if $currentUser}
-                <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
-                    <span class="sr-only">View notifications</span>
-                    <Bell strokeWidth="1.5" />
-                </button>
-            {/if} -->
-
             <NewListButton buttonText="New list" extraClasses="py-1 hidden lg:flex" />
 
             <!-- Profile dropdown -->
-            {#if currentUser?.user}
+            {#if currentUser}
                 <div class="relative">
                     <button
                         onclick={toggleProfileMenu}
@@ -91,13 +81,17 @@ function toggleRelayMenu() {
                         aria-haspopup="true"
                     >
                         <span class="sr-only">Open user menu</span>
-                        <UserAvatar user={currentUser.user} extraClasses="w-8 h-8 rounded-full" />
+                        <User.Root ndk={ndkSvelte} user={currentUser}>
+                            <User.Avatar class="w-8 h-8 rounded-full" />
+                        </User.Root>
                         <span class="hidden lg:flex lg:items-center">
                             <span
                                 class="ml-2 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-50"
                                 aria-hidden="true"
                             >
-                                <UserName user={currentUser.user} npubMaxLength={9} />
+                                <User.Root ndk={ndkSvelte} user={currentUser}>
+                                    <User.Name />
+                                </User.Root>
                             </span>
                             <svg
                                 class="ml-2 h-5 w-5 text-gray-400"
@@ -127,7 +121,7 @@ function toggleRelayMenu() {
                             tabindex="-1"
                         >
                             <a
-                                href={`/${currentUser.user.npub}`}
+                                href={`/${currentUser.npub}`}
                                 class="block px-3 py-1 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 role="menuitem"
                                 tabindex="-1"

@@ -1,49 +1,19 @@
 <script lang="ts">
 import "../../app.css";
-import { onMount } from "svelte";
 import { Toaster } from "svelte-hot-french-toast";
 import DonateModal from "$lib/components/DonateModal.svelte";
 import Header from "$lib/components/header/Header.svelte";
 import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
 import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
-import { getCurrentUser, setCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { SigninMethod, signin, signout } from "$lib/utils/auth";
 
-let { data, children } = $props();
+let { children } = $props();
 
 let mobileMenuVisible = $state(false);
 let donateModal = $state(false);
-let listrCookie = $derived(data.listrCookie);
 
 function toggleMobileMenu() {
     mobileMenuVisible = !mobileMenuVisible;
 }
-
-$effect(() => {
-    if (listrCookie && getCurrentUser()?.user?.npub !== listrCookie) {
-        setCurrentUser(listrCookie);
-    }
-});
-
-onMount(() => {
-    if (!window.nostr) {
-        import("nostr-login")
-            .then(async ({ init }) => {
-                init({
-                    onAuth(npub, options) {
-                        if (options.type === "logout") {
-                            signout(ndk);
-                        } else {
-                            let user = ndk.getUser({ npub });
-                            signin(ndk, undefined, SigninMethod.NostrLogin, undefined, user);
-                        }
-                    },
-                });
-            })
-            .catch((error) => console.log("Failed to load nostr-login", error));
-    }
-});
 </script>
 
 <Toaster />

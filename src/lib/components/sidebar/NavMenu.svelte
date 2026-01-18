@@ -1,10 +1,8 @@
 <script lang="ts">
-import { NDKEvent, NDKKind, NDKList, type NDKSubscription } from "@nostr-dev-kit/ndk";
+import { type NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { Github, HelpCircle, LifeBuoy, Merge, Newspaper } from "lucide-svelte";
-import { onDestroy } from "svelte";
 import { page } from "$app/stores";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { filterAndSortByTitle, getListDisplayTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 import DonateButton from "../DonateButton.svelte";
@@ -16,53 +14,44 @@ let {
     donateButtonClicked,
 }: { closeMobileMenu?: () => void; donateButtonClicked: () => void } = $props();
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 
-let currentUserLists: NDKList[] = $state([]);
-let deletedEvents: NDKEvent[] = $state([]);
-let listsSub: NDKSubscription | null = $state(null);
-let deletesSub: NDKSubscription | null = $state(null);
+// Subscribe to user's lists - only when logged in
+let listsSub = ndk.$subscribe(() =>
+    currentUser
+        ? {
+              filters: [
+                  {
+                      kinds: SUPPORTED_LIST_KINDS,
+                      authors: [currentUser.pubkey],
+                  },
+              ],
+          }
+        : undefined
+);
+
+// Subscribe to user's deleted events - only when logged in
+let deletesSub = ndk.$subscribe(() =>
+    currentUser
+        ? {
+              filters: [
+                  {
+                      kinds: [NDKKind.EventDeletion],
+                      authors: [currentUser.pubkey],
+                  },
+              ],
+          }
+        : undefined
+);
+
+let currentUserLists = $derived(listsSub.events.map((e: NDKEvent) => NDKList.from(e)));
+let deletedEvents = $derived(deletesSub.events);
 let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvents));
-
-$effect(() => {
-    if (currentUser?.user && !listsSub) {
-        listsSub = ndk.subscribe(
-            {
-                kinds: SUPPORTED_LIST_KINDS,
-                authors: [currentUser.user.pubkey],
-            },
-            { closeOnEose: false }
-        );
-
-        listsSub.on("event", (event: NDKEvent) => {
-            currentUserLists = [...currentUserLists, NDKList.from(event)];
-        });
-    }
-
-    if (currentUser?.user && !deletesSub) {
-        deletesSub = ndk.subscribe(
-            {
-                kinds: [NDKKind.EventDeletion],
-                authors: [currentUser.user.pubkey],
-            },
-            { closeOnEose: false }
-        );
-
-        deletesSub.on("event", (event: NDKEvent) => {
-            deletedEvents = [...deletedEvents, event];
-        });
-    }
-});
-
-onDestroy(() => {
-    listsSub?.stop();
-    deletesSub?.stop();
-});
 </script>
 
 <nav class="flex flex-1 flex-col relative">
     <ul role="list" class="flex flex-1 flex-col gap-y-7">
-        {#if currentUser?.user}
+        {#if currentUser}
             <li>
                 <NewListButton
                     buttonText="Create a new list"
@@ -85,7 +74,7 @@ onDestroy(() => {
                         Activity Feed
                     </a>
                 </li>
-                {#if currentUser?.user}
+                {#if currentUser}
                     <li>
                         <a
                             href="/merge"
@@ -141,7 +130,7 @@ onDestroy(() => {
                 </li> -->
             </ul>
         </li>
-        {#if currentUser?.user}
+        {#if currentUser}
             <!-- <li>
                 <div class="text-xs font-semibold leading-6 text-gray-400">Pinned Lists</div>
                 <ul role="list" class="-mx-2 mt-2 space-y-1">
@@ -190,9 +179,9 @@ onDestroy(() => {
                         {#each filteredLists as list}
                             <li>
                                 <a
-                                    href="/{currentUser.user?.npub}/{list.kind}/{list.encode()}"
+                                    href="/{currentUser.npub}/{list.kind}/{list.encode()}"
                                     class="{$page.url.pathname ===
-                                    `/${currentUser.user?.npub}/${list.kind}/${list.encode()}`
+                                    `/${currentUser.npub}/${list.kind}/${list.encode()}`
                                         ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                                         : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                     onclick={closeMobileMenu}
@@ -202,15 +191,6 @@ onDestroy(() => {
                                         >{getListDisplayTitle(list).slice(0, 1).toUpperCase()}</span
                                     >
                                     <span class="truncate">{getListDisplayTitle(list)}</span>
-                                    {#if currentUser?.settings?.devMode}
-                                        <Tooltip
-                                            type="custom"
-                                            placement="right"
-                                            class="text-xs bg-transparent border-none shadow-none"
-                                        >
-                                            k: {list.kind}
-                                        </Tooltip>
-                                    {/if}
                                 </a>
                             </li>
                         {/each}

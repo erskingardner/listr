@@ -2,7 +2,7 @@
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { ListPlus } from "lucide-svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
 
 let {
     user,
@@ -12,9 +12,9 @@ let {
     extraClasses?: string;
 } = $props();
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 async function handleAddToList() {
-    if (currentUser?.user !== user) {
+    if (currentUser !== user) {
         console.log("Soon™");
     }
 }
