@@ -3,7 +3,7 @@
     "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
     "files": {
         "ignoreUnknown": false,
-        "includes": ["**", "!.svelte-kit", "!.vercel", "!node_modules", "!build"]
+        "includes": ["**", "!.svelte-kit", "!.vercel", "!node_modules", "!build", "!coverage"]
     },
     "formatter": {
         "enabled": true,

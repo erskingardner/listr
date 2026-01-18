@@ -6,7 +6,12 @@ import Loader from "$lib/components/Loader.svelte";
 import ListSummary from "$lib/components/lists/ListSummary.svelte";
 import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
-import { FEED_LIST_KINDS, filteredLists, unixTimeNowInSeconds } from "$lib/utils";
+import {
+    FEED_LIST_KINDS,
+    filteredLists,
+    getListDisplayTitle,
+    unixTimeNowInSeconds,
+} from "$lib/utils";
 
 let currentUser = $derived(getCurrentUser());
 let loading = $state(true);
@@ -87,13 +92,12 @@ onMount(async () => {
             <Tabs
                 class="border-b border-b-gray-300"
                 contentClass="p-0 rounded-lg dark:bg-gray-800 mt-4"
-                inactiveClasses="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
             >
                     <TabItem
                         open
                         title="Following"
-                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                        defaultClass="text-base"
+                        activeClass="border-b border-b-indigo-600 p-4 text-base"
+                        inactiveClass="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 text-base"
                     >
                         {#if followingLists.length === 0}
                             <div class="flex flex-row items-center justify-center my-12">
@@ -102,7 +106,7 @@ onMount(async () => {
                         {:else}
                             {#each followingLists as list}
                                 <ListSummary
-                                    title={list.title}
+                                    title={getListDisplayTitle(list)}
                                     kind={list.kind}
                                     date={list.created_at}
                                     authorPubkey={list.pubkey}
@@ -113,13 +117,12 @@ onMount(async () => {
                     </TabItem>
                     <TabItem
                         title="Global"
-                        style="underline"
-                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                        defaultClass="text-base"
+                        activeClass="border-b border-b-indigo-600 p-4 text-base"
+                        inactiveClass="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 text-base"
                     >
                         {#each globalLists as list}
                             <ListSummary
-                                title={list.title}
+                                title={getListDisplayTitle(list)}
                                 kind={list.kind}
                                 date={list.created_at}
                                 authorPubkey={list.pubkey}
@@ -131,7 +134,7 @@ onMount(async () => {
             {:else if globalLists && globalLists.length > 0}
                 {#each globalLists as list}
                     <ListSummary
-                        title={list.title}
+                        title={getListDisplayTitle(list)}
                         kind={list.kind}
                         date={list.created_at}
                         authorPubkey={list.pubkey}

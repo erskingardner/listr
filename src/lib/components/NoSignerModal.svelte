@@ -4,11 +4,39 @@ import { Modal } from "flowbite-svelte";
 let { modalOpen = $bindable() }: { modalOpen: boolean } = $props();
 </script>
 
+{#snippet footer()}
+    <div
+        class="my-6 flex flex-col gap-8 md:flex-row items-center justify-center md:justify-around w-full"
+    >
+        <a
+            href="https://getalby.com?utm_source=listr&utm_medium=signerModal"
+            class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
+            target="_blank"
+        >
+            <span class="">Get Alby</span>
+        </a>
+        <a
+            href="https://github.com/fiatjaf/nos2x"
+            class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
+            target="_blank"
+        >
+            <span class="">Get nos2x</span>
+        </a>
+        <a
+            href="https://nostr.how?utm_source=listr&utm_medium=signerModal"
+            class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
+            target="_blank"
+        >
+            <span class="">Learn more</span>
+        </a>
+    </div>
+{/snippet}
+
 <Modal
     title="Nostr signing extension not found"
     bind:open={modalOpen}
     placement="top-center"
-    backdropClass="fixed inset-0 z-40 bg-black/60"
+    {footer}
 >
     <div class="p-4">
         <p class="text-gray-900 dark:text-white mb-4">
@@ -22,31 +50,4 @@ let { modalOpen = $bindable() }: { modalOpen: boolean } = $props();
             >
         </p>
     </div>
-    <svelte:fragment slot="footer">
-        <div
-            class="my-6 flex flex-col gap-8 md:flex-row items-center justify-center md:justify-around w-full"
-        >
-            <a
-                href="https://getalby.com?utm_source=listr&utm_medium=signerModal"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
-                target="_blank"
-            >
-                <span class="">Get Alby</span>
-            </a>
-            <a
-                href="https://github.com/fiatjaf/nos2x"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
-                target="_blank"
-            >
-                <span class="">Get nos2x</span>
-            </a>
-            <a
-                href="https://nostr.how?utm_source=listr&utm_medium=signerModal"
-                class="transition-all px-2 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-md h-fit border-0 whitespace-nowrap"
-                target="_blank"
-            >
-                <span class="">Learn more</span>
-            </a>
-        </div>
-    </svelte:fragment>
 </Modal>

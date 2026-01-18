@@ -10,7 +10,10 @@
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
         "lint": "biome check .",
-        "format": "biome format --write ."
+        "format": "biome format --write .",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "test:coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.11",
@@ -20,8 +23,12 @@
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/postcss": "^4.1.18",
         "@tailwindcss/typography": "^0.5.19",
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/svelte": "^5.3.1",
+        "@vitest/coverage-v8": "^4.0.17",
         "flowbite-svelte": "^1.31.0",
         "globals": "^17.0.0",
+        "jsdom": "^27.4.0",
         "postcss": "^8.5.6",
         "svelte": "^5.46.4",
         "svelte-check": "^4.3.5",
@@ -31,6 +38,7 @@
         "tslib": "^2.8.1",
         "typescript": "^5.9.3",
         "vite": "^7.3.1",
+        "vitest": "^4.0.17",
         "zod": "^4.3.5"
     },
     "type": "module",

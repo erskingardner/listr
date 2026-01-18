@@ -17,6 +17,14 @@ let {
 } = $props();
 </script>
 
+{#snippet lightIcon()}
+    <SunMoon strokeWidth="1.5" size="24" />
+{/snippet}
+
+{#snippet darkIcon()}
+    <SunMoon strokeWidth="1.5" size="24" />
+{/snippet}
+
 {#if mobileMenuVisible}
     <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
     <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
@@ -56,14 +64,7 @@ let {
                                 <Logo />
                             </a>
                         </div>
-                        <DarkMode btnClass="text-white hover:text-gray-500">
-                            <svelte:fragment slot="lightIcon">
-                                <SunMoon strokeWidth="1.5" size="24" />
-                            </svelte:fragment>
-                            <svelte:fragment slot="darkIcon">
-                                <SunMoon strokeWidth="1.5" size="24" />
-                            </svelte:fragment>
-                        </DarkMode>
+                        <DarkMode class="text-white hover:text-gray-500" {lightIcon} {darkIcon} />
                     </div>
                     <NavMenu
                         {closeMobileMenu}

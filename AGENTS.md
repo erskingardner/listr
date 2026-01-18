@@ -5,12 +5,11 @@
 
 ## Environment Setup
 ### Prerequisites
-- Node.js (Latest LTS recommended)
-- pnpm (Project uses `pnpm-lock.yaml`)
+- [Bun](https://bun.sh/) (Project uses `bun.lockb`)
 
 ### Installation
 ```bash
-pnpm install
+bun install
 ```
 
 ### Environment Variables
@@ -19,11 +18,13 @@ pnpm install
 - Authentication is client-side (NIP-07, NIP-46, or Private Key).
 
 ## Commands & Workflows
-- **Development**: `pnpm dev` - Starts the local development server.
-- **Build**: `pnpm build` - Builds the application for production (using `@sveltejs/adapter-vercel`).
-- **Check**: `pnpm check` - Runs `svelte-check` for type checking.
-- **Lint**: `pnpm lint` - Runs Prettier check and ESLint.
-- **Format**: `pnpm format` - Runs Prettier write.
+- **Development**: `bun run dev` - Starts the local development server.
+- **Build**: `bun run build` - Builds the application for production (using `@sveltejs/adapter-vercel`).
+- **Check**: `bun run check` - Runs `svelte-check` for type checking.
+- **Lint**: `bun run lint` - Runs Biome check.
+- **Format**: `bun run format` - Runs Biome format.
+- **Test**: `bun run test` - Runs Vitest in watch mode.
+- **Test (CI)**: `bun run test:run` - Runs all tests once.
 
 ## Tech Stack
 - **Framework**: SvelteKit
@@ -31,7 +32,8 @@ pnpm install
 - **Nostr SDK**: `@nostr-dev-kit/ndk`
 - **Icons**: `lucide-svelte`
 - **State Management**: Svelte 5 Runes (`.svelte.ts` files)
-- **Formatting/Linting**: Biome (config present in `biome.json`) / Prettier & ESLint (scripts in `package.json`)
+- **Formatting/Linting**: Biome (config in `biome.json`)
+- **Testing**: Vitest with `@testing-library/svelte`
 
 ## Project Structure
 - `src/routes/`: Application routes (SvelteKit file-based routing).
@@ -52,7 +54,7 @@ pnpm install
     - **Parameterized Lists (3xxxx)**: `30000` (Follow Sets), `30001` (Categorized Lists/Bookmarks), `30002` (Relay Sets).
 - **Authentication**: Supports NIP-07 (Browser Extension), NIP-46 (Bunker), and Private Key login.
 - **Relays**:
-    - Default explicit relays: `purplepag.es`, `relay.nostr.band`, `relay.snort.social`, `relay.damus.io`, `relay.primal.net`.
+    - Default explicit relays: `purplepag.es`, `relay.snort.social`, `relay.damus.io`, `relay.primal.net`.
     - Outbox relays: `purplepag.es`, `relay.primal.net`.
 
 ## Guidelines for AI Agents
@@ -67,3 +69,42 @@ pnpm install
 - **Safety**:
     - Do not commit private keys.
     - Be careful when modifying `src/lib/utils/lists.ts` as it controls which lists are supported and how they are displayed.
+
+## Code Standards
+- Always use TypeScript strict mode
+- Never commit without explicitly asking for permission first
+- Follow the existing component structure in `src/lib/components`
+- Use named exports, not default exports
+- Keep functions under 50 lines, break into smaller units if longer
+
+## Testing Requirements
+- Run `bun run check` after any changes to verify nothing breaks
+- Run `bun run test:run` to run all tests before committing
+- Run `bun run dev` and test the app in a browser to verify it works before committing
+- Write tests for utility functions in `src/lib/utils/` (use `*.test.ts` naming convention)
+- Use Vitest with `@testing-library/svelte` for component tests
+- Tests are located alongside source files (e.g., `lists.ts` has `lists.test.ts`)
+- Never skip error handling, always wrap risky operations in try/catch
+
+## Git Workflow
+- Branch names must follow pattern: `feature/description` or `fix/description`
+- Commit messages must be descriptive, not generic ("fix bug" is not acceptable)
+- Always run linter before committing: `bun run lint`
+
+## Common Mistakes to Avoid
+- Do NOT use `any` type in TypeScript, use proper types or `unknown`
+- Do NOT install new dependencies without discussing alternatives first
+- Do NOT use inline styles, always use Tailwind classes
+
+## Documentation
+- Update README.md if you add new environment variables
+- Add JSDoc comments to all exported functions
+
+## Performance Rules
+- Lazy load components that aren't immediately visible
+- Use `{#key}` blocks or reactive statements efficiently to avoid unnecessary re-renders
+- Never fetch data in loops, batch requests instead
+
+## When Stuck
+- Search existing closed issues in GitHub before asking
+- If adding a workaround, document why with a TODO comment

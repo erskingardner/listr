@@ -1,38 +1,45 @@
-# create-svelte
+# Listr
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+A Nostr-based list management application built with SvelteKit. Create, manage, and discover various types of Nostr lists including Contact lists, Mute lists, Bookmarks, Communities, and more.
 
-## Creating a project
+## Prerequisites
 
-If you're seeing this, you've probably already done this step. Congrats!
+- [Bun](https://bun.sh/)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Getting Started
 
 ```bash
-npm run dev
+# Install dependencies
+bun install
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# Start development server
+bun run dev
+
+# Or start and open in browser
+bun run dev -- --open
 ```
 
-## Building
+## Available Scripts
 
-To create a production version of your app:
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start development server |
+| `bun run build` | Build for production |
+| `bun run preview` | Preview production build |
+| `bun run check` | Run svelte-check for type checking |
+| `bun run lint` | Run Biome linter |
+| `bun run format` | Format code with Biome |
+| `bun run test` | Run tests in watch mode |
+| `bun run test:run` | Run all tests once |
 
-```bash
-npm run build
-```
+## Tech Stack
 
-You can preview the production build with `npm run preview`.
+- **Framework**: SvelteKit with Svelte 5
+- **Styling**: TailwindCSS, Flowbite Svelte
+- **Nostr**: @nostr-dev-kit/ndk
+- **Testing**: Vitest, @testing-library/svelte
+- **Linting/Formatting**: Biome
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Deployment
+
+This project uses `@sveltejs/adapter-vercel` for deployment to Vercel.

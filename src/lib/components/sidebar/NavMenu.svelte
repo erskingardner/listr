@@ -6,7 +6,7 @@ import { onDestroy } from "svelte";
 import { page } from "$app/stores";
 import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
-import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
+import { filterAndSortByTitle, getListDisplayTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 import DonateButton from "../DonateButton.svelte";
 import SigninSelector from "../header/SigninSelector.svelte";
 import NewListButton from "../NewListButton.svelte";
@@ -199,9 +199,9 @@ onDestroy(() => {
                                 >
                                     <span
                                         class="flex font-mono h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-500 bg-gray-400 dark:border-gray-700 dark:bg-gray-800 text-[0.625rem] font-medium text-gray-700 group-hover:text-black dark:text-gray-400 dark:group-hover:text-white"
-                                        >{list.title?.slice(0, 1).toUpperCase()}</span
+                                        >{getListDisplayTitle(list).slice(0, 1).toUpperCase()}</span
                                     >
-                                    <span class="truncate">{list.title}</span>
+                                    <span class="truncate">{getListDisplayTitle(list)}</span>
                                     {#if currentUser?.settings?.devMode}
                                         <Tooltip
                                             type="custom"
@@ -224,7 +224,7 @@ onDestroy(() => {
         {/if}
     </ul>
     <div
-        class="border-t border-gray-500 dark:border-gray-800 text-gray-700 dark:text-gray-400 text-sm -mx-6 px-6 py-4 bottom-0 bg-gray-400 dark:bg-gray-950 sticky"
+        class="border-t border-gray-500 dark:border-gray-800 text-gray-700 dark:text-gray-400 text-sm -mx-6 px-6 py-4 bottom-0 bg-gray-400 dark:bg-gray-950 sticky w-[calc(100%+3rem)]"
     >
         Built with ⚡ and 💜 by <a
             href="https://primal.net/jeffg"
