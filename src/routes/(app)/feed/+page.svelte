@@ -1,5 +1,5 @@
 <script lang="ts">
-import { NDKList } from "@nostr-dev-kit/ndk";
+import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { TabItem, Tabs } from "flowbite-svelte";
 import { onMount } from "svelte";
 import Loader from "$lib/components/Loader.svelte";
@@ -13,10 +13,31 @@ import {
     unixTimeNowInSeconds,
 } from "$lib/utils";
 
+/** Maximum number of authors to include in a single relay filter request */
+const MAX_AUTHORS_PER_QUERY = 400;
+
 let currentUser = $derived(getCurrentUser());
 let loading = $state(true);
 let globalLists: NDKList[] | null = $state(null);
 let followingLists: NDKList[] | null = $state(null);
+
+/**
+ * Batch fetches user profiles for a list of pubkeys.
+ * This avoids the N+1 problem where each component fetches its own profile.
+ */
+async function batchFetchProfiles(pubkeys: string[]): Promise<void> {
+    if (pubkeys.length === 0) return;
+
+    const uniquePubkeys = [...new Set(pubkeys)];
+    try {
+        await ndk.fetchEvents({
+            kinds: [NDKKind.Metadata],
+            authors: uniquePubkeys.slice(0, MAX_AUTHORS_PER_QUERY),
+        });
+    } catch (e) {
+        console.error("Error batch fetching profiles", e);
+    }
+}
 
 onMount(async () => {
     ndk.fetchEvents({
@@ -24,12 +45,17 @@ onMount(async () => {
         limit: 50,
         since: unixTimeNowInSeconds() - 60 * 60 * 96,
     })
-        .then((events) => {
-            globalLists = filteredLists(
+        .then(async (events) => {
+            const lists = filteredLists(
                 Array.from(events).map((event) => NDKList.from(event)),
                 undefined,
                 true
             );
+            globalLists = lists;
+
+            // Batch fetch profiles for all authors in the list
+            const authorPubkeys = lists.map((list) => list.pubkey);
+            await batchFetchProfiles(authorPubkeys);
         })
         .catch((e) => {
             console.error("Error fetching global lists", e);
@@ -38,20 +64,26 @@ onMount(async () => {
             loading = false;
         });
 
-    // TODO: This isn't ever returning anything from the fetchEvents call
+    // Fetch lists from followed users, limiting authors to avoid relay filter size limits
     if (currentUser && currentUser.follows.length > 0) {
+        const followsToQuery = currentUser.follows.slice(0, MAX_AUTHORS_PER_QUERY);
         ndk.fetchEvents({
             kinds: FEED_LIST_KINDS,
-            authors: currentUser.follows,
+            authors: followsToQuery,
             limit: 50,
             since: unixTimeNowInSeconds() - 60 * 60 * 96,
         })
-            .then((events) => {
-                followingLists = filteredLists(
+            .then(async (events) => {
+                const lists = filteredLists(
                     Array.from(events).map((event) => NDKList.from(event)),
                     undefined,
                     true
                 );
+                followingLists = lists;
+
+                // Batch fetch profiles for all authors in the list
+                const authorPubkeys = lists.map((list) => list.pubkey);
+                await batchFetchProfiles(authorPubkeys);
             })
             .catch((e) => {
                 console.error("Error fetching following lists", e);
@@ -91,7 +123,7 @@ onMount(async () => {
             {#if currentUser && followingLists && followingLists.length > 0 && globalLists && globalLists.length > 0}
             <Tabs
                 class="border-b border-b-gray-300"
-                contentClass="p-0 rounded-lg dark:bg-gray-800 mt-4"
+                classes={{ content: "p-0 rounded-lg dark:bg-gray-800 mt-4" }}
             >
                     <TabItem
                         open

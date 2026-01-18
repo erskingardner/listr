@@ -34,7 +34,7 @@ $effect(() => {
             class="z-1 absolute py-6 inset-0 w-full min-h-[286px] h-full
 bg-linear-to-b from-transparent via-80% via-white dark:via-gray-800 to-white dark:to-gray-800"
         ></div>
-        <div class="relative profileMetadata flex flex-col gap-2 pt-10 mx-6">
+        <div class="relative z-10 profileMetadata flex flex-col gap-2 pt-10 mx-6">
             <UserAvatar
                 {user}
                 userProfile={profile || undefined}

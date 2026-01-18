@@ -13,10 +13,12 @@ export const ndkStore = new NDK({
         "wss://relay.snort.social",
         "wss://relay.damus.io",
         "wss://relay.primal.net",
+        "wss://nos.lol",
+        "wss://relay.ditto.pub"
     ],
     outboxRelayUrls: ["wss://purplepag.es", "wss://relay.primal.net"],
-    autoConnectUserRelays: true,
-    enableOutboxModel: true,
+    autoConnectUserRelays: false,
+    enableOutboxModel: false,
     cacheAdapter,
     clientName: "Listr",
 });
