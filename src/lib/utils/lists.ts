@@ -29,15 +29,31 @@ export const KIND_FALLBACK_TITLES: Record<number, string> = {
 const NON_READABLE_TITLE_REGEXP = /^(\d{5}:[a-f0-9]|url:|aHR0|[a-f0-9]{40,})/i;
 
 /**
+ * NDK's default titles that we want to override with our own.
+ */
+const NDK_DEFAULT_TITLES_TO_OVERRIDE: Record<string, number> = {
+    "Direct Message Receive Relays": 10050,
+};
+
+/**
  * Gets a display-friendly title for a list.
  * Falls back to kind-specific defaults if the title appears to be a raw identifier.
  */
 export function getListDisplayTitle(list: NDKList): string {
     const title = list.title;
+    const kind = list.kind as number;
+
+    // Check if this is an NDK default title we want to override
+    if (title && NDK_DEFAULT_TITLES_TO_OVERRIDE[title] === kind) {
+        const fallback = KIND_FALLBACK_TITLES[kind];
+        if (fallback) {
+            return fallback;
+        }
+    }
 
     // If no title or title looks like a raw identifier, use fallback
     if (!title || NON_READABLE_TITLE_REGEXP.test(title)) {
-        const fallback = KIND_FALLBACK_TITLES[list.kind as number];
+        const fallback = KIND_FALLBACK_TITLES[kind];
         if (fallback) {
             return fallback;
         }

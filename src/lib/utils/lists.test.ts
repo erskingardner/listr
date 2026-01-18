@@ -774,5 +774,13 @@ describe("lists utility functions", () => {
             // This is a readable slug, should be allowed through
             expect(getListDisplayTitle(list)).toBe("surely-we-can-just-tax-the-billionaires");
         });
+
+        it("should override NDK default title 'Direct Message Receive Relays' with 'Inbox Relays'", () => {
+            const list = createMockList({
+                title: "Direct Message Receive Relays",
+                kind: 10050,
+            });
+            expect(getListDisplayTitle(list)).toBe("Inbox Relays");
+        });
     });
 });

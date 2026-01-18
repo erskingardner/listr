@@ -25,7 +25,12 @@ import UserListNav from "$lib/components/lists/UserListNav.svelte";
 import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte.js";
 import type { AddressPointer, ListItemParams } from "$lib/types";
-import { deduplicateItems, ensurePubkeys, unixTimeNowInSeconds } from "$lib/utils";
+import {
+    deduplicateItems,
+    ensurePubkeys,
+    getListDisplayTitle,
+    unixTimeNowInSeconds,
+} from "$lib/utils";
 
 let currentUser = $derived(getCurrentUser());
 
@@ -105,7 +110,7 @@ function fetchEvent() {
     ndk.fetchEvent(listNip19).then((fetchedEvent) => {
         event = fetchedEvent;
         let tmpList = NDKList.from(event as NDKEvent);
-        listTitle = tmpList.title;
+        listTitle = getListDisplayTitle(tmpList);
         listDescription = tmpList.description;
         listCategory = tmpList.tags.find((tag: NDKTag) => tag[0] === "l")?.[1] || undefined;
         initialListTitle = listTitle;
