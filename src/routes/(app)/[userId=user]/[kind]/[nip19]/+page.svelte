@@ -20,6 +20,7 @@ import { page } from "$app/stores";
 import ListActions from "$lib/components/lists/actions/ListActions.svelte";
 import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
 import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
+import InfiniteList from "$lib/components/lists/InfiniteList.svelte";
 import Item from "$lib/components/lists/Item.svelte";
 import UserListNav from "$lib/components/lists/UserListNav.svelte";
 import ndk from "$lib/stores/ndk.svelte.js";
@@ -76,22 +77,24 @@ let unpublishedChanges = $derived(
 );
 
 let itemCount = $derived.by(() => {
-    publicItems.filter(
-        (item) =>
-            ![
-                "L",
-                "l",
-                "d",
-                "image",
-                "thumb",
-                "summary",
-                "alt",
-                "expiration",
-                "subject",
-                "title",
-                "description",
-            ].includes(item[0])
-    ).length + (privateItems?.length || 0);
+    return (
+        publicItems.filter(
+            (item) =>
+                ![
+                    "L",
+                    "l",
+                    "d",
+                    "image",
+                    "thumb",
+                    "summary",
+                    "alt",
+                    "expiration",
+                    "subject",
+                    "title",
+                    "description",
+                ].includes(item[0])
+        ).length + (privateItems?.length || 0)
+    );
 });
 
 $effect(() => {
@@ -556,7 +559,7 @@ function toggleDrawerVisible() {
                         </fieldset>
                     {/if}
 
-                    {#each privateItems || [] as item (item[1])}
+                    {#snippet renderPrivateItem(item: NDKTag, _index: number)}
                         <Item
                             id={item[1]}
                             tag={item}
@@ -568,8 +571,9 @@ function toggleDrawerVisible() {
                             removeItem={handleListRemoval}
                             removeUnsavedItem={handleRemoveUnsavedItem}
                         />
-                    {/each}
-                    {#each publicItems || [] as item (item[1])}
+                    {/snippet}
+
+                    {#snippet renderPublicItem(item: NDKTag, _index: number)}
                         <Item
                             id={item[1]}
                             tag={item}
@@ -581,7 +585,13 @@ function toggleDrawerVisible() {
                             removeItem={handleListRemoval}
                             removeUnsavedItem={handleRemoveUnsavedItem}
                         />
-                    {/each}
+                    {/snippet}
+
+                    {#if privateItems && privateItems.length > 0}
+                        <InfiniteList items={privateItems} renderItem={renderPrivateItem} />
+                    {/if}
+
+                    <InfiniteList items={publicItems || []} renderItem={renderPublicItem} />
                 </div>
             </div>
         {/if}
