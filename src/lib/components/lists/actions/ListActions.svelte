@@ -1,8 +1,8 @@
 <script lang="ts">
 import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
-import { MessagesSquare, MoreVertical } from "lucide-svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import { MoreVertical } from "lucide-svelte";
+import ndk from "$lib/stores/ndk.svelte";
 import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
 import CopyId from "./CopyId.svelte";
 import Delete from "./Delete.svelte";
@@ -12,7 +12,7 @@ import Edit from "./Edit.svelte";
 import Like from "./Like.svelte";
 import Share from "./Share.svelte";
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 
 let {
     nip19,
@@ -41,8 +41,8 @@ const listKind: NDKKind = $derived(rawList.kind as NDKKind);
     </button> -->
 
     <Share {pubkey} {rawList} {nip19} />
-    {#if currentUser?.user}
-        {#if currentUser.user.pubkey !== pubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
+    {#if currentUser}
+        {#if currentUser.pubkey !== pubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
             <Duplicate {rawList} />
         {/if}
 

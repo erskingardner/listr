@@ -23,7 +23,8 @@ export interface ParsedSegment {
 
 export const PATTERNS = {
     EMOJI_SHORTCODE: /:([a-zA-Z0-9_]+):/g,
-    NOSTR_URI: /nostr:(npub1[a-z0-9]{58}|nprofile1[a-z0-9]+|note1[a-z0-9]{58}|nevent1[a-z0-9]+|naddr1[a-z0-9]+)/gi,
+    NOSTR_URI:
+        /nostr:(npub1[a-z0-9]{58}|nprofile1[a-z0-9]+|note1[a-z0-9]{58}|nevent1[a-z0-9]+|naddr1[a-z0-9]+)/gi,
     HASHTAG: /(^|\s)#([a-zA-Z0-9_\u0080-\uFFFF]+)(?=\s|$|[^\w])/g,
     MEDIA_FILE: /https?:\/\/[^\s<>"]+\.(jpg|jpeg|png|gif|webp|svg|mp4|webm|mov)(\?[^\s<>"]*)?/gi,
     YOUTUBE:
@@ -39,7 +40,7 @@ export function buildEmojiMap(tags: string[][]): Map<string, string> {
     const emojiMap = new Map();
 
     if (!Array.isArray(tags)) {
-        console.warn('[buildEmojiMap] Expected tags to be an array, got:', typeof tags);
+        console.warn("[buildEmojiMap] Expected tags to be an array, got:", typeof tags);
         return emojiMap;
     }
 
@@ -52,9 +53,14 @@ export function buildEmojiMap(tags: string[][]): Map<string, string> {
     return emojiMap;
 }
 
-export function createEmojiSegment(shortcode: string, emojiMap: Map<string, string>): ParsedSegment {
+export function createEmojiSegment(
+    shortcode: string,
+    emojiMap: Map<string, string>
+): ParsedSegment {
     const url = emojiMap.get(shortcode);
-    return url ? { type: "emoji", content: shortcode, data: url } : { type: "text", content: `:${shortcode}:` };
+    return url
+        ? { type: "emoji", content: shortcode, data: url }
+        : { type: "text", content: `:${shortcode}:` };
 }
 
 // ============================================================================
@@ -101,7 +107,9 @@ export function isYouTube(url: string): boolean {
 }
 
 export function extractYouTubeId(url: string): string | null {
-    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+    const match = url.match(
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/
+    );
     return match?.[1] || null;
 }
 
@@ -165,7 +173,10 @@ export function collectMatches(content: string): Array<{ match: RegExpExecArray;
     return matches.sort((a, b) => a.index - b.index);
 }
 
-export function parseContentToSegments(content: string, emojiMap: Map<string, string>): ParsedSegment[] {
+export function parseContentToSegments(
+    content: string,
+    emojiMap: Map<string, string>
+): ParsedSegment[] {
     const segments: ParsedSegment[] = [];
     const matches = collectMatches(content);
 
@@ -249,7 +260,11 @@ export function groupConsecutiveImages(segments: ParsedSegment[]): ParsedSegment
         if (segment.type === "media" && isImage(segment.content)) {
             // Continue grouping images
             imageBuffer.push(segment.content);
-        } else if (segment.type === "text" && isWhitespaceOnly(segment.content) && imageBuffer.length > 0) {
+        } else if (
+            segment.type === "text" &&
+            isWhitespaceOnly(segment.content) &&
+            imageBuffer.length > 0
+        ) {
             // Buffer whitespace in case more images follow
             whitespaceBuffer.push(segment);
         } else {
@@ -296,7 +311,11 @@ export function groupConsecutiveLinks(segments: ParsedSegment[]): ParsedSegment[
         if (segment.type === "link") {
             // Continue grouping links
             linkBuffer.push(segment.content);
-        } else if (segment.type === "text" && isWhitespaceOnly(segment.content) && linkBuffer.length > 0) {
+        } else if (
+            segment.type === "text" &&
+            isWhitespaceOnly(segment.content) &&
+            linkBuffer.length > 0
+        ) {
             // Buffer whitespace in case more links follow
             whitespaceBuffer.push(segment);
         } else {

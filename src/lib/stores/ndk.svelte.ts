@@ -1,10 +1,10 @@
 import NDKCacheDexie from "@nostr-dev-kit/cache-dexie";
-import { createNDK } from "@nostr-dev-kit/svelte";
+import { createNDK, type NDKSvelteWithSession } from "@nostr-dev-kit/svelte";
 import { browser } from "$app/environment";
 
 const cacheAdapter = browser ? new NDKCacheDexie({ dbName: "listr-v2" }) : undefined;
 
-const ndk = createNDK({
+const ndk: NDKSvelteWithSession = createNDK({
     explicitRelayUrls: [
         "wss://purplepag.es",
         "wss://relay.snort.social",

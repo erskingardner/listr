@@ -1,37 +1,23 @@
 <script lang="ts">
-import type { NDKSubscription } from "@nostr-dev-kit/ndk";
 import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { Heart } from "lucide-svelte";
-import { onDestroy, onMount } from "svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { unixTimeNowInSeconds } from "$lib/utils";
 
 let { listId }: { listId: string } = $props();
 
-let currentUser = $derived(getCurrentUser());
-let likes: NDKEvent[] = $state([]);
-let likesSub: NDKSubscription | null = $state(null);
+let currentUser = $derived(ndk.$currentUser);
+let likesSub = ndk.$subscribe(() => ({
+    filters: [{ kinds: [NDKKind.Reaction], "#a": [listId as string] }],
+}));
+let likes = $derived(likesSub.events);
 let alreadyLiked = $derived(
-    currentUser?.user && likes.map((like) => like.pubkey).includes(currentUser.user.pubkey)
+    currentUser && likes.map((like) => like.pubkey).includes(currentUser.pubkey)
 );
 
-onMount(() => {
-    likesSub = ndk.subscribe(
-        { kinds: [NDKKind.Reaction], "#a": [listId as string] },
-        { closeOnEose: false }
-    );
-
-    likesSub.on("event", (event: NDKEvent) => {
-        likes = [...likes, event];
-    });
-});
-
-onDestroy(() => likesSub?.stop());
-
 function likeList() {
-    if (currentUser?.user) {
+    if (currentUser) {
         if (!ndk.signer) {
             const signer = new NDKNip07Signer();
             ndk.signer = signer;
@@ -43,11 +29,11 @@ function likeList() {
             const likeEvent = new NDKEvent(ndk, {
                 kind: 7,
                 content: "+",
-                pubkey: currentUser.user.pubkey,
+                pubkey: currentUser.pubkey,
                 created_at: unixTimeNowInSeconds(),
                 tags: [
                     ["a", listId as string],
-                    ["p", currentUser.user.pubkey],
+                    ["p", currentUser.pubkey],
                 ],
             });
             likeEvent.publish().catch((error) => {
@@ -71,7 +57,7 @@ function likeList() {
     />
     {likes.length > 0 ? likes.length : 0}
 </button>
-{#if !currentUser?.user}
+{#if !currentUser}
     <Popover
         triggeredBy="#likeButton"
         trigger="click"

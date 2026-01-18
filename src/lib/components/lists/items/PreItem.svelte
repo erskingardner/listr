@@ -1,9 +1,14 @@
 <script lang="ts">
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { NDKArticle } from "@nostr-dev-kit/ndk";
+import type { NDKSvelte } from "@nostr-dev-kit/svelte";
 import { Smile } from "lucide-svelte";
-import UserName from "$lib/components/users/UserName.svelte";
+import { User } from "$lib/ndk/ui/user";
 import ndk from "$lib/stores/ndk.svelte";
+
+// Cast ndk to NDKSvelte for component compatibility
+const ndkSvelte = ndk as unknown as NDKSvelte;
+
 import type { ListItemParams } from "$lib/types";
 import { formattedDate } from "$lib/utils";
 import RemoveItem from "../actions/RemoveItem.svelte";
@@ -90,7 +95,9 @@ $effect(() => {
                             >
                             <span class="italic">
                                 by <a href="/{creator.npub}" class="hover:underline">
-                                    <UserName user={creator} />
+                                    <User.Root ndk={ndkSvelte} user={creator}>
+                                        <User.Name />
+                                    </User.Root>
                                 </a>
                             </span>
                         </div>

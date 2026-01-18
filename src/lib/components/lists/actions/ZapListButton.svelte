@@ -4,52 +4,43 @@ import {
     NDKEvent,
     NDKNip07Signer,
     type NDKPaymentConfirmationLN,
-    type NDKSubscription,
     type NDKZapDetails,
     NDKZapper,
     zapInvoiceFromEvent,
 } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { Zap } from "lucide-svelte";
-import { onDestroy, onMount } from "svelte";
 import toast from "svelte-hot-french-toast";
 import { requestProvider } from "webln";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 
 let { listId, nip19 }: { listId: string; nip19: string } = $props();
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 let amount = $state(21);
 let comment = $state("");
 
 let popoverOpen = $state(false);
-let totalZaps = $state(0);
 let alreadyZapped = $state(false);
 
-let zaps: NDKEvent[] = $state([]);
-let zapsSub: NDKSubscription | null = $state(null);
+let zapsSub = ndk.$subscribe(() => ({
+    filters: [{ kinds: [9735], "#a": [listId as string] }],
+}));
+let zaps = $derived(zapsSub.events);
 
-onMount(() => {
-    zapsSub = ndk.subscribe({ kinds: [9735], "#a": [listId as string] }, { closeOnEose: false });
-
-    zapsSub.on("event", (event: NDKEvent) => {
-        zaps = [...zaps, event];
-    });
-});
-
-onDestroy(() => zapsSub?.stop());
-
-$effect(() => {
-    totalZaps = zaps
+let totalZaps = $derived.by(() => {
+    let zapped = false;
+    const total = zaps
         .map((event: NDKEvent) => {
             const zapInvoice = zapInvoiceFromEvent(event);
-            if (currentUser?.user) {
-                alreadyZapped = zapInvoice?.zappee === currentUser.user.pubkey;
+            if (currentUser && zapInvoice?.zappee === currentUser.pubkey) {
+                zapped = true;
             }
             return (zapInvoice?.amount || 0) / 1000;
         })
-        .reduce((subTotal, value) => subTotal + value, 0);
+        .reduce((subTotal: number, value: number) => subTotal + value, 0);
+    alreadyZapped = zapped;
+    return total;
 });
 
 async function submitZap(e: Event) {
@@ -126,7 +117,7 @@ async function submitZap(e: Event) {
     class="dark:text-gray-50 dark:bg-gray-700 z-30"
 >
     <div class="panel-contents flex flex-col gap-2">
-        {#if currentUser?.user}
+        {#if currentUser}
             <form
                 onsubmit={submitZap}
                 class="flex flex-col gap-2 justify-start items-start"

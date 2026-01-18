@@ -3,29 +3,27 @@ import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { Info } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { unixTimeNowInSeconds } from "$lib/utils";
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 let devMode = $state(false);
 
-$effect(() => {
-    devMode = !!currentUser?.settings?.devMode;
-});
+// TODO: User settings are not currently managed by NDK sessions
+// For now, we'll keep the settings logic but note that it needs to be refactored
+// to work with the new session system or store settings locally
 
 async function saveSettings(e: SubmitEvent) {
     e.preventDefault();
-    if (!currentUser?.user) return;
+    if (!currentUser) return;
 
-    const user = currentUser.user;
     const settingsObj: App.UserSettings = {
         devMode: devMode ? devMode : false,
     };
 
     const settingsEvent = new NDKEvent(ndk, {
         kind: NDKKind.AppSpecificData,
-        pubkey: user.pubkey,
+        pubkey: currentUser.pubkey,
         created_at: unixTimeNowInSeconds(),
         tags: [["d", "listr/settings/v1"]],
         content: JSON.stringify(settingsObj),
@@ -37,9 +35,8 @@ async function saveSettings(e: SubmitEvent) {
         ndk.signer = signer;
     }
 
-    await settingsEvent.encrypt(user);
+    await settingsEvent.encrypt(currentUser);
     await settingsEvent.publish();
-    currentUser.settings = settingsObj;
     toast.success("Settings updated");
 }
 </script>

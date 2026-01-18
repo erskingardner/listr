@@ -22,7 +22,6 @@ import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
 import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
 import Item from "$lib/components/lists/Item.svelte";
 import UserListNav from "$lib/components/lists/UserListNav.svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte.js";
 import type { AddressPointer, ListItemParams } from "$lib/types";
 import {
@@ -32,7 +31,7 @@ import {
     unixTimeNowInSeconds,
 } from "$lib/utils";
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 
 let profile: NDKUserProfile | null = $state(null);
 let event: NDKEvent | null = $state(null);
@@ -122,7 +121,7 @@ function fetchEvent() {
 
 function updateListItems() {
     if (!list) return;
-    if (list.content.length > 0 && currentUser?.user?.pubkey === list.pubkey) {
+    if (list.content.length > 0 && currentUser?.pubkey === list.pubkey) {
         list.encryptedTags().then((tags) => {
             // Svelte keyed each will blow up if we send lists with duplicate items
             privateItems = deduplicateItems(tags);
@@ -283,7 +282,7 @@ async function publishList(): Promise<void> {
         }
 
         if (newPrivateItems.length > 0) {
-            await list.encrypt(currentUser?.user as NDKUser);
+            await list.encrypt(currentUser as NDKUser);
         }
 
         if (newListConfirmation) {
@@ -365,7 +364,7 @@ function toggleDrawerVisible() {
     <!-- List of the user's lists -->
     <div class="flex flex-row gap-6">
         {#if rawList}
-            {#if currentUser?.user?.pubkey === rawList.pubkey}
+                {#if currentUser?.pubkey === rawList.pubkey}
                 <!-- Don't render inside user list nav if it's the current user's list -->
             {:else}
                 <div
@@ -389,7 +388,7 @@ function toggleDrawerVisible() {
                             class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
                         >
                             {listTitle}
-                            {#if currentUser?.settings?.devMode}
+                                {#if false /* TODO: Implement settings via ndk.$sessionEvent or localStorage */}
                                 <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
                                 <Tooltip
                                     type="auto"
@@ -422,7 +421,7 @@ function toggleDrawerVisible() {
                 </div>
                 <hr class="dark:border-gray-700" />
                 <div class="flex flex-col">
-                    {#if currentUser?.user?.pubkey === rawList.pubkey && editMode}
+                    {#if currentUser?.pubkey === rawList.pubkey && editMode}
                         <div transition:slide={{ easing: expoInOut }}>
                             <form class="flex flex-col gap-2">
                                 <label for="listTitle" class="font-medium">Name</label>

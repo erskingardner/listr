@@ -2,10 +2,10 @@
 	Installed from @ndk/svelte
 */
 
-import type { NDKUser, NDKUserProfile } from '@nostr-dev-kit/ndk';
-import { SvelteMap } from 'svelte/reactivity';
-import type { NDKSvelte } from '@nostr-dev-kit/svelte';
-import { getNDK } from '../../utils/ndk/index.svelte.js';
+import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { SvelteMap } from "svelte/reactivity";
+import type { NDKSvelte } from "@nostr-dev-kit/svelte";
+import { getNDK } from "../../utils/ndk/index.svelte.js";
 
 // Track in-flight profile fetch requests to prevent duplicate fetches
 const inFlightRequests = new SvelteMap<string, Promise<NDKUserProfile | null>>();
@@ -51,19 +51,22 @@ export function createProfileFetcher(
     ndk?: NDKSvelte
 ): ProfileFetcherState {
     const ndkInstance = getNDK(ndk);
-    const state = $state<{ profile: NDKUserProfile | null; user: NDKUser | null; loading: boolean }>({
+    const state = $state<{
+        profile: NDKUserProfile | null;
+        user: NDKUser | null;
+        loading: boolean;
+    }>({
         profile: null,
         user: null,
-        loading: false
+        loading: false,
     });
 
     async function fetchProfile(payload: NDKUser | string) {
         state.loading = true;
 
         try {
-            const ndkUser = typeof payload === 'string'
-                ? await ndkInstance.fetchUser(payload)
-                : payload;
+            const ndkUser =
+                typeof payload === "string" ? await ndkInstance.fetchUser(payload) : payload;
 
             if (!ndkUser) {
                 state.profile = null;
@@ -102,7 +105,7 @@ export function createProfileFetcher(
             state.profile = fetchedProfile || null;
             state.user = ndkUser;
         } catch (err) {
-            console.error('Failed to fetch profile:', err);
+            console.error("Failed to fetch profile:", err);
             state.profile = null;
             state.user = null;
         }

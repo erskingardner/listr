@@ -1,14 +1,13 @@
 <script lang="ts">
-import { NDKList, NDKNip07Signer, type NostrEvent } from "@nostr-dev-kit/ndk";
+import { NDKList, type NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { CopyPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { v4 as uuidv4 } from "uuid";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { unixTimeNowInSeconds } from "$lib/utils";
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 
 let { rawList }: { rawList: NostrEvent } = $props();
 
@@ -27,7 +26,7 @@ async function createDuplicateList(e: Event) {
     tags.push(["d", `listr-${uuid}`]);
 
     const duplicateList = new NDKList(ndk, {
-        pubkey: currentUser.user?.pubkey as string,
+        pubkey: currentUser.pubkey,
         kind: rawList.kind,
         content: "",
         created_at: unixTimeNowInSeconds(),

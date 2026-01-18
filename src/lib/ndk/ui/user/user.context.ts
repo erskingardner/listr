@@ -2,8 +2,8 @@
 	Installed from @ndk/svelte
 */
 
-import type { NDKUser, NDKUserProfile } from '@nostr-dev-kit/ndk';
-import type { NDKSvelte } from '@nostr-dev-kit/svelte';
+import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import type { NDKSvelte } from "@nostr-dev-kit/svelte";
 
 /**
  * Context shared between User components
@@ -25,4 +25,4 @@ export interface UserContext {
     onclick?: (e: MouseEvent) => void;
 }
 
-export const USER_CONTEXT_KEY = Symbol('user');
+export const USER_CONTEXT_KEY = Symbol("user");

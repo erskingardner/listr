@@ -3,64 +3,69 @@
 -->
 
 <script lang="ts">
-	import { setContext, getContext } from 'svelte';
-	import { createFetchEvent, type NDKSvelte } from '@nostr-dev-kit/svelte';
-	import type { NDKEvent } from '@nostr-dev-kit/ndk';
-	import { defaultContentRenderer, type ContentRenderer } from './content-renderer';
-	import { CONTENT_RENDERER_CONTEXT_KEY, type ContentRendererContext } from './content-renderer/content-renderer.context.js';
+import { setContext, getContext } from "svelte";
+import { createFetchEvent, type NDKSvelte } from "@nostr-dev-kit/svelte";
+import type { NDKEvent } from "@nostr-dev-kit/ndk";
+import { defaultContentRenderer, type ContentRenderer } from "./content-renderer";
+import {
+    CONTENT_RENDERER_CONTEXT_KEY,
+    type ContentRendererContext,
+} from "./content-renderer/content-renderer.context.js";
 
-	export interface EmbeddedEventProps {
-		ndk: NDKSvelte;
-		bech32: string;
-		renderer?: ContentRenderer;
-		onclick?: (event: NDKEvent) => void;
-		class?: string;
-	}
+export interface EmbeddedEventProps {
+    ndk: NDKSvelte;
+    bech32: string;
+    renderer?: ContentRenderer;
+    onclick?: (event: NDKEvent) => void;
+    class?: string;
+}
 
-	let {
-		ndk,
-		bech32,
-		renderer: rendererProp,
-		onclick,
-		class: className = ''
-	}: EmbeddedEventProps = $props();
+let {
+    ndk,
+    bech32,
+    renderer: rendererProp,
+    onclick,
+    class: className = "",
+}: EmbeddedEventProps = $props();
 
-	// Get parent context
-	const parentContext = getContext<ContentRendererContext | undefined>(CONTENT_RENDERER_CONTEXT_KEY);
+// Get parent context
+const parentContext = getContext<ContentRendererContext | undefined>(CONTENT_RENDERER_CONTEXT_KEY);
 
-	// Use renderer from prop, or from context, or fallback to default
-	const renderer = $derived(rendererProp ?? parentContext?.renderer ?? defaultContentRenderer);
+// Use renderer from prop, or from context, or fallback to default
+const renderer = $derived(rendererProp ?? parentContext?.renderer ?? defaultContentRenderer);
 
-	// Set ContentRendererContext for nested components
-	setContext(CONTENT_RENDERER_CONTEXT_KEY, {
-		get renderer() { return renderer; }
-	});
+// Set ContentRendererContext for nested components
+setContext(CONTENT_RENDERER_CONTEXT_KEY, {
+    get renderer() {
+        return renderer;
+    },
+});
 
-	const eventFetcher = createFetchEvent(ndk, () => ({ bech32 }))
+const eventFetcher = createFetchEvent(ndk, () => ({ bech32 }));
 
-	// Lookup handler from registry for this specific kind
-	let handlerInfo = $derived(renderer.getKindHandler(eventFetcher.event?.kind));
+// Lookup handler from registry for this specific kind
+let handlerInfo = $derived(renderer.getKindHandler(eventFetcher.event?.kind));
 
-	// Use kind-specific handler
-	let KindHandler = $derived(handlerInfo?.component);
+// Use kind-specific handler
+let KindHandler = $derived(handlerInfo?.component);
 
-	// Use fallback if no kind-specific handler
-	let FallbackHandler = $derived(renderer.fallbackComponent);
+// Use fallback if no kind-specific handler
+let FallbackHandler = $derived(renderer.fallbackComponent);
 
-	// Wrap event using NDK wrapper class if available (only for kind-specific handlers)
-	let wrappedEvent = $derived(
-		eventFetcher.event && handlerInfo?.wrapper?.from
-			? handlerInfo.wrapper.from(eventFetcher.event)
-			: eventFetcher.event
-	);
+// Wrap event using NDK wrapper class if available (only for kind-specific handlers)
+let wrappedEvent = $derived(
+    eventFetcher.event && handlerInfo?.wrapper?.from
+        ? handlerInfo.wrapper.from(eventFetcher.event)
+        : eventFetcher.event
+);
 
-	// Handle click on embedded event
-	function handleClick(e: MouseEvent | KeyboardEvent) {
-		if (onclick && wrappedEvent) {
-			e.stopPropagation();
-			onclick(wrappedEvent);
-		}
-	}
+// Handle click on embedded event
+function handleClick(e: MouseEvent | KeyboardEvent) {
+    if (onclick && wrappedEvent) {
+        e.stopPropagation();
+        onclick(wrappedEvent);
+    }
+}
 </script>
 
 {#if eventFetcher.loading}

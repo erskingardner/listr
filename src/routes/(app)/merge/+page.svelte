@@ -3,7 +3,6 @@ import { NDKKind, NDKList, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk"
 import { onMount } from "svelte";
 import toast from "svelte-hot-french-toast";
 import { invalidateAll } from "$app/navigation";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import {
     deduplicateItems,
@@ -20,7 +19,7 @@ type ListOption = {
     count: number;
 };
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 
 let lists: NDKList[] = $state([]);
 let options: ListOption[] = $state([]);
@@ -46,12 +45,12 @@ onMount(async () => {
 
     const userLists = await ndk.fetchEvents({
         kinds: SUPPORTED_LIST_KINDS,
-        authors: [currentUser.user?.pubkey as string],
+        authors: [currentUser.pubkey],
     });
 
     const deletedEvents = await ndk.fetchEvents({
         kinds: [NDKKind.EventDeletion],
-        authors: [currentUser.user?.pubkey as string],
+        authors: [currentUser.pubkey],
     });
 
     lists = filterAndSortByTitle(
@@ -148,7 +147,7 @@ async function mergeLists(e: Event) {
 
     // Encrypt the new list if needed
     if (newList.content) {
-        await newList.encrypt(currentUser?.user as NDKUser, ndk.signer);
+        await newList.encrypt(currentUser as NDKUser, ndk.signer);
     }
 
     // Publish the new list

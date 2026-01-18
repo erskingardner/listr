@@ -1,8 +1,13 @@
 <script lang="ts">
 import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
-import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
+import type { NDKSvelte } from "@nostr-dev-kit/svelte";
 import UserDetails from "$lib/components/users/UserDetails.svelte";
+import EventContent from "$lib/ndk/ui/event-content.svelte";
 import ndk from "$lib/stores/ndk.svelte";
+
+// Cast ndk to NDKSvelte for component compatibility
+const ndkSvelte = ndk as unknown as NDKSvelte;
+
 import type { ListItemParams } from "$lib/types";
 import { timeAgo } from "$lib/utils";
 import RemoveItem from "../actions/RemoveItem.svelte";
@@ -97,7 +102,7 @@ $effect(() => {
                 </div>
             </div>
             <div class="wrap-break-word lg:w-2/3">
-                <EventContent ndk={ndk as any} event={event as any} />
+                <EventContent ndk={ndkSvelte} {event} />
             </div>
         </div>
     {/if}

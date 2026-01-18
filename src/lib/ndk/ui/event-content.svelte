@@ -3,48 +3,51 @@
 -->
 
 <script lang="ts">
-	import { getContext, setContext } from 'svelte';
-	import type { NDKEvent } from '@nostr-dev-kit/ndk';
-	import type { NDKSvelte } from '@nostr-dev-kit/svelte';
-	import { createEventContent } from '../builders/event-content/event-content.svelte.js';
-	import { defaultContentRenderer, type ContentRenderer } from './content-renderer';
-	import { CONTENT_RENDERER_CONTEXT_KEY, type ContentRendererContext } from './content-renderer/content-renderer.context.js';
-	import EmbeddedEvent from './embedded-event.svelte';
+import { getContext, setContext } from "svelte";
+import type { NDKEvent } from "@nostr-dev-kit/ndk";
+import type { NDKSvelte } from "@nostr-dev-kit/svelte";
+import { createEventContent } from "../builders/event-content/event-content.svelte.js";
+import { defaultContentRenderer, type ContentRenderer } from "./content-renderer";
+import {
+    CONTENT_RENDERER_CONTEXT_KEY,
+    type ContentRendererContext,
+} from "./content-renderer/content-renderer.context.js";
+import EmbeddedEvent from "./embedded-event.svelte";
 
-	interface EventContentProps {
-		ndk: NDKSvelte;
-		event?: NDKEvent;
-		content?: string;
-		emojiTags?: string[][];
-		renderer?: ContentRenderer;
-		class?: string;
-	}
+interface EventContentProps {
+    ndk: NDKSvelte;
+    event?: NDKEvent;
+    content?: string;
+    emojiTags?: string[][];
+    renderer?: ContentRenderer;
+    class?: string;
+}
 
-	let {
-		ndk,
-		event,
-		content: contentProp,
-		emojiTags,
-		renderer: rendererProp,
-		class: className = ''
-	}: EventContentProps = $props();
+let {
+    ndk,
+    event,
+    content: contentProp,
+    emojiTags,
+    renderer: rendererProp,
+    class: className = "",
+}: EventContentProps = $props();
 
-	// Get parent context for renderer
-	const parentContext = getContext<ContentRendererContext | undefined>(CONTENT_RENDERER_CONTEXT_KEY);
-	const renderer = $derived(rendererProp ?? parentContext?.renderer ?? defaultContentRenderer);
+// Get parent context for renderer
+const parentContext = getContext<ContentRendererContext | undefined>(CONTENT_RENDERER_CONTEXT_KEY);
+const renderer = $derived(rendererProp ?? parentContext?.renderer ?? defaultContentRenderer);
 
-	// Set ContentRendererContext for nested components
-	setContext(CONTENT_RENDERER_CONTEXT_KEY, {
-		get renderer() { return renderer; }
-	});
+// Set ContentRendererContext for nested components
+setContext(CONTENT_RENDERER_CONTEXT_KEY, {
+    get renderer() {
+        return renderer;
+    },
+});
 
-	const parsed = createEventContent(
-		() => ({
-			event,
-			content: contentProp,
-			emojiTags
-		})
-	);
+const parsed = createEventContent(() => ({
+    event,
+    content: contentProp,
+    emojiTags,
+}));
 </script>
 
 <div class="whitespace-pre-wrap wrap-break-all leading-relaxed {className}">

@@ -1,64 +1,62 @@
 <script lang="ts">
-import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-import { type NDKEvent, NDKKind, NDKList, type NDKSubscription } from "@nostr-dev-kit/ndk";
+import type { NDKEvent, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
 import { Home } from "lucide-svelte";
-import { onDestroy } from "svelte";
 import { page } from "$app/stores";
 import ListCard from "$lib/components/lists/ListCard.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 
-let lists: NDKList[] = $state([]);
-let deletedEvents: NDKEvent[] = $state([]);
-let listsSub: NDKSubscription | undefined;
-let deletedEventsSub: NDKSubscription | undefined;
 let userId = $derived($page.params.userId);
 let user: NDKUser = $derived(ndk.getUser({ npub: userId }));
 let profile: NDKUserProfile | null = $state(null);
 let displayableName: string = $state("");
+
+// Subscribe to user's lists
+let listsSub = ndk.$subscribe(() =>
+    user
+        ? {
+              filters: [
+                  {
+                      kinds: SUPPORTED_LIST_KINDS,
+                      authors: [user.pubkey],
+                  },
+              ],
+          }
+        : undefined
+);
+
+// Subscribe to deleted events
+let deletedEventsSub = ndk.$subscribe(() =>
+    user
+        ? {
+              filters: [
+                  {
+                      kinds: [NDKKind.EventDeletion],
+                      authors: [user.pubkey],
+                  },
+              ],
+          }
+        : undefined
+);
+
+let lists = $derived(listsSub.events.map((e: NDKEvent) => NDKList.from(e)));
+let deletedEvents = $derived(deletedEventsSub.events);
 let filteredLists: NDKList[] = $derived(filterAndSortByTitle(lists, deletedEvents));
 
 $effect(() => {
-    if (user) {
-        if (!profile) {
-            user.fetchProfile().then((fetchedProfile) => {
-                profile = fetchedProfile;
-                displayableName =
-                    profile?.displayName ||
-                    profile?.name ||
-                    profile?.nip05 ||
-                    `${user?.npub.slice(0, 9)}...` ||
-                    "";
-            });
-        }
-        if (!listsSub) {
-            let listsSub = ndk.subscribe(
-                {
-                    kinds: SUPPORTED_LIST_KINDS,
-                    authors: [user.pubkey],
-                },
-                { closeOnEose: false }
-            );
-            listsSub.on("event", (event) => {
-                lists = [...lists, NDKList.from(event)];
-            });
-        }
-        if (!deletedEventsSub) {
-            let deletedEventsSub = ndk.subscribe({
-                kinds: [NDKKind.EventDeletion],
-                authors: [user.pubkey],
-            });
-            deletedEventsSub.on("event", (event) => {
-                deletedEvents = [...deletedEvents, event];
-            });
-        }
+    if (user && !profile) {
+        user.fetchProfile().then((fetchedProfile) => {
+            profile = fetchedProfile;
+            displayableName =
+                profile?.displayName ||
+                profile?.name ||
+                profile?.nip05 ||
+                `${user?.npub.slice(0, 9)}...` ||
+                "";
+        });
     }
-});
-
-onDestroy(() => {
-    listsSub?.stop();
-    deletedEventsSub?.stop();
 });
 </script>
 

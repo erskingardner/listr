@@ -12,12 +12,11 @@ import { Popover } from "flowbite-svelte";
 import { Zap } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { requestProvider } from "webln";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 
 let { user, extraClasses }: { user: NDKUser; extraClasses?: string } = $props();
 
-let currentUser = $derived(getCurrentUser());
+let currentUser = $derived(ndk.$currentUser);
 let profile: NDKUserProfile | null = $state(null);
 let amount = $state(21);
 let comment: string = $state("");
@@ -99,7 +98,7 @@ let displayableName = $derived.by(() => {
     class="dark:text-gray-50 dark:bg-gray-700"
 >
     <div class="panel-contents flex flex-col gap-2">
-        {#if currentUser?.user}
+        {#if currentUser}
             <form
                 onsubmit={submitZap}
                 class="flex flex-col gap-2 justify-start items-start"

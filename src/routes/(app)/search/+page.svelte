@@ -1,6 +1,5 @@
 <script lang="ts">
-import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet, type NDKSubscription } from "@nostr-dev-kit/ndk";
-import { onDestroy } from "svelte";
+import { NDKKind, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import { page } from "$app/stores";
 import Loader from "$lib/components/Loader.svelte";
 import ListSearchResult from "$lib/components/search/ListSearchResult.svelte";
@@ -21,37 +20,27 @@ for (const url of searchRelayUrls) {
 }
 
 let query: string | null = $derived($page.url.searchParams.get("q"));
-let sub: NDKSubscription | null = $state(null);
-let searchResults: NDKEvent[] = $state([]);
-let userResults: NDKEvent[] = $state([]);
-let listResults: NDKEvent[] = $state([]);
-let eoseReceived = $state(false);
 
-$effect(() => {
-    if (query) {
-        sub = ndk.subscribe({ search: query, limit: 50 }, {}, searchRelays);
-    }
+let sub = ndk.$subscribe(() =>
+    query
+        ? {
+              filters: [{ search: query, limit: 50 }],
+              relaySet: searchRelays,
+          }
+        : undefined
+);
 
-    if (sub) {
-        sub.on("eose", () => {
-            eoseReceived = true;
-        });
-        sub.on("event", (event: NDKEvent) => {
-            searchResults = [...searchResults, event];
-        });
-    }
+let searchResults = $derived(sub.events);
+let eoseReceived = $derived(sub.eosed);
 
-    if (searchResults.length > 0) {
-        userResults = searchResults.filter((event) => event.kind === NDKKind.Metadata);
-        listResults = searchResults.filter((event) =>
-            SUPPORTED_LIST_KINDS.includes(event.kind as number)
-        );
-    }
-});
-
-onDestroy(() => {
-    sub?.stop();
-});
+let userResults = $derived(
+    searchResults.filter((event: { kind: number }) => event.kind === NDKKind.Metadata)
+);
+let listResults = $derived(
+    searchResults.filter((event: { kind: number }) =>
+        SUPPORTED_LIST_KINDS.includes(event.kind as number)
+    )
+);
 </script>
 
 <svelte:head>
