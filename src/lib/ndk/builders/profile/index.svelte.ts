@@ -3,8 +3,8 @@
 */
 
 import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
-import { SvelteMap } from "svelte/reactivity";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
+import { SvelteMap } from "svelte/reactivity";
 import { getNDK } from "../../utils/ndk/index.svelte.js";
 
 // Track in-flight profile fetch requests to prevent duplicate fetches

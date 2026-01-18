@@ -3,10 +3,10 @@
 -->
 
 <script lang="ts">
-import { setContext, getContext } from "svelte";
-import { createFetchEvent, type NDKSvelte } from "@nostr-dev-kit/svelte";
 import type { NDKEvent } from "@nostr-dev-kit/ndk";
-import { defaultContentRenderer, type ContentRenderer } from "./content-renderer";
+import { createFetchEvent, type NDKSvelte } from "@nostr-dev-kit/svelte";
+import { getContext, setContext } from "svelte";
+import { type ContentRenderer, defaultContentRenderer } from "./content-renderer";
 import {
     CONTENT_RENDERER_CONTEXT_KEY,
     type ContentRendererContext,

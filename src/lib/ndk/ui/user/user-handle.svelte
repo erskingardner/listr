@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import { getContext } from "svelte";
-import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
 import { cn } from "../../utils/cn.js";
+import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
 
 interface Props {
     class?: string;

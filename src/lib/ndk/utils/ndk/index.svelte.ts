@@ -2,8 +2,8 @@
 	Installed from @ndk/svelte
 */
 
-import { getContext, hasContext } from "svelte";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
+import { getContext, hasContext } from "svelte";
 
 /**
  * Context key for NDK instance

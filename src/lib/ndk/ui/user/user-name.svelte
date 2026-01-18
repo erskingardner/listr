@@ -46,10 +46,10 @@ const displayText = $derived.by(() => {
             context.profile.name && context.profile.name !== context.profile.displayName
                 ? context.profile.name
                 : null;
-        return name ? `${displayName} (@${name})` : displayName || userPubkey?.slice(0, 8) + "...";
+        return name ? `${displayName} (@${name})` : displayName || `${userPubkey?.slice(0, 8)}...`;
     }
 
-    return userPubkey?.slice(0, 8) + "..." || "Unknown";
+    return `${userPubkey?.slice(0, 8)}...` || "Unknown";
 });
 </script>
 

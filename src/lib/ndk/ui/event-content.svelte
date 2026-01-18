@@ -3,11 +3,11 @@
 -->
 
 <script lang="ts">
-import { getContext, setContext } from "svelte";
 import type { NDKEvent } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
+import { getContext, setContext } from "svelte";
 import { createEventContent } from "../builders/event-content/event-content.svelte.js";
-import { defaultContentRenderer, type ContentRenderer } from "./content-renderer";
+import { type ContentRenderer, defaultContentRenderer } from "./content-renderer";
 import {
     CONTENT_RENDERER_CONTEXT_KEY,
     type ContentRendererContext,

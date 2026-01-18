@@ -2,14 +2,14 @@
 	Installed from @ndk/svelte
 */
 
-import Root from "./user-root.svelte";
 import Avatar from "./user-avatar.svelte";
-import Name from "./user-name.svelte";
+import Banner from "./user-banner.svelte";
+import Bio from "./user-bio.svelte";
 import Field from "./user-field.svelte";
 import Handle from "./user-handle.svelte";
-import Bio from "./user-bio.svelte";
-import Banner from "./user-banner.svelte";
+import Name from "./user-name.svelte";
 import Nip05 from "./user-nip05.svelte";
+import Root from "./user-root.svelte";
 
 export const User = {
     Root,

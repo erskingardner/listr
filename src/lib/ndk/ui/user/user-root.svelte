@@ -3,13 +3,13 @@
 -->
 
 <script lang="ts">
-import { setContext } from "svelte";
 import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
-import { createProfileFetcher } from "../../builders/profile/index.svelte.js";
-import { USER_CONTEXT_KEY } from "./user.context.js";
 import type { Snippet } from "svelte";
+import { setContext } from "svelte";
+import { createProfileFetcher } from "../../builders/profile/index.svelte.js";
 import { cn } from "../../utils/cn.js";
+import { USER_CONTEXT_KEY } from "./user.context.js";
 
 interface Props {
     ndk: NDKSvelte;
@@ -67,7 +67,8 @@ $effect(() => {
     if (propProfile !== undefined) {
         profileFetcher = null;
     } else if (ndkUser) {
-        profileFetcher = createProfileFetcher(() => ({ user: ndkUser! }), ndk);
+        const currentUser = ndkUser;
+        profileFetcher = createProfileFetcher(() => ({ user: currentUser }), ndk);
     } else {
         profileFetcher = null;
     }

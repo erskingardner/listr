@@ -2,9 +2,9 @@
 	Installed from @ndk/svelte
 */
 
-import type { Component } from "svelte";
 import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
+import type { Component } from "svelte";
 
 /**
  * NDK wrapper class with static properties
@@ -205,6 +205,7 @@ export class ContentRenderer {
      * // Registers kinds 1 and 1111 without wrapping
      * ```
      */
+    // biome-ignore lint/suspicious/noExplicitAny: Component props type from jsrepo package
     addKind(target: NDKWrapper | number[], component: Component<any>, priority: number = 1): void {
         if (Array.isArray(target)) {
             // Manual kind numbers - no wrapper
@@ -281,6 +282,7 @@ export class ContentRenderer {
      * @param component - Component to render unhandled events
      * @param priority - Priority for this component (default: 1)
      */
+    // biome-ignore lint/suspicious/noExplicitAny: Component props type from jsrepo package
     setFallbackComponent(component: Component<any> | null, priority: number = 1): void {
         if (priority >= this.fallbackPriority) {
             this.fallbackComponent = component;

@@ -3,9 +3,9 @@
 -->
 
 <script lang="ts">
+import type { Snippet } from "svelte";
 import { getContext } from "svelte";
 import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
-import type { Snippet } from "svelte";
 
 const NIP05_REGEX = /^(?:([\w.+-]+)@)?([\w.-]+)$/;
 
