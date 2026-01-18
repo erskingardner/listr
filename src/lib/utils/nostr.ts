@@ -5,13 +5,14 @@ import {
     type NDKUserParams,
     type NDKUserProfile,
 } from "@nostr-dev-kit/ndk";
-import { nip19 } from "nostr-tools";
+import { nip05, nip19 } from "nostr-tools";
 import type { ProfilePointer } from "nostr-tools/nip19";
 import { ndkStore } from "$lib/stores/ndk.svelte";
 
 export const NOSTR_BECH32_REGEXP =
     /^(npub|nprofile|note|nevent|naddr)1[023456789acdefghjklmnpqrstuvwxyz]+/;
 export const NOSTR_PUBKEY_REGEXP = /^[0-9a-fA-F]{64}$/;
+export const NIP05_REGEXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function nip19ToTag(nip19Id: string): string[] | undefined {
     const decoded = nip19.decode(nip19Id);
@@ -41,11 +42,11 @@ export function nip19ToTag(nip19Id: string): string[] | undefined {
     }
 }
 
-export function stringInputToTag(
+export async function stringInputToTag(
     input: string,
     listKind: number,
     markers?: string[]
-): NDKTag | undefined {
+): Promise<NDKTag | undefined> {
     if (input.match(NOSTR_BECH32_REGEXP)) {
         return nip19ToTag(input);
     }
@@ -68,6 +69,13 @@ export function stringInputToTag(
         const shortcode = input.split(",")[0].replace(":", "").trim();
         const url = input.split(",")[1].trim();
         return ["emoji", shortcode, url];
+    }
+    // Handle NIP-05
+    if (input.match(NIP05_REGEXP)) {
+        const profile = await nip05.queryProfile(input);
+        if (profile?.pubkey) {
+            tag = ["p", profile.pubkey];
+        }
     }
     // Add any markers to the tag
     if (tag && markers && markers.length > 0) tag = [...tag, ...markers];

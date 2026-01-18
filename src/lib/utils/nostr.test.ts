@@ -1,5 +1,6 @@
 import { NDKKind } from "@nostr-dev-kit/ndk";
-import { describe, expect, it } from "vitest";
+import { nip05 } from "nostr-tools";
+import { describe, expect, it, vi } from "vitest";
 import {
     aTagToNip19,
     NOSTR_BECH32_REGEXP,
@@ -7,6 +8,24 @@ import {
     nip19ToTag,
     stringInputToTag,
 } from "./nostr";
+
+vi.mock("$app/environment", () => ({
+    browser: false,
+    dev: true,
+    building: false,
+    version: "test",
+}));
+
+vi.mock("nostr-tools", async (importOriginal) => {
+    const mod = await importOriginal<typeof import("nostr-tools")>();
+    return {
+        ...mod,
+        nip05: {
+            ...mod.nip05,
+            queryProfile: vi.fn(),
+        },
+    };
+});
 
 describe("nostr utility functions", () => {
     describe("NOSTR_BECH32_REGEXP", () => {
@@ -162,73 +181,85 @@ describe("nostr utility functions", () => {
     });
 
     describe("stringInputToTag", () => {
-        it("should handle hashtag input", () => {
-            const result = stringInputToTag("#bitcoin", 10000);
+        it("should handle hashtag input", async () => {
+            const result = await stringInputToTag("#bitcoin", 10000);
 
             expect(result).toEqual(["t", "bitcoin"]);
         });
 
-        it("should handle URL input", () => {
-            const result = stringInputToTag("https://example.com", 10003);
+        it("should handle URL input", async () => {
+            const result = await stringInputToTag("https://example.com", 10003);
 
             expect(result).toEqual(["r", "https://example.com"]);
         });
 
-        it("should handle http URL input", () => {
-            const result = stringInputToTag("http://example.com", 10003);
+        it("should handle http URL input", async () => {
+            const result = await stringInputToTag("http://example.com", 10003);
 
             expect(result).toEqual(["r", "http://example.com"]);
         });
 
-        it("should handle wss relay URL for non-RelayList kinds", () => {
-            const result = stringInputToTag("wss://relay.example.com", 10003);
+        it("should handle wss relay URL for non-RelayList kinds", async () => {
+            const result = await stringInputToTag("wss://relay.example.com", 10003);
 
             expect(result).toEqual(["relay", "wss://relay.example.com"]);
         });
 
-        it("should handle wss relay URL for RelayList kind", () => {
-            const result = stringInputToTag("wss://relay.example.com", NDKKind.RelayList);
+        it("should handle wss relay URL for RelayList kind", async () => {
+            const result = await stringInputToTag("wss://relay.example.com", NDKKind.RelayList);
 
             expect(result).toEqual(["r", "wss://relay.example.com"]);
         });
 
-        it("should handle ws relay URL", () => {
-            const result = stringInputToTag("ws://relay.example.com", 10003);
+        it("should handle ws relay URL", async () => {
+            const result = await stringInputToTag("ws://relay.example.com", 10003);
 
             expect(result).toEqual(["relay", "ws://relay.example.com"]);
         });
 
-        it("should handle emoji input with shortcode and URL", () => {
-            const result = stringInputToTag(":smile:, https://example.com/smile.png", 30030);
+        it("should handle emoji input with shortcode and URL", async () => {
+            const result = await stringInputToTag(":smile:, https://example.com/smile.png", 30030);
 
             // Note: The current implementation only removes one colon with replace()
             // This tests the actual behavior - shortcode retains trailing colon
             expect(result).toEqual(["emoji", "smile:", "https://example.com/smile.png"]);
         });
 
-        it("should handle emoji input with space after comma", () => {
-            const result = stringInputToTag(":laugh:,https://example.com/laugh.png", 30030);
+        it("should handle emoji input with space after comma", async () => {
+            const result = await stringInputToTag(":laugh:,https://example.com/laugh.png", 30030);
 
             // Note: The current implementation only removes one colon with replace()
             expect(result).toEqual(["emoji", "laugh:", "https://example.com/laugh.png"]);
         });
 
-        it("should pass through NIP-19 identifiers to nip19ToTag", () => {
+        it("should pass through NIP-19 identifiers to nip19ToTag", async () => {
             const npub = "npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6";
-            const result = stringInputToTag(npub, 30000);
+            const result = await stringInputToTag(npub, 30000);
 
             expect(result).toBeDefined();
             expect(result?.[0]).toBe("p");
         });
 
-        it("should add markers to tag if provided", () => {
-            const result = stringInputToTag("#bitcoin", 10000, ["marker1", "marker2"]);
+        it("should resolve NIP-05 identifier", async () => {
+            vi.mocked(nip05.queryProfile).mockResolvedValue({
+                pubkey: "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                relays: [],
+            });
+            const result = await stringInputToTag("user@example.com", 30000);
+            expect(result).toEqual([
+                "p",
+                "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            ]);
+        });
+
+        it("should add markers to tag if provided", async () => {
+            const result = await stringInputToTag("#bitcoin", 10000, ["marker1", "marker2"]);
 
             expect(result).toEqual(["t", "bitcoin", "marker1", "marker2"]);
         });
 
-        it("should return undefined for unrecognized input", () => {
-            const result = stringInputToTag("random text", 10000);
+        it("should return undefined for unrecognized input", async () => {
+            const result = await stringInputToTag("random text", 10000);
 
             expect(result).toBeUndefined();
         });

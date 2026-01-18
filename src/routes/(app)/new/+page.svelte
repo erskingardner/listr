@@ -88,7 +88,7 @@ async function publishList(): Promise<string> {
     return list.encode();
 }
 
-function handleListAddition(e: MouseEvent) {
+async function handleListAddition(e: MouseEvent) {
     e.preventDefault();
     addItemSubmitting = true;
     addItemError = false;
@@ -101,7 +101,8 @@ function handleListAddition(e: MouseEvent) {
 
         // Convert the string input to a NDKTag
         let tag: NDKTag | undefined;
-        tag = stringInputToTag(listItemInputEl.value, +$form.kind, [relayReadWriteEl.value]);
+        const markers = relayReadWriteEl ? [relayReadWriteEl.value] : undefined;
+        tag = await stringInputToTag(listItemInputEl.value, +$form.kind, markers);
 
         if (!tag) {
             // Error if we can't parse the input to a tag

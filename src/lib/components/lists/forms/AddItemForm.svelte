@@ -26,7 +26,7 @@ let addItemError = $state(false);
 let addItemErrorMessage = $state("");
 let placeholder = $derived(placeholderForListKind(Number.parseInt(kind.toString(), 10)));
 
-function handleListAddition(e: MouseEvent) {
+async function handleListAddition(e: MouseEvent) {
     e.preventDefault();
     addItemSubmitting = true;
     addItemError = false;
@@ -36,9 +36,9 @@ function handleListAddition(e: MouseEvent) {
         // Convert the string input to a NDKTag
         let tag: NDKTag | undefined;
         if (relayReadWrite === "read" || relayReadWrite === "write") {
-            tag = stringInputToTag(listItem, kind, [relayReadWrite]);
+            tag = await stringInputToTag(listItem, kind, [relayReadWrite]);
         } else {
-            tag = stringInputToTag(listItem, kind);
+            tag = await stringInputToTag(listItem, kind);
         }
 
         if (!tag) {

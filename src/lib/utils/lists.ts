@@ -381,7 +381,7 @@ export function validateTagForListKind(tag: NDKTag, kind: number): boolean {
 export function placeholderForListKind(kind: number): string {
     switch (kind) {
         case 10000:
-            return "NIP-19 identifier (npub, nprofile, note, nevent), a hashtag (e.g. #NSFW), or a word (e.g. Bitcoin)";
+            return "NIP-19 identifier (npub, nprofile, note, nevent), NIP-05 address, hashtag (e.g. #NSFW), or word";
         case 10001:
             return "Note NIP-19 identifier (note or nevent)";
         case 10002:
@@ -400,7 +400,7 @@ export function placeholderForListKind(kind: number): string {
             return "NIP-19 identifier (naddr) of an Emoji Set (kind 30030) or a comma-separated shortcode and url to an emoji (e.g. :smile:, https://example.com/smile.png)";
         case 30000:
         case 39089:
-            return "NIP-19 pubkey identifier (npub or nprofile)";
+            return "NIP-19 pubkey identifier (npub or nprofile) or NIP-05 address (e.g. name@domain.com)";
         case 30004:
             return "Note or event NIP-19 identifier (note, nevent, naddr)";
         case 30015:
