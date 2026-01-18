@@ -1,42 +1,27 @@
-import type { NDKCacheAdapter } from "@nostr-dev-kit/ndk";
-import NDK from "@nostr-dev-kit/ndk";
-import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
+import NDKCacheDexie from "@nostr-dev-kit/cache-dexie";
+import { createNDK } from "@nostr-dev-kit/svelte";
 import { browser } from "$app/environment";
 
-const cacheAdapter: NDKCacheAdapter | undefined = browser
-    ? new NDKCacheAdapterDexie({ dbName: "listr-v2" })
-    : undefined;
+const cacheAdapter = browser ? new NDKCacheDexie({ dbName: "listr-v2" }) : undefined;
 
-export const ndkStore = new NDK({
+const ndk = createNDK({
     explicitRelayUrls: [
         "wss://purplepag.es",
         "wss://relay.snort.social",
         "wss://relay.damus.io",
         "wss://relay.primal.net",
         "wss://nos.lol",
-        "wss://relay.ditto.pub"
+        "wss://relay.ditto.pub",
     ],
     outboxRelayUrls: ["wss://purplepag.es", "wss://relay.primal.net"],
-    autoConnectUserRelays: false,
-    enableOutboxModel: false,
+    enableOutboxModel: true,
     cacheAdapter,
     clientName: "Listr",
+    session: true,
 });
 
-ndkStore.connect().then(() => console.log("NDK Connected"));
+ndk.connect().then(() => console.log("NDK Connected"));
 
-// Create a singleton instance that is the default export
-const ndk = $state(ndkStore);
-
-export const bunkerNDKStore = new NDK({
-    explicitRelayUrls: [
-        "wss://relay.nsecbunker.com",
-        "wss://relay.damus.io",
-        "wss://relay.primal.net",
-    ],
-    enableOutboxModel: false,
-});
-
-bunkerNDKStore.connect().then(() => console.log("Bunker NDK Connected"));
-export const bunkerNdk = $state(bunkerNDKStore);
+// Export the NDK instance both as default and named export for compatibility
+export const ndkStore = ndk;
 export default ndk;
