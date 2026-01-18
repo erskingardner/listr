@@ -4,6 +4,8 @@ import { Loader2 } from "lucide-svelte";
 import type { Snippet } from "svelte";
 
 const PAGE_SIZE = 50;
+const MAX_VISIBLE_ITEMS = 150;
+const ITEM_HEIGHT_ESTIMATE = 80;
 
 let {
     items,
@@ -13,37 +15,57 @@ let {
     renderItem: Snippet<[NDKTag, number]>;
 } = $props();
 
-let displayCount = $state(PAGE_SIZE);
+let endIndex = $state(PAGE_SIZE);
+let startIndex = $state(0);
 let loadMoreTrigger: HTMLDivElement | null = $state(null);
+let loadPrevTrigger: HTMLDivElement | null = $state(null);
 let isLoadingMore = $state(false);
+let isLoadingPrev = $state(false);
 
-let visibleItems = $derived(items.slice(0, displayCount));
-let hasMore = $derived(displayCount < items.length);
+let visibleItems = $derived(items.slice(startIndex, endIndex));
+let hasMore = $derived(endIndex < items.length);
+let hasPrev = $derived(startIndex > 0);
 let totalCount = $derived(items.length);
-let showingCount = $derived(Math.min(displayCount, items.length));
+let showingCount = $derived(Math.min(endIndex, items.length) - startIndex);
+let topSpacerHeight = $derived(startIndex * ITEM_HEIGHT_ESTIMATE);
 
 // Reset display count when items change significantly (e.g., navigating to a different list)
 $effect(() => {
     // Access items.length to create a dependency
     const _ = items.length;
-    displayCount = PAGE_SIZE;
+    endIndex = PAGE_SIZE;
+    startIndex = 0;
 });
 
 $effect(() => {
-    if (!loadMoreTrigger || !hasMore) return;
-
     const observer = new IntersectionObserver(
         (entries) => {
-            if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
-                loadMore();
+            for (const entry of entries) {
+                if (
+                    entry.target === loadMoreTrigger &&
+                    entry.isIntersecting &&
+                    hasMore &&
+                    !isLoadingMore
+                ) {
+                    loadMore();
+                }
+                if (
+                    entry.target === loadPrevTrigger &&
+                    entry.isIntersecting &&
+                    hasPrev &&
+                    !isLoadingPrev
+                ) {
+                    loadPrev();
+                }
             }
         },
         {
-            rootMargin: "200px", // Start loading before the element is visible
+            rootMargin: "400px", // Start loading before the element is visible
         }
     );
 
-    observer.observe(loadMoreTrigger);
+    if (loadMoreTrigger) observer.observe(loadMoreTrigger);
+    if (loadPrevTrigger) observer.observe(loadPrevTrigger);
 
     return () => {
         observer.disconnect();
@@ -56,14 +78,37 @@ function loadMore() {
     isLoadingMore = true;
     // Use a small timeout to allow UI to update with loading state
     setTimeout(() => {
-        displayCount = Math.min(displayCount + PAGE_SIZE, items.length);
+        endIndex = Math.min(endIndex + PAGE_SIZE, items.length);
+        // Windowing: Remove items from top if we exceed max visible
+        if (endIndex - startIndex > MAX_VISIBLE_ITEMS) {
+            startIndex = endIndex - MAX_VISIBLE_ITEMS;
+        }
         isLoadingMore = false;
+    }, 50);
+}
+
+function loadPrev() {
+    if (isLoadingPrev || !hasPrev) return;
+
+    isLoadingPrev = true;
+    setTimeout(() => {
+        startIndex = Math.max(0, startIndex - PAGE_SIZE);
+        // Windowing: Remove items from bottom if we exceed max visible
+        if (endIndex - startIndex > MAX_VISIBLE_ITEMS) {
+            endIndex = startIndex + MAX_VISIBLE_ITEMS;
+        }
+        isLoadingPrev = false;
     }, 50);
 }
 </script>
 
+{#if hasPrev}
+    <div style="height: {topSpacerHeight}px; width: 100%;"></div>
+    <div bind:this={loadPrevTrigger} style="height: 1px; width: 100%;"></div>
+{/if}
+
 {#each visibleItems as item, index (item[1])}
-    {@render renderItem(item, index)}
+    {@render renderItem(item, startIndex + index)}
 {/each}
 
 {#if hasMore}
