@@ -38,7 +38,7 @@ async function handleUnfollow() {
                 onclick={handleUnfollow}
                 onmouseenter={() => (followingButtonText = "Unfollow")}
                 onmouseleave={() => (followingButtonText = "Following")}
-                class="primaryActionButton bg:white hover:bg-white hover:text-red-700 hover:border-red-700 dark:bg-white dark:text-indigo-800 dark:hover:border-red-700 dark:hover:text-red-700 w-full dark:hover:bg-white justify-center {buttonClasses}"
+                class="primaryActionButton bg-white text-indigo-700 border-indigo-400 hover:bg-red-50 hover:text-red-700 hover:border-red-400 dark:bg-white dark:text-indigo-700 dark:border-indigo-400 dark:hover:bg-red-50 dark:hover:text-red-700 dark:hover:border-red-400 w-full justify-center {buttonClasses}"
             >
                 <UserRoundMinus size="20" strokeWidth="1.5" class="w-5 h-5" />
                 <span class="w-16 text-left">{followingButtonText}</span>
