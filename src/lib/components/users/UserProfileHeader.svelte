@@ -41,7 +41,7 @@ let user = $derived(ndk.getUser({ pubkey: pubkey }));
 <User.Root ndk={ndkSvelte} pubkey={pubkey}>
     <div class="relative w-full mb-14">
         <!-- Banner - positioned absolutely behind the content -->
-        <User.Banner class="absolute inset-0 min-h-[286px] h-full bg-center bg-cover z-0 rounded-lg" />
+        <User.Banner class="absolute inset-0 min-h-[286px] h-full bg-center bg-cover z-0 rounded-md overflow-hidden" />
         <!-- Gradient overlay -->
         <div
             class="z-1 absolute py-6 inset-0 w-full min-h-[286px] h-full
