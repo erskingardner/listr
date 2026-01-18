@@ -15,7 +15,7 @@ let {
 let currentUser = $derived(getCurrentUser());
 </script>
 
-{#if currentUser.user?.pubkey === pubkey}
+{#if currentUser?.user?.pubkey === pubkey}
     {#if editMode}
         <button onclick={toggleEditMode} class="primaryActionButton">
             <FileX strokeWidth="1.5" size="20" class="w-5 h-5" />

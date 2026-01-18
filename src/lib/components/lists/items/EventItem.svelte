@@ -96,8 +96,8 @@ $effect(() => {
                     {/if}
                 </div>
             </div>
-            <div class="break-words lg:w-2/3">
-                <EventContent {ndk} {event} />
+            <div class="wrap-break-word lg:w-2/3">
+                <EventContent ndk={ndk as any} event={event as any} />
             </div>
         </div>
     {/if}

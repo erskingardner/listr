@@ -15,7 +15,7 @@ const otherItems = $derived(list.items.filter((item) => !["p", "e", "a"].include
 
 <a
     href="/{npub}/{list.kind}/{nip19}"
-    class="flex flex-col gap-1 border border-gray-300 rounded-md shadow-md bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:text-gray-50 p-4 hover:dark:bg-gray-600"
+    class="flex flex-col gap-1 border border-gray-300 rounded-md shadow-md bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:text-gray-50 p-4 dark:hover:bg-gray-600"
 >
     <div class="flex flex-row gap-2 items-center">
         <h3 class="text-lg font-bold">{list.title}</h3>

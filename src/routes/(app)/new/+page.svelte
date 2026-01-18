@@ -18,7 +18,7 @@ import toast from "svelte-hot-french-toast";
 import { zod } from "sveltekit-superforms/adapters";
 import { defaults, superForm } from "sveltekit-superforms/client";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
+import { z } from "zod/v3";
 
 let addItemSubmitting = $state(false);
 let addItemError = $state(false);

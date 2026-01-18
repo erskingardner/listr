@@ -32,13 +32,13 @@ $effect(() => {
         ></div>
         <div
             class="z-1 absolute py-6 inset-0 w-full min-h-[286px] h-full
-bg-gradient-to-b from-transparent via-80% via-white dark:via-gray-800 to-white dark:to-gray-800"
+bg-linear-to-b from-transparent via-80% via-white dark:via-gray-800 to-white dark:to-gray-800"
         ></div>
         <div class="relative profileMetadata flex flex-col gap-2 pt-10 mx-6">
             <UserAvatar
                 {user}
                 userProfile={profile || undefined}
-                extraClasses="w-36 h-36 border-zinc-100 object-cover rounded-full dark:!bg-gray-800 shadow-3xl"
+                extraClasses="w-36 h-36 border-zinc-100 object-cover rounded-full dark:bg-gray-800! shadow-3xl"
             />
             <h1 class="text-2xl font-bold">
                 <UserName user={user} userProfile={profile || undefined} />
@@ -60,11 +60,11 @@ bg-gradient-to-b from-transparent via-80% via-white dark:via-gray-800 to-white d
                 </div>
             </span>
             <div class="flex flex-col gap-4 lg:flex-row justify-between">
-                <div class="leading-relaxed break-words max-w-xl">{profile?.about}</div>
+                <div class="leading-relaxed wrap-break-word max-w-xl">{profile?.about}</div>
                 <div class="flex flex-row gap-4">
-                    <!-- <ZapUserButton {user} extraClasses="primaryActionButton w-full whitespace-nowrap justify-start h-fit !py-2" /> -->
-                    <FollowButton {user} buttonClasses="!justify-start h-fit !py-2" />
-                    <AddToListButton {user} extraClasses="!justify-start h-fit !py-2" />
+                    <!-- <ZapUserButton {user} extraClasses="primaryActionButton w-full whitespace-nowrap justify-start h-fit py-2!" /> -->
+                    <FollowButton {user} buttonClasses="justify-start! h-fit py-2!" />
+                    <AddToListButton {user} extraClasses="justify-start! h-fit py-2!" />
             </div>
         </div>
     </div>

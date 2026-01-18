@@ -14,7 +14,7 @@ let {
 
 let currentUser = $derived(getCurrentUser());
 async function handleAddToList() {
-    if (currentUser.user !== user) {
+    if (currentUser?.user !== user) {
         console.log("Soon™");
     }
 }

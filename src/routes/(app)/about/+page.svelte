@@ -46,7 +46,7 @@ const users = shuffled.map((id) => ndk.getUser({ pubkey: id }));
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <div
                 onclick={() => (goto(`/${user.npub}`))}
-                class="flex p-4 border border-gray-300 cursor-pointer rounded-md shadow-md bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:text-gray-50 truncate hover:dark:bg-gray-600"
+                class="flex p-4 border border-gray-300 cursor-pointer rounded-md shadow-md bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:text-gray-50 truncate dark:hover:bg-gray-600"
             >
                 <UserDetails {user} noPopover={true} />
             </div>

@@ -1,15 +1,33 @@
-@import url("https://fonts.bunny.net/css?family=unica-one:400");
+@import url('https://fonts.bunny.net/css?family=unica-one:400') layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../tailwind.config.js';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 .popoverActionButton {
     @apply flex flex-row gap-2 items-center text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md py-1 px-2 text-sm w-full;
 }
 
 .primaryActionButton {
-    @apply font-medium flex flex-row gap-2 items-center bg-indigo-100 border border-indigo-500 dark:border-indigo-800 dark:bg-indigo-700 hover:bg-indigo-200 dark:hover:bg-indigo-600 hover:dark:text-white rounded-md text-sm px-2 py-0.5;
+    @apply font-medium flex flex-row gap-2 items-center bg-indigo-100 border border-indigo-500 dark:border-indigo-800 dark:bg-indigo-700 hover:bg-indigo-200 dark:hover:bg-indigo-600 dark:hover:text-white rounded-md text-sm px-2 py-0.5;
 }
 
 code::before {

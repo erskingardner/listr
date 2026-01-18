@@ -17,7 +17,7 @@ let bio = $derived(profile?.bio || profile?.about);
 </script>
 
 {#if bio}
-    <div class="text-sm not-prose leading-relaxed whitespace-normal break-words">
+    <div class="text-sm not-prose leading-relaxed whitespace-normal wrap-break-word">
         {bio}
     </div>
 {/if}

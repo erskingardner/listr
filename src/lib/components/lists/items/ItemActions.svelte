@@ -74,7 +74,7 @@ function valuesForItemActions() {
     <MoreVertical
         strokeWidth="1.5"
         size="20"
-        class="stroke-gray-500 hover:stroke-black hover:dark:stroke-white w-5 h-5"
+        class="stroke-gray-500 hover:stroke-black dark:hover:stroke-white w-5 h-5"
     />
 </button>
 <Popover triggeredBy="#actions-{hashedId ? hashedId : itemCopyString}" placement="left-start">

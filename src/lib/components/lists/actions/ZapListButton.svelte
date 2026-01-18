@@ -43,7 +43,7 @@ $effect(() => {
     totalZaps = zaps
         .map((event: NDKEvent) => {
             const zapInvoice = zapInvoiceFromEvent(event);
-            if (currentUser.user) {
+            if (currentUser?.user) {
                 alreadyZapped = zapInvoice?.zappee === currentUser.user.pubkey;
             }
             return (zapInvoice?.amount || 0) / 1000;
@@ -118,7 +118,7 @@ async function submitZap(e: Event) {
     class="dark:text-gray-50 dark:bg-gray-700 z-30"
 >
     <div class="panel-contents flex flex-col gap-2">
-        {#if currentUser.user}
+        {#if currentUser?.user}
             <form
                 onsubmit={submitZap}
                 class="flex flex-col gap-2 justify-start items-start"

@@ -13,7 +13,7 @@ let currentUser = $derived(getCurrentUser());
 let likes: NDKEvent[] = $state([]);
 let likesSub: NDKSubscription | null = $state(null);
 let alreadyLiked = $derived(
-    currentUser.user && likes.map((like) => like.pubkey).includes(currentUser.user.pubkey)
+    currentUser?.user && likes.map((like) => like.pubkey).includes(currentUser.user.pubkey)
 );
 
 onMount(() => {
@@ -30,7 +30,7 @@ onMount(() => {
 onDestroy(() => likesSub?.stop());
 
 function likeList() {
-    if (currentUser.user) {
+    if (currentUser?.user) {
         if (!ndk.signer) {
             const signer = new NDKNip07Signer();
             ndk.signer = signer;
@@ -70,7 +70,7 @@ function likeList() {
     />
     {likes.length > 0 ? likes.length : 0}
 </button>
-{#if !currentUser.user}
+{#if !currentUser?.user}
     <Popover
         triggeredBy="#likeButton"
         trigger="click"

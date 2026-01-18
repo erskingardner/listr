@@ -1,8 +1,8 @@
 <script lang="ts">
+import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { page } from "$app/stores";
 import UserProfileHeader from "$lib/components/users/UserProfileHeader.svelte";
 import ndk from "$lib/stores/ndk.svelte";
-import type { NDKUser } from "@nostr-dev-kit/ndk";
 
 let { children } = $props();
 
@@ -18,6 +18,8 @@ let user: NDKUser = $derived(ndk.getUser({ npub: $page.params.userId }));
 {@render children()}
 
 <style lang="postcss">
+    @reference "tailwindcss";
+
     * > :global(.userCard--avatar) {
         @apply w-10 h-10;
     }

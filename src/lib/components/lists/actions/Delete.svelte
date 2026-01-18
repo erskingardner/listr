@@ -44,7 +44,7 @@ async function deleteList() {
 }
 </script>
 
-{#if currentUser.user?.pubkey === pubkey}
+{#if currentUser?.user?.pubkey === pubkey}
     <button onclick={deleteList} class="popoverActionButton">
         <Trash2 strokeWidth="1.5" size="20" class="stroke-black dark:stroke-white w-5 h-5" />
         Delete list
