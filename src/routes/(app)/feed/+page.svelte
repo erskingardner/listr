@@ -1,5 +1,6 @@
 <script lang="ts">
-import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+import type { NDKEvent } from "@nostr-dev-kit/ndk";
+import { NDKList } from "@nostr-dev-kit/ndk";
 import { TabItem, Tabs } from "flowbite-svelte";
 import { onMount } from "svelte";
 import Loader from "$lib/components/Loader.svelte";
@@ -15,81 +16,109 @@ import {
 /** Maximum number of authors to include in a single relay filter request */
 const MAX_AUTHORS_PER_QUERY = 400;
 
+/** Minimum time to show loader before displaying content */
+const MIN_LOADING_TIME_MS = 500;
+
+/** Maximum time to wait before showing content (even if no events) */
+const MAX_LOADING_TIME_MS = 5000;
+
 let currentUser = $derived(ndk.$currentUser);
-let follows = $derived(ndk.$follows);
-let loading = $state(true);
-let globalLists: NDKList[] | null = $state(null);
-let followingLists: NDKList[] | null = $state(null);
 
 /**
- * Batch fetches user profiles for a list of pubkeys.
- * This avoids the N+1 problem where each component fetches its own profile.
+ * Safely get follows as an array.
+ * ndk.$follows is a ReactiveFollows which extends Array, but may not be
+ * properly initialized before the session loads. The NDK library's
+ * ReactiveFollows constructor uses spread syntax which can fail if the
+ * underlying session follows Set isn't properly iterable yet.
  */
-async function batchFetchProfiles(pubkeys: string[]): Promise<void> {
-    if (pubkeys.length === 0) return;
-
-    const uniquePubkeys = [...new Set(pubkeys)];
+function getFollowsArray(): string[] {
     try {
-        await ndk.fetchEvents({
-            kinds: [NDKKind.Metadata],
-            authors: uniquePubkeys.slice(0, MAX_AUTHORS_PER_QUERY),
-        });
-    } catch (e) {
-        console.error("Error batch fetching profiles", e);
+        const follows = ndk.$follows;
+        if (!follows || !Array.isArray(follows)) {
+            return [];
+        }
+        return [...follows];
+    } catch {
+        // ReactiveFollows constructor can throw if session.follows isn't iterable
+        return [];
     }
 }
 
-onMount(async () => {
-    ndk.fetchEvents({
-        kinds: FEED_LIST_KINDS,
-        limit: 50,
-        since: unixTimeNowInSeconds() - 60 * 60 * 96,
-    })
-        .then(async (events) => {
-            const lists = filteredLists(
-                Array.from(events).map((event) => NDKList.from(event)),
-                undefined,
-                true
-            );
-            globalLists = lists;
-
-            // Batch fetch profiles for all authors in the list
-            const authorPubkeys = lists.map((list) => list.pubkey);
-            await batchFetchProfiles(authorPubkeys);
-        })
-        .catch((e) => {
-            console.error("Error fetching global lists", e);
-        })
-        .finally(() => {
-            loading = false;
-        });
-
-    // Fetch lists from followed users, limiting authors to avoid relay filter size limits
-    if (currentUser && follows.length > 0) {
-        const followsToQuery = follows.slice(0, MAX_AUTHORS_PER_QUERY);
-        ndk.fetchEvents({
+// Subscribe to global lists
+let globalListsSub = ndk.$subscribe(() => ({
+    filters: [
+        {
             kinds: FEED_LIST_KINDS,
-            authors: followsToQuery,
             limit: 50,
             since: unixTimeNowInSeconds() - 60 * 60 * 96,
-        })
-            .then(async (events) => {
-                const lists = filteredLists(
-                    Array.from(events).map((event) => NDKList.from(event)),
-                    undefined,
-                    true
-                );
-                followingLists = lists;
+        },
+    ],
+}));
 
-                // Batch fetch profiles for all authors in the list
-                const authorPubkeys = lists.map((list) => list.pubkey);
-                await batchFetchProfiles(authorPubkeys);
-            })
-            .catch((e) => {
-                console.error("Error fetching following lists", e);
-            });
+// Subscribe to lists from followed users (only when logged in and have follows)
+let followingListsSub = ndk.$subscribe(() => {
+    if (!currentUser) {
+        return undefined;
     }
+    const followsArray = getFollowsArray();
+    if (followsArray.length === 0) {
+        return undefined;
+    }
+    const followsToQuery = followsArray.slice(0, MAX_AUTHORS_PER_QUERY);
+    return {
+        filters: [
+            {
+                kinds: FEED_LIST_KINDS,
+                authors: followsToQuery,
+                limit: 50,
+                since: unixTimeNowInSeconds() - 60 * 60 * 96,
+            },
+        ],
+    };
 });
+
+// Derive filtered lists from subscriptions
+let globalLists = $derived(
+    filteredLists(
+        globalListsSub.events.map((e: NDKEvent) => NDKList.from(e)),
+        undefined,
+        true
+    )
+);
+
+let followingLists = $derived(
+    filteredLists(
+        followingListsSub.events.map((e: NDKEvent) => NDKList.from(e)),
+        undefined,
+        true
+    )
+);
+
+// Loading state management
+// We show loading until either:
+// 1. We have events AND minimum loading time has passed, OR
+// 2. Maximum loading time has passed (timeout)
+let minTimeElapsed = $state(false);
+let maxTimeElapsed = $state(false);
+
+onMount(() => {
+    const minTimer = setTimeout(() => {
+        minTimeElapsed = true;
+    }, MIN_LOADING_TIME_MS);
+
+    const maxTimer = setTimeout(() => {
+        maxTimeElapsed = true;
+    }, MAX_LOADING_TIME_MS);
+
+    return () => {
+        clearTimeout(minTimer);
+        clearTimeout(maxTimer);
+    };
+});
+
+// Show loading if:
+// - Max time hasn't elapsed AND (min time hasn't elapsed OR we have no events yet)
+let loading = $derived(!maxTimeElapsed && (!minTimeElapsed || globalLists.length === 0));
 </script>
 
 <svelte:head>
@@ -120,39 +149,18 @@ onMount(async () => {
                 <Loader />
             </div>
         {:else}
-            {#if currentUser && followingLists && followingLists.length > 0 && globalLists && globalLists.length > 0}
-            <Tabs
-                class="border-b border-b-gray-300"
-                classes={{ content: "p-0 rounded-lg dark:bg-gray-800 mt-4" }}
-            >
+            {#if currentUser && followingLists.length > 0}
+                <Tabs
+                    class="border-b border-b-gray-300"
+                    classes={{ content: "p-0 rounded-lg dark:bg-gray-800 mt-4" }}
+                >
                     <TabItem
                         open
                         title="Following"
                         activeClass="border-b border-b-indigo-600 p-4 text-base"
                         inactiveClass="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 text-base"
                     >
-                        {#if followingLists.length === 0}
-                            <div class="flex flex-row items-center justify-center my-12">
-                                <Loader />
-                            </div>
-                        {:else}
-                            {#each followingLists as list}
-                                <ListSummary
-                                    title={getListDisplayTitle(list)}
-                                    kind={list.kind}
-                                    date={list.created_at}
-                                    authorPubkey={list.pubkey}
-                                    listNip19={list.encode()}
-                                />
-                            {/each}
-                        {/if}
-                    </TabItem>
-                    <TabItem
-                        title="Global"
-                        activeClass="border-b border-b-indigo-600 p-4 text-base"
-                        inactiveClass="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 text-base"
-                    >
-                        {#each globalLists as list}
+                        {#each followingLists as list}
                             <ListSummary
                                 title={getListDisplayTitle(list)}
                                 kind={list.kind}
@@ -162,8 +170,29 @@ onMount(async () => {
                             />
                         {/each}
                     </TabItem>
+                    <TabItem
+                        title="Global"
+                        activeClass="border-b border-b-indigo-600 p-4 text-base"
+                        inactiveClass="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 text-base"
+                    >
+                        {#if globalLists.length > 0}
+                            {#each globalLists as list}
+                                <ListSummary
+                                    title={getListDisplayTitle(list)}
+                                    kind={list.kind}
+                                    date={list.created_at}
+                                    authorPubkey={list.pubkey}
+                                    listNip19={list.encode()}
+                                />
+                            {/each}
+                        {:else}
+                            <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+                                No recent lists found.
+                            </p>
+                        {/if}
+                    </TabItem>
                 </Tabs>
-            {:else if globalLists && globalLists.length > 0}
+            {:else if globalLists.length > 0}
                 {#each globalLists as list}
                     <ListSummary
                         title={getListDisplayTitle(list)}
@@ -173,6 +202,10 @@ onMount(async () => {
                         listNip19={list.encode()}
                     />
                 {/each}
+            {:else}
+                <p class="text-gray-500 dark:text-gray-400 text-center py-8">
+                    No recent lists found. Check back later!
+                </p>
             {/if}
         {/if}
     </div>
