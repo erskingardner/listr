@@ -5,6 +5,7 @@
 <script lang="ts">
 import type { Snippet } from "svelte";
 import { getContext } from "svelte";
+import { isProfileNsfw } from "$lib/utils/nsfw.js";
 import { cn } from "../../utils/cn.js";
 import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
 
@@ -16,9 +17,17 @@ interface Props {
     alt?: string;
 
     customFallback?: Snippet;
+
+    /**
+     * Whether to blur NSFW profile pictures.
+     * When true, profiles marked as NSFW (via content-warning tag, labels, or nsfw field)
+     * will have their avatar blurred.
+     * @default true
+     */
+    blurNsfw?: boolean;
 }
 
-let { class: className = "", fallback, alt, customFallback }: Props = $props();
+let { class: className = "", fallback, alt, customFallback, blurNsfw = true }: Props = $props();
 
 const context = getContext<UserContext>(USER_CONTEXT_KEY);
 if (!context) {
@@ -26,6 +35,9 @@ if (!context) {
 }
 
 const imageUrl = $derived(context.profile?.picture || fallback);
+
+// Check if profile is marked as NSFW
+const isNsfw = $derived(blurNsfw && isProfileNsfw(context.profile, context.ndkUser?.profileEvent));
 
 let imageLoaded = $state(false);
 let imageError = $state(false);
@@ -69,7 +81,8 @@ $effect(() => {
       {alt}
       class={cn(
         "rounded-full object-cover block w-full h-full absolute inset-0 bg-background",
-        imageLoaded ? "opacity-100" : "opacity-0"
+        imageLoaded ? "opacity-100" : "opacity-0",
+        isNsfw && "blur-lg"
       )}
       onload={handleImageLoad}
       onerror={handleImageError}
