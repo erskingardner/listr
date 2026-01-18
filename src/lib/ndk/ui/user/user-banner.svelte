@@ -3,61 +3,49 @@
 -->
 
 <script lang="ts">
-  import { getContext } from 'svelte';
-  import { USER_CONTEXT_KEY, type UserContext } from './user.context.js';
-  import { deterministicPubkeyGradient } from '@nostr-dev-kit/svelte';
+import { getContext } from "svelte";
+import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
 
-  interface Props {
+interface Props {
     class?: string;
-  }
+}
 
-  let {
-    class: className = ''
-  }: Props = $props();
+let { class: className = "" }: Props = $props();
 
-  const context = getContext<UserContext>(USER_CONTEXT_KEY);
-  if (!context) {
-    throw new Error('User.Banner must be used within User.Root');
-  }
+const context = getContext<UserContext>(USER_CONTEXT_KEY);
+if (!context) {
+    throw new Error("User.Banner must be used within User.Root");
+}
 
-  const profile = $derived(context.profile);
-  const ndkUser = $derived(context.ndkUser);
+const profile = $derived(context.profile);
 
-  let imageLoaded = $state(false);
-  let imageError = $state(false);
+let imageLoaded = $state(false);
+let imageError = $state(false);
 
-  const backgroundStyle = $derived.by(() => {
-    const resolvedPubkey = ndkUser?.pubkey;
-    if (resolvedPubkey) {
-      return `background: ${deterministicPubkeyGradient(resolvedPubkey)}`;
-    }
-    return 'background: var(--primary)';
-  });
-
-  $effect(() => {
+$effect(() => {
     if (profile?.banner) {
-      imageLoaded = false;
-      imageError = false;
+        imageLoaded = false;
+        imageError = false;
     }
-  });
+});
 
-  function handleImageLoad() {
+function handleImageLoad() {
     imageLoaded = true;
     imageError = false;
-  }
+}
 
-  function handleImageError() {
+function handleImageError() {
     imageLoaded = false;
     imageError = true;
-  }
+}
 
-  const showImage = $derived(profile?.banner && imageLoaded && !imageError);
+const showImage = $derived(profile?.banner && imageLoaded && !imageError);
 </script>
 
 <div
   data-user-banner=""
-  class="relative w-full h-48 {className}"
-  style="{backgroundStyle}"
+  class="w-full h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 {className}"
+  class:animate-pulse={!imageLoaded}
 >
   {#if profile?.banner}
     <img

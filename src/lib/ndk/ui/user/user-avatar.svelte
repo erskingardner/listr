@@ -3,13 +3,12 @@
 -->
 
 <script lang="ts">
-  import { getContext } from 'svelte';
-  import { USER_CONTEXT_KEY, type UserContext } from './user.context.js';
-  import { deterministicPubkeyGradient } from '@nostr-dev-kit/svelte';
-  import {cn} from "../../utils/cn.js";
-  import type { Snippet } from 'svelte';
+import type { Snippet } from "svelte";
+import { getContext } from "svelte";
+import { cn } from "../../utils/cn.js";
+import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
 
-  interface Props {
+interface Props {
     class?: string;
 
     fallback?: string;
@@ -17,46 +16,35 @@
     alt?: string;
 
     customFallback?: Snippet;
-  }
+}
 
-  let {
-    class: className = '',
-    fallback,
-    alt,
-    customFallback
-  }: Props = $props();
+let { class: className = "", fallback, alt, customFallback }: Props = $props();
 
-  const context = getContext<UserContext>(USER_CONTEXT_KEY);
-  if (!context) {
-    throw new Error('User.Avatar must be used within User.Root');
-  }
+const context = getContext<UserContext>(USER_CONTEXT_KEY);
+if (!context) {
+    throw new Error("User.Avatar must be used within User.Root");
+}
 
-  const imageUrl = $derived(context.profile?.picture || fallback);
+const imageUrl = $derived(context.profile?.picture || fallback);
 
-  const avatarGradient = $derived(
-    context.ndkUser?.pubkey
-      ? deterministicPubkeyGradient(context.ndkUser.pubkey)
-      : 'var(--primary)'
-  );
+let imageLoaded = $state(false);
+let imageError = $state(false);
 
-  let imageLoaded = $state(false);
-  let imageError = $state(false);
-
-  function handleImageLoad() {
+function handleImageLoad() {
     imageLoaded = true;
     imageError = false;
-  }
+}
 
-  function handleImageError() {
+function handleImageError() {
     imageLoaded = false;
     imageError = true;
-  }
+}
 
-  $effect(() => {
+$effect(() => {
     // Reset loading state when imageUrl changes
     imageLoaded = false;
     imageError = false;
-  });
+});
 </script>
 
 <div data-user-avatar="" class={cn("rounded-full relative w-12 h-12", className)}>
@@ -66,8 +54,7 @@
       {@render customFallback()}
     {:else}
       <div
-        class="rounded-full flex items-center justify-center w-full h-full absolute inset-0"
-        style="background: {avatarGradient};"
+        class="rounded-full flex items-center justify-center w-full h-full absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 text-gray-500 dark:text-gray-400 font-medium animate-pulse"
       >
         {context.ndkUser?.pubkey?.slice(0, 2).toUpperCase() ?? '??'}
       </div>
