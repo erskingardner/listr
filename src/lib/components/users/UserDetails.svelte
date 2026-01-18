@@ -6,7 +6,7 @@ import { User } from "$lib/ndk/ui/user";
 import ndk from "$lib/stores/ndk.svelte";
 
 // Cast ndk to NDKSvelte for component compatibility
-const ndkSvelte = ndk as unknown as NDKSvelte;
+const ndkSvelte = ndk;
 
 import CopyId from "../lists/actions/CopyId.svelte";
 import UserCard from "./UserCard.svelte";
@@ -52,11 +52,8 @@ const avatarSizeClass = $derived(`w-${avatarSize} h-${avatarSize}`);
         />
     {/if}
 {/snippet}
-
 <User.Root ndk={ndkSvelte} pubkey={user.pubkey} profile={userProfile}>
     <div
-        role="link"
-        tabindex="-1"
         class="flex flex-row gap-2 items-center relative"
         onmouseleave={() => (userCardVisible = false)}
     >
