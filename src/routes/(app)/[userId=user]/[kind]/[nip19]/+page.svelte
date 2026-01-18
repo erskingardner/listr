@@ -28,6 +28,7 @@ import {
     deduplicateItems,
     ensurePubkeys,
     getListDisplayTitle,
+    getTitleFromTags,
     unixTimeNowInSeconds,
 } from "$lib/utils";
 
@@ -121,11 +122,23 @@ function fetchEvent() {
 
 function updateListItems() {
     if (!list) return;
+
+    // Always clear private items first to prevent stale data from previous lists
+    privateItems = [];
+    initialPrivateItems = [];
+
     if (list.content.length > 0 && currentUser?.pubkey === list.pubkey) {
         list.encryptedTags().then((tags) => {
             // Svelte keyed each will blow up if we send lists with duplicate items
             privateItems = deduplicateItems(tags);
             initialPrivateItems = privateItems;
+
+            // Check if the title is in the encrypted tags (for fully private lists)
+            const encryptedTitle = getTitleFromTags(tags);
+            if (encryptedTitle && (!listTitle || listTitle === "Private List")) {
+                listTitle = encryptedTitle;
+                initialListTitle = encryptedTitle;
+            }
         });
     }
     // Svelte keyed each will blow up if we send lists with duplicate items
