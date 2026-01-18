@@ -331,14 +331,16 @@ export const filteredLists = (lists: NDKList[], deletions?: NDKEvent[], filterMu
  * @returns An array of NDKTag items with duplicates removed. If the input array is empty or contains no duplicates, returns the original array.
  */
 export function deduplicateItems(itemsArray: NDKTag[]): NDKTag[] {
-    const dedupedArr: NDKTag[] = [];
+    const seen = new Set<string>();
+    const result: NDKTag[] = [];
     for (const item of itemsArray) {
-        const dupes = dedupedArr.filter(
-            (dedupedItem) => dedupedItem[0] === item[0] && dedupedItem[1] === item[1]
-        );
-        if (dupes.length === 0) dedupedArr.push(item);
+        const key = `${item[0]}:${item[1]}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            result.push(item);
+        }
     }
-    return dedupedArr;
+    return result;
 }
 
 export function ensurePubkeys(itemsArray: NDKTag[]): NDKTag[] {
@@ -408,7 +410,7 @@ export function placeholderForListKind(kind: number): string {
         case 30030:
             return "Comma-separated shortcode and url to an emoji (e.g. :smile:, https://example.com/smile.png)";
         default:
-            return "";
+            return "NIP-19 identifier, URL, or text";
     }
 }
 
