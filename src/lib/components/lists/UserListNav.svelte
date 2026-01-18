@@ -1,10 +1,11 @@
 <script lang="ts">
-import { page } from "$app/stores";
-import ndk from "$lib/stores/ndk.svelte";
-import { SUPPORTED_LIST_KINDS, filterAndSortByTitle } from "$lib/utils";
-import { NDKEvent, NDKKind, NDKList, NDKSubscription } from "@nostr-dev-kit/ndk";
+import type { NDKSubscription } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import { onDestroy, onMount } from "svelte";
+import { page } from "$app/stores";
+import ndk from "$lib/stores/ndk.svelte";
+import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 
 let { userPubkey }: { userPubkey: string } = $props();
 

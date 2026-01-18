@@ -1,9 +1,9 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { UserRoundMinus, UserRoundPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 
 let { user, buttonClasses }: { user: NDKUser; buttonClasses?: string } = $props();
 

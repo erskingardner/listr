@@ -1,12 +1,12 @@
 <script lang="ts">
+import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet, type NDKSubscription } from "@nostr-dev-kit/ndk";
+import { onDestroy } from "svelte";
 import { page } from "$app/stores";
 import Loader from "$lib/components/Loader.svelte";
 import ListSearchResult from "$lib/components/search/ListSearchResult.svelte";
 import UserSearchResult from "$lib/components/search/UserSearchResult.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { SUPPORTED_LIST_KINDS } from "$lib/utils";
-import { NDKEvent, NDKKind, NDKRelay, NDKRelaySet, type NDKSubscription } from "@nostr-dev-kit/ndk";
-import { onDestroy } from "svelte";
 
 const searchRelayUrls = [
     "wss://relay.nostr.band",

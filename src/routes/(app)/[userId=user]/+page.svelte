@@ -1,14 +1,13 @@
 <script lang="ts">
-import { page } from "$app/stores";
-import ListCard from "$lib/components/lists/ListCard.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { filterAndSortByTitle } from "$lib/utils";
-import { SUPPORTED_LIST_KINDS } from "$lib/utils";
-import { type NDKEvent, NDKKind, NDKList, type NDKSubscription } from "@nostr-dev-kit/ndk";
 import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
+import { type NDKEvent, NDKKind, NDKList, type NDKSubscription } from "@nostr-dev-kit/ndk";
 import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
 import { Home } from "lucide-svelte";
 import { onDestroy } from "svelte";
+import { page } from "$app/stores";
+import ListCard from "$lib/components/lists/ListCard.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 
 let lists: NDKList[] = $state([]);
 let deletedEvents: NDKEvent[] = $state([]);

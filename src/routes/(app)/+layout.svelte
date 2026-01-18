@@ -1,5 +1,7 @@
 <script lang="ts">
 import "../../app.css";
+import { onMount } from "svelte";
+import { Toaster } from "svelte-hot-french-toast";
 import DonateModal from "$lib/components/DonateModal.svelte";
 import Header from "$lib/components/header/Header.svelte";
 import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
@@ -7,8 +9,6 @@ import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
 import { getCurrentUser, setCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { SigninMethod, signin, signout } from "$lib/utils/auth";
-import { onMount } from "svelte";
-import { Toaster } from "svelte-hot-french-toast";
 
 let { data, children } = $props();
 

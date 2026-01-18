@@ -1,5 +1,3 @@
-import { browser } from "$app/environment";
-import ndk from "$lib/stores/ndk.svelte";
 import {
     type NDKEvent,
     NDKKind,
@@ -7,6 +5,8 @@ import {
     type NDKRelay,
     type NDKUser,
 } from "@nostr-dev-kit/ndk";
+import { browser } from "$app/environment";
+import ndk from "$lib/stores/ndk.svelte";
 
 let currentUser: CurrentUser | null = $state(null);
 

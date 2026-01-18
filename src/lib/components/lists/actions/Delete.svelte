@@ -1,12 +1,12 @@
 <script lang="ts">
-import { goto } from "$app/navigation";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
 import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { db } from "@nostr-dev-kit/ndk-cache-dexie";
 import { Trash2 } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
+import { goto } from "$app/navigation";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
 
 let { listId, pubkey, listDeleted }: { listId: string; pubkey: string; listDeleted: () => void } =
     $props();

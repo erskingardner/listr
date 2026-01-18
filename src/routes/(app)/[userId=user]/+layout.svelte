@@ -16,15 +16,3 @@ let user: NDKUser = $derived(ndk.getUser({ npub: $page.params.userId }));
 {/if}
 
 {@render children()}
-
-<style lang="postcss">
-    @reference "tailwindcss";
-
-    * > :global(.userCard--avatar) {
-        @apply w-10 h-10;
-    }
-
-    * > :global(.userCard--details) {
-        @apply w-full;
-    }
-</style>

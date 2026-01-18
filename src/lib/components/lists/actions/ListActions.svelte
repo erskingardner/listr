@@ -1,9 +1,9 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
 import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { MessagesSquare, MoreVertical } from "lucide-svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
 import CopyId from "./CopyId.svelte";
 import Delete from "./Delete.svelte";
 import Duplicate from "./Duplicate.svelte";

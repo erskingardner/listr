@@ -14,15 +14,16 @@ let {
     extraClasses?: string;
 } = $props();
 
-let profile: NDKUserProfile | null | undefined = $state(userProfile || user.profile);
+let fetchedProfile: NDKUserProfile | null | undefined = $state(undefined);
+let profile = $derived(userProfile || user.profile || fetchedProfile);
 let nip05 = $derived(profile?.nip05);
 let truncatedNip05 = $derived(nip05?.slice(0, nip05MaxLength));
 let nip05Valid: boolean | null = $state(null);
 
 $effect(() => {
-    if (!userProfile) {
+    if (!userProfile && !user.profile) {
         user.fetchProfile().then((profileResponse: NDKUserProfile | null) => {
-            profile = profileResponse;
+            fetchedProfile = profileResponse;
         });
     }
 

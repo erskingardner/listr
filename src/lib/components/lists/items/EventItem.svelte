@@ -1,10 +1,10 @@
 <script lang="ts">
+import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
+import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 import UserDetails from "$lib/components/users/UserDetails.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import type { ListItemParams } from "$lib/types";
 import { timeAgo } from "$lib/utils";
-import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
-import { EventContent } from "@nostr-dev-kit/ndk-svelte-components";
 import RemoveItem from "../actions/RemoveItem.svelte";
 import Unstage from "../actions/Unstage.svelte";
 import AdditionItemPill from "./AdditionItemPill.svelte";

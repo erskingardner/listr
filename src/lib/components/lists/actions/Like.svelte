@@ -1,11 +1,12 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
-import { NDKEvent, NDKKind, NDKNip07Signer, NDKSubscription } from "@nostr-dev-kit/ndk";
+import type { NDKSubscription } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { Heart } from "lucide-svelte";
 import { onDestroy, onMount } from "svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
 
 let { listId }: { listId: string } = $props();
 

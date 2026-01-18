@@ -1,7 +1,7 @@
 <script lang="ts">
-import ndk from "$lib/stores/ndk.svelte";
 import type { NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { BadgeCheck, BadgeHelp, BadgeX } from "lucide-svelte";
+import ndk from "$lib/stores/ndk.svelte";
 import AddToListButton from "../lists/actions/AddToListButton.svelte";
 import CopyId from "../lists/actions/CopyId.svelte";
 import FollowButton from "../lists/actions/FollowButton.svelte";

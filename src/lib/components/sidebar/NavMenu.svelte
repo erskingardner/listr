@@ -1,15 +1,15 @@
 <script lang="ts">
-import { page } from "$app/stores";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { SUPPORTED_LIST_KINDS, filterAndSortByTitle } from "$lib/utils";
 import { NDKEvent, NDKKind, NDKList, type NDKSubscription } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { Github, HelpCircle, LifeBuoy, Merge, Newspaper } from "lucide-svelte";
 import { onDestroy } from "svelte";
+import { page } from "$app/stores";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 import DonateButton from "../DonateButton.svelte";
-import NewListButton from "../NewListButton.svelte";
 import SigninSelector from "../header/SigninSelector.svelte";
+import NewListButton from "../NewListButton.svelte";
 
 let {
     closeMobileMenu,

@@ -1,7 +1,7 @@
 <script lang="ts">
+import { LogIn } from "lucide-svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { SigninMethod, signin } from "$lib/utils/auth";
-import { LogIn } from "lucide-svelte";
 
 let { buttonClass = "" }: { buttonClass?: string } = $props();
 </script>

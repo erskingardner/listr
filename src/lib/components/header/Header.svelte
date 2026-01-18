@@ -1,10 +1,10 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { signout } from "$lib/utils/auth";
 import { Menu, Search } from "lucide-svelte";
 import { expoInOut } from "svelte/easing";
 import { scale } from "svelte/transition";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { signout } from "$lib/utils/auth";
 import NewListButton from "../NewListButton.svelte";
 import UserAvatar from "../users/UserAvatar.svelte";
 import UserName from "../users/UserName.svelte";

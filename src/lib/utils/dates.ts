@@ -4,7 +4,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export function unixTimeNowInSeconds() {
-    return Math.floor(new Date().getTime() / 1000);
+    return Math.floor(Date.now() / 1000);
 }
 
 export function dateTomorrow() {

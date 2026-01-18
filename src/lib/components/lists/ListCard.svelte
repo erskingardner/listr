@@ -1,8 +1,8 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import type { NDKList } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { BoxSelect, Info, MenuSquare, UserSquare } from "lucide-svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 
 let { list, npub }: { list: NDKList; npub: string } = $props();
 

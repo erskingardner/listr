@@ -1,16 +1,4 @@
 <script lang="ts">
-import { afterNavigate, beforeNavigate, invalidateAll } from "$app/navigation";
-import { page } from "$app/stores";
-import Item from "$lib/components/lists/Item.svelte";
-import UserListNav from "$lib/components/lists/UserListNav.svelte";
-import ListActions from "$lib/components/lists/actions/ListActions.svelte";
-import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
-import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte.js";
-import type { AddressPointer, ListItemParams } from "$lib/types";
-import { ensurePubkeys, unixTimeNowInSeconds } from "$lib/utils";
-import { deduplicateItems } from "$lib/utils";
 import {
     type NDKEvent,
     NDKKind,
@@ -23,10 +11,21 @@ import {
 import { Breadcrumb, BreadcrumbItem, Tooltip } from "flowbite-svelte";
 import { HardDriveUpload, Home, Info } from "lucide-svelte";
 import { nip19 } from "nostr-tools";
-import toast from "svelte-hot-french-toast";
 import { expoInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
+import toast from "svelte-hot-french-toast";
 import { v4 as uuidv4 } from "uuid";
+import { afterNavigate, beforeNavigate, invalidateAll } from "$app/navigation";
+import { page } from "$app/stores";
+import ListActions from "$lib/components/lists/actions/ListActions.svelte";
+import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
+import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
+import Item from "$lib/components/lists/Item.svelte";
+import UserListNav from "$lib/components/lists/UserListNav.svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte.js";
+import type { AddressPointer, ListItemParams } from "$lib/types";
+import { deduplicateItems, ensurePubkeys, unixTimeNowInSeconds } from "$lib/utils";
 
 let currentUser = $derived(getCurrentUser());
 
@@ -39,7 +38,7 @@ let listNip19 = $derived($page.params.nip19);
 let decodedListNip19: AddressPointer | null = $derived(
     listNip19 ? (nip19.decode(listNip19).data as AddressPointer) : null
 );
-let kind = $derived(Number.parseInt($page.params.kind));
+let kind = $derived(Number.parseInt($page.params.kind, 10));
 let rawList = $derived.by(() => (event ? (event?.rawEvent() as NostrEvent) : null));
 let list = $derived.by(() => (event ? NDKList.from(event as NDKEvent) : null));
 let initialPrivateItems: NDKTag[] = $state([]);

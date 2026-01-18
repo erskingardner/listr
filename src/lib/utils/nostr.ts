@@ -1,4 +1,3 @@
-import { ndkStore } from "$lib/stores/ndk.svelte";
 import {
     NDKKind,
     type NDKTag,
@@ -8,6 +7,7 @@ import {
 } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
 import type { ProfilePointer } from "nostr-tools/nip19";
+import { ndkStore } from "$lib/stores/ndk.svelte";
 
 export const NOSTR_BECH32_REGEXP =
     /^(npub|nprofile|note|nevent|naddr)1[023456789acdefghjklmnpqrstuvwxyz]+/;
@@ -50,7 +50,7 @@ export function stringInputToTag(
         return nip19ToTag(input);
     }
 
-    let tag: NDKTag | undefined = undefined;
+    let tag: NDKTag | undefined;
     // Handle hashtags (e.g. "#bitcoin")
     if (input.startsWith("#")) tag = ["t", input.substring(1)];
     // Handle URLs
@@ -79,7 +79,7 @@ export function aTagToNip19(aTag: NDKTag): string {
     const tagIdSplit = aTag[1].split(":");
 
     return nip19.naddrEncode({
-        kind: Number.parseInt(tagIdSplit[0]),
+        kind: Number.parseInt(tagIdSplit[0], 10),
         pubkey: tagIdSplit[1],
         identifier: tagIdSplit[2],
     });

@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { ListItemParams } from "$lib/types";
 import { X } from "lucide-svelte";
+import type { ListItemParams } from "$lib/types";
 
 let {
     type,

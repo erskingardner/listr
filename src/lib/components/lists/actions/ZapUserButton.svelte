@@ -1,12 +1,11 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
 import { NDKNip07Signer, type NDKUser, type NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { Zap } from "lucide-svelte";
-import { decrypt } from "nostr-tools/nip04";
 import toast from "svelte-hot-french-toast";
 import { requestProvider } from "webln";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
 
 let { user, extraClasses }: { user: NDKUser; extraClasses?: string } = $props();
 

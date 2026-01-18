@@ -1,6 +1,6 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import { FileEdit, FileX } from "lucide-svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 
 let {
     pubkey,

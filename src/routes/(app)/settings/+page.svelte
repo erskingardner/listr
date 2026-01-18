@@ -1,14 +1,18 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
 import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { Info } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
 
 let currentUser = $derived(getCurrentUser());
-let devMode = $state(!!currentUser?.settings?.devMode);
+let devMode = $state(false);
+
+$effect(() => {
+    devMode = !!currentUser?.settings?.devMode;
+});
 
 async function saveSettings(e: SubmitEvent) {
     e.preventDefault();
