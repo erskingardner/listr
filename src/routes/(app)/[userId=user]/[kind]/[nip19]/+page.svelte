@@ -112,50 +112,83 @@ $effect(() => {
     }
 });
 
-function fetchEvent() {
-    ndk.fetchEvent(listNip19).then((fetchedEvent) => {
-        event = fetchedEvent;
-        let tmpList = NDKList.from(event as NDKEvent);
-        listTitle = getListDisplayTitle(tmpList);
-        listDescription = tmpList.description;
-        listImage = tmpList.tagValue("image");
-        listCategory = tmpList.tags.find((tag: NDKTag) => tag[0] === "l")?.[1] || undefined;
-        initialListTitle = listTitle;
-        initialListDescription = listDescription;
-        initialListImage = listImage;
-        initialListCategory = listCategory;
-        updateListItems();
-    });
+async function fetchEvent() {
+    try {
+        const fetchedEvent = await ndk.fetchEvent(listNip19);
+        if (fetchedEvent) {
+            event = fetchedEvent;
+        }
+    } catch (error) {
+        console.error("Failed to fetch list:", error);
+        toast.error("Could not load list. Please try again.");
+    }
 }
 
-function updateListItems() {
-    if (!list) return;
+$effect(() => {
+    if (list) {
+        const updateState = async () => {
+            // Update metadata if not modified locally
+            const titleChanged = listTitle !== initialListTitle;
+            const descChanged = listDescription !== initialListDescription;
+            const imageChanged = listImage !== initialListImage;
+            const categoryChanged = listCategory !== initialListCategory;
 
-    // Always clear private items first to prevent stale data from previous lists
-    privateItems = [];
-    initialPrivateItems = [];
-
-    if (list.content.length > 0 && currentUser?.pubkey === list.pubkey) {
-        list.encryptedTags().then((tags) => {
-            // Svelte keyed each will blow up if we send lists with duplicate items
-            privateItems = deduplicateItems(tags);
-            initialPrivateItems = privateItems;
-
-            // Check if the title is in the encrypted tags (for fully private lists)
-            const encryptedTitle = getTitleFromTags(tags);
-            if (encryptedTitle && (!listTitle || listTitle === "Private List")) {
-                listTitle = encryptedTitle;
-                initialListTitle = encryptedTitle;
+            if (!titleChanged) {
+                listTitle = getListDisplayTitle(list);
+                initialListTitle = listTitle;
             }
-        });
+            if (!descChanged) {
+                listDescription = list.description;
+                initialListDescription = listDescription;
+            }
+            if (!imageChanged) {
+                listImage = list.tagValue("image");
+                initialListImage = listImage;
+            }
+            if (!categoryChanged) {
+                listCategory = list.tags.find((tag: NDKTag) => tag[0] === "l")?.[1] || undefined;
+                initialListCategory = listCategory;
+            }
+
+            let newPrivateItems: NDKTag[] = [];
+            let newPublicItems: NDKTag[] = [];
+
+            if (list.content.length > 0 && currentUser?.pubkey === list.pubkey) {
+                const tags = await list.encryptedTags();
+                newPrivateItems = deduplicateItems(tags);
+
+                const encryptedTitle = getTitleFromTags(tags);
+                if (encryptedTitle && (!listTitle || listTitle === "Private List")) {
+                    if (!titleChanged) {
+                        listTitle = encryptedTitle;
+                        initialListTitle = encryptedTitle;
+                    }
+                }
+            }
+
+            newPublicItems = deduplicateItems(list.items);
+            if (list.kind === NDKKind.Contacts) {
+                newPublicItems = ensurePubkeys(newPublicItems);
+            }
+
+            // Apply Unsaved Removals (for Merge Support)
+            newPrivateItems = newPrivateItems.filter(
+                (item) =>
+                    !unsavedPrivateRemovals.some((rem) => rem[0] === item[0] && rem[1] === item[1])
+            );
+            newPublicItems = newPublicItems.filter(
+                (item) =>
+                    !unsavedPublicRemovals.some((rem) => rem[0] === item[0] && rem[1] === item[1])
+            );
+
+            privateItems = newPrivateItems;
+            publicItems = newPublicItems;
+            initialPrivateItems = newPrivateItems;
+            initialPublicItems = newPublicItems;
+        };
+        updateState();
     }
-    // Svelte keyed each will blow up if we send lists with duplicate items
-    publicItems = deduplicateItems(list.items);
-    if (list.kind === NDKKind.Contacts) {
-        publicItems = ensurePubkeys(publicItems);
-    }
-    initialPublicItems = publicItems;
-}
+});
 
 beforeNavigate(() => {
     if (unpublishedChanges) {
@@ -257,6 +290,27 @@ async function publishList(): Promise<void> {
     publishingChanges = true;
 
     try {
+        // Check for remote updates
+        try {
+            const latestEvent = await ndk.fetchEvent(listNip19);
+            if (latestEvent && rawList && latestEvent.id !== rawList.id) {
+                const confirmMerge = confirm(
+                    "The list has been modified remotely. Do you want to load the latest version and merge your changes?"
+                );
+                if (confirmMerge) {
+                    event = latestEvent;
+                    toast.success("Merged with latest version. Please review and publish again.");
+                    publishingChanges = false;
+                    return;
+                } else {
+                    publishingChanges = false;
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn("Could not check for latest version", e);
+        }
+
         const newPrivateItems = [...privateItems, ...unsavedPrivateItems];
         let jsonPrivateItems = "";
         if (newPrivateItems.length > 0) {
