@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
+import type { NDKKind, NDKTag, NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { MoreVertical } from "lucide-svelte";
 import ndk from "$lib/stores/ndk.svelte";
@@ -8,6 +8,7 @@ import CopyId from "./CopyId.svelte";
 import Delete from "./Delete.svelte";
 import Duplicate from "./Duplicate.svelte";
 import Edit from "./Edit.svelte";
+import FollowAllButton from "./FollowAllButton.svelte";
 // import Zap from "./ZapListButton.svelte";
 import Like from "./Like.svelte";
 import Share from "./Share.svelte";
@@ -21,6 +22,7 @@ let {
     rawList,
     editMode,
     toggleEditMode,
+    publicItems = [],
 }: {
     nip19: string;
     listId: string;
@@ -28,9 +30,15 @@ let {
     rawList: NostrEvent;
     editMode: boolean;
     toggleEditMode: () => void;
+    publicItems?: NDKTag[];
 } = $props();
 
 const listKind: NDKKind = $derived(rawList.kind as NDKKind);
+
+/**
+ * Check if the list contains any user (p-tag) items
+ */
+const hasUserItems = $derived(publicItems.some((tag) => tag[0] === "p"));
 </script>
 
 <div class="lg:ml-auto w-full lg:w-auto flex flex-row gap-2 lg:gap-4 items-center justify-between">
@@ -41,6 +49,9 @@ const listKind: NDKKind = $derived(rawList.kind as NDKKind);
     </button> -->
 
     <Share {pubkey} {rawList} {nip19} />
+    {#if currentUser && hasUserItems}
+        <FollowAllButton {publicItems} />
+    {/if}
     {#if currentUser}
         {#if currentUser.pubkey !== pubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
             <Duplicate {rawList} />

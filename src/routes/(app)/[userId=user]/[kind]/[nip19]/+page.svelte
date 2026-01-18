@@ -433,6 +433,7 @@ function toggleDrawerVisible() {
                         {rawList}
                         {editMode}
                         {toggleEditMode}
+                        {publicItems}
                     />
                 </div>
                 <hr class="dark:border-gray-700" />
