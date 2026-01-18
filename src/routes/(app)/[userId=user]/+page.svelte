@@ -106,7 +106,7 @@ onDestroy(() => {
 <Breadcrumb
     aria-label="User list breadcrumb"
     class="flex flex-row gap-2 w-full my-6"
-    olClass="flex flex-row gap-2 items-center w-full"
+    classes={{ list: "flex flex-row gap-2 items-center w-full" }}
 >
     <BreadcrumbItem
         href="/feed"
