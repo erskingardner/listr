@@ -17,6 +17,7 @@ export const KIND_FALLBACK_TITLES: Record<number, string> = {
     [NDKKind.HighlightSet]: "Highlight Set",
     10050: "Inbox Relays",
     10051: "Key Package Relays",
+    39089: "Starter Pack",
 };
 
 /**
@@ -111,6 +112,7 @@ export const SUPPORTED_LIST_KINDS = [
     NDKKind.InterestSet,
     NDKKind.EmojiSet,
     NDKKind.HighlightSet,
+    39089, // Starter Pack
 ];
 
 // What shows up in the feed
@@ -128,6 +130,7 @@ export const FEED_LIST_KINDS = [
     NDKKind.InterestSet,
     NDKKind.EmojiSet,
     NDKKind.HighlightSet,
+    39089, // Starter Pack
 ];
 
 export const DUPLICATABLEABLE_LIST_KINDS = [
@@ -139,6 +142,7 @@ export const DUPLICATABLEABLE_LIST_KINDS = [
     NDKKind.InterestSet,
     NDKKind.EmojiSet,
     NDKKind.HighlightSet,
+    39089, // Starter Pack
 ];
 
 export const BLOCKED_PUBKEYS = [
@@ -170,6 +174,7 @@ export const ITEM_TYPES_FOR_LIST_KINDS: AllowedItemsForListKind = {
     30004: ["a", "e"],
     30015: ["t"],
     30030: ["emoji"],
+    39089: ["p"],
 };
 
 export const LIST_FILTER_REGEXP = /^(chats|notifications|\/)/;
@@ -394,6 +399,7 @@ export function placeholderForListKind(kind: number): string {
         case 10030:
             return "NIP-19 identifier (naddr) of an Emoji Set (kind 30030) or a comma-separated shortcode and url to an emoji (e.g. :smile:, https://example.com/smile.png)";
         case 30000:
+        case 39089:
             return "NIP-19 pubkey identifier (npub or nprofile)";
         case 30004:
             return "Note or event NIP-19 identifier (note, nevent, naddr)";

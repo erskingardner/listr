@@ -1,7 +1,7 @@
 <script lang="ts">
 import { type NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
-import { Github, HelpCircle, LifeBuoy, Merge, Newspaper } from "lucide-svelte";
+import { Github, HelpCircle, LifeBuoy, Merge, Newspaper, UsersRound } from "lucide-svelte";
 import { page } from "$app/stores";
 import ndk from "$lib/stores/ndk.svelte";
 import { filterAndSortByTitle, getListDisplayTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
@@ -72,6 +72,18 @@ let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvent
                     >
                         <Newspaper strokeWidth="1.5" size="20" />
                         Activity Feed
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="/packs"
+                        class="{$page.url.pathname === '/packs'
+                            ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
+                            : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                        onclick={closeMobileMenu}
+                    >
+                        <UsersRound strokeWidth="1.5" size="20" />
+                        Starter Packs
                     </a>
                 </li>
                 {#if currentUser}

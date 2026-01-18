@@ -4,6 +4,7 @@ import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
 import { Home } from "lucide-svelte";
 import { page } from "$app/stores";
+import FollowPackCard from "$lib/components/lists/FollowPackCard.svelte";
 import ListCard from "$lib/components/lists/ListCard.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
@@ -44,6 +45,9 @@ let deletedEventsSub = ndk.$subscribe(() =>
 let lists = $derived(listsSub.events.map((e: NDKEvent) => NDKList.from(e)));
 let deletedEvents = $derived(deletedEventsSub.events);
 let filteredLists: NDKList[] = $derived(filterAndSortByTitle(lists, deletedEvents));
+
+let starterPacks = $derived(filteredLists.filter((l) => l.kind === 39089));
+let otherLists = $derived(filteredLists.filter((l) => l.kind !== 39089));
 
 $effect(() => {
     if (user && !profile) {
@@ -120,9 +124,25 @@ $effect(() => {
 </Breadcrumb>
 
 {#if lists.length > 0}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {#each filteredLists as list (list.id)}
-            <ListCard npub={user.npub} {list} />
-        {/each}
-    </div>
+    {#if starterPacks.length > 0}
+        <div class="mb-8 flex flex-col gap-4">
+            <h2 class="text-xl font-bold">Starter Packs</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {#each starterPacks as list (list.id)}
+                    <FollowPackCard {list} />
+                {/each}
+            </div>
+        </div>
+    {/if}
+
+    {#if otherLists.length > 0}
+        {#if starterPacks.length > 0}
+            <h2 class="text-xl font-bold mb-4">Other Lists</h2>
+        {/if}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {#each otherLists as list (list.id)}
+                <ListCard npub={user.npub} {list} />
+            {/each}
+        </div>
+    {/if}
 {/if}

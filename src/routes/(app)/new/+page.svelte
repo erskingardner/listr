@@ -213,6 +213,7 @@ $effect(() => {
                         <option value="30004">Named Curation Set - kind 30004</option>
                         <option value="30015">Named Interest Set - kind 30015</option>
                         <option value="30030">Named Emoji Set - kind 30030</option>
+                        <option value="39089">Starter Pack - kind 39089</option>
                     </select>
                     <div class="" tabindex="-1">
                         <Info strokeWidth="1.5" size="20" class="stroke-gray-500 w-5 h-5" />

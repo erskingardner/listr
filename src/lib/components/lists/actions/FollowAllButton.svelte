@@ -5,7 +5,7 @@ import { UsersRound } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import ndk from "$lib/stores/ndk.svelte";
 
-let { publicItems }: { publicItems: NDKTag[] } = $props();
+let { publicItems, extraClasses = "" }: { publicItems: NDKTag[]; extraClasses?: string } = $props();
 
 let currentUser = $derived(ndk.$currentUser);
 let modalOpen = $state(false);
@@ -61,7 +61,7 @@ async function handleFollowAll() {
 {#if currentUser && userPubkeys.length > 0}
     <button
         onclick={() => (modalOpen = true)}
-        class="primaryActionButton"
+        class="primaryActionButton {extraClasses}"
         disabled={notFollowingPubkeys.length === 0}
     >
         <UsersRound strokeWidth="1.5" size="20" class="w-5 h-5" />
