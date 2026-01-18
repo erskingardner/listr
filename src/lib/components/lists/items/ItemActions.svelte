@@ -1,8 +1,8 @@
 <script lang="ts">
-import { aTagToNip19, copyToClipboard } from "$lib/utils";
 import { Popover } from "flowbite-svelte";
 import { Copy, CopyCheck, ExternalLink, MoreVertical } from "lucide-svelte";
 import { nip19 } from "nostr-tools";
+import { aTagToNip19, copyToClipboard } from "$lib/utils";
 
 let { type, id }: { type: string; id: string } = $props();
 
@@ -11,18 +11,16 @@ let copySuccess: boolean = $state(false);
 let itemCopyString: string = $state("");
 let itemCopyName: string = $state("ID");
 let primalUrl: string | undefined = $state(undefined);
-let hashedId: string | undefined = $state(undefined);
-if (type === "r" || type === "a" || type === "relay") {
-    hashedId = btoa(id).slice(0, 8);
-}
+let hashedId = $derived(
+    type === "r" || type === "a" || type === "relay" ? btoa(id).slice(0, 8) : undefined
+);
 
 // If it's an a we need the parts to construct an naddr;
-let naddrId: string = $state("");
-if (type === "a") {
-    naddrId = aTagToNip19([type, id]);
-}
+let naddrId = $derived(type === "a" ? aTagToNip19([type, id]) : "");
 
-valuesForItemActions();
+$effect(() => {
+    valuesForItemActions();
+});
 
 async function copyItemId() {
     valuesForItemActions();
@@ -74,7 +72,7 @@ function valuesForItemActions() {
     <MoreVertical
         strokeWidth="1.5"
         size="20"
-        class="stroke-gray-500 hover:stroke-black hover:dark:stroke-white w-5 h-5"
+        class="stroke-gray-500 hover:stroke-black dark:hover:stroke-white w-5 h-5"
     />
 </button>
 <Popover triggeredBy="#actions-{hashedId ? hashedId : itemCopyString}" placement="left-start">

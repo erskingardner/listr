@@ -1,6 +1,6 @@
 <script lang="ts">
-import { goto } from "$app/navigation";
 import { PlusCircle } from "lucide-svelte";
+import { goto } from "$app/navigation";
 
 let {
     buttonText,

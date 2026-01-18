@@ -8,12 +8,13 @@ import UserDetails from "./UserDetails.svelte";
 
 let { user, userProfile }: { user: NDKUser; userProfile?: NDKUserProfile } = $props();
 
-let profile: NDKUserProfile | null | undefined = $state(userProfile || user.profile);
+let fetchedProfile: NDKUserProfile | null | undefined = $state(undefined);
+let profile = $derived(userProfile || user.profile || fetchedProfile);
 
 $effect(() => {
     if (!profile) {
-        user.fetchProfile().then((userProfile) => {
-            profile = userProfile;
+        user.fetchProfile().then((p) => {
+            fetchedProfile = p;
         });
     }
 });

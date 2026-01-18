@@ -1,14 +1,9 @@
+import type NDK from "@nostr-dev-kit/ndk";
+import { NDKNip07Signer, type NDKUser } from "@nostr-dev-kit/ndk";
+import toast from "svelte-hot-french-toast";
 import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
 import { getCurrentUser, setCurrentUser } from "$lib/stores/currentUser.svelte";
-import type NDK from "@nostr-dev-kit/ndk";
-import {
-    NDKNip07Signer,
-    NDKNip46Signer,
-    NDKPrivateKeySigner,
-    type NDKUser,
-} from "@nostr-dev-kit/ndk";
-import toast from "svelte-hot-french-toast";
 
 export enum SigninMethod {
     Nip07 = "nip07",
@@ -22,9 +17,9 @@ export enum SigninMethod {
  */
 export async function signin(
     ndk: NDK,
-    bunkerNDK?: NDK,
+    _bunkerNDK?: NDK,
     method?: SigninMethod,
-    token?: string,
+    _token?: string,
     user?: NDKUser
 ): Promise<NDKUser | null> {
     // Check if we know of the last way the user signed in

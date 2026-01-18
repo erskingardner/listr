@@ -1,13 +1,11 @@
-import { browser } from "$app/environment";
 import type { NDKCacheAdapter } from "@nostr-dev-kit/ndk";
 import NDK from "@nostr-dev-kit/ndk";
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
+import { browser } from "$app/environment";
 
-let cacheAdapter: NDKCacheAdapter | undefined = $state(undefined);
-
-if (browser) {
-    cacheAdapter = new NDKCacheAdapterDexie({ dbName: "listr-v2" });
-}
+const cacheAdapter: NDKCacheAdapter | undefined = browser
+    ? new NDKCacheAdapterDexie({ dbName: "listr-v2" })
+    : undefined;
 
 export const ndkStore = new NDK({
     explicitRelayUrls: [
@@ -19,9 +17,8 @@ export const ndkStore = new NDK({
     ],
     outboxRelayUrls: ["wss://purplepag.es", "wss://relay.primal.net"],
     autoConnectUserRelays: true,
-    autoFetchUserMutelist: true,
     enableOutboxModel: true,
-    cacheAdapter: cacheAdapter,
+    cacheAdapter,
     clientName: "Listr",
 });
 

@@ -11,12 +11,13 @@ let {
     npubMaxLength?: number;
 } = $props();
 
-let profile: NDKUserProfile | null | undefined = $state(userProfile || user.profile);
+let fetchedProfile: NDKUserProfile | null | undefined = $state(undefined);
+let profile = $derived(userProfile || user.profile || fetchedProfile);
 
 $effect(() => {
     if (!profile) {
         user.fetchProfile().then((profileResponse: NDKUserProfile | null) => {
-            profile = profileResponse;
+            fetchedProfile = profileResponse;
         });
     }
 });

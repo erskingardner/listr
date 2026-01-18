@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { NDKTag } from "@nostr-dev-kit/ndk";
+import { Check } from "lucide-svelte";
 import { browser } from "$app/environment";
 import {
     kindIsRelayList,
@@ -6,8 +8,6 @@ import {
     stringInputToTag,
     validateTagForListKind,
 } from "$lib/utils";
-import type { NDKTag } from "@nostr-dev-kit/ndk";
-import { Check } from "lucide-svelte";
 
 let {
     kind,
@@ -24,7 +24,7 @@ let relayReadWrite = $state<string | undefined>(undefined);
 let addItemSubmitting = $state(false);
 let addItemError = $state(false);
 let addItemErrorMessage = $state("");
-let placeholder = $derived(placeholderForListKind(Number.parseInt(kind.toString())));
+let placeholder = $derived(placeholderForListKind(Number.parseInt(kind.toString(), 10)));
 
 function handleListAddition(e: MouseEvent) {
     e.preventDefault();
@@ -45,7 +45,7 @@ function handleListAddition(e: MouseEvent) {
             // Error if we can't parse the input to a tag
             addItemError = true;
             addItemErrorMessage = "Please enter a valid input.";
-        } else if (tag && validateTagForListKind(tag, Number.parseInt(kind.toString()))) {
+        } else if (tag && validateTagForListKind(tag, Number.parseInt(kind.toString(), 10))) {
             addListItem(tag, listItemType);
         } else {
             // Error if the type of tag isn't valid for the kind of list

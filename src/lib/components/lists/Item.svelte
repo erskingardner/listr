@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { ListItemParams } from "$lib/types";
 import type { NDKTag } from "@nostr-dev-kit/ndk";
+import type { ListItemParams } from "$lib/types";
 import EmojiItem from "./items/EmojiItem.svelte";
 import EventItem from "./items/EventItem.svelte";
 import PersonItem from "./items/PersonItem.svelte";

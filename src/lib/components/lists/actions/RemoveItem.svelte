@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { ListItemParams } from "$lib/types";
 import { X } from "lucide-svelte";
 import { expoInOut } from "svelte/easing";
 import { fly } from "svelte/transition";
+import type { ListItemParams } from "$lib/types";
 
 let {
     editMode,

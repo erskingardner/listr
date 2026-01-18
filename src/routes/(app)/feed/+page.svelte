@@ -1,12 +1,12 @@
 <script lang="ts">
+import { NDKList } from "@nostr-dev-kit/ndk";
+import { TabItem, Tabs } from "flowbite-svelte";
+import { onMount } from "svelte";
 import Loader from "$lib/components/Loader.svelte";
 import ListSummary from "$lib/components/lists/ListSummary.svelte";
 import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import { FEED_LIST_KINDS, filteredLists, unixTimeNowInSeconds } from "$lib/utils";
-import { NDKList } from "@nostr-dev-kit/ndk";
-import { TabItem, Tabs } from "flowbite-svelte";
-import { onMount } from "svelte";
 
 let currentUser = $derived(getCurrentUser());
 let loading = $state(true);

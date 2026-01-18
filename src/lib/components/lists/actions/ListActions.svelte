@@ -1,9 +1,9 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
 import type { NDKKind, NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { MessagesSquare, MoreVertical } from "lucide-svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
 import CopyId from "./CopyId.svelte";
 import Delete from "./Delete.svelte";
 import Duplicate from "./Duplicate.svelte";
@@ -41,7 +41,7 @@ const listKind: NDKKind = $derived(rawList.kind as NDKKind);
     </button> -->
 
     <Share {pubkey} {rawList} {nip19} />
-    {#if currentUser.user}
+    {#if currentUser?.user}
         {#if currentUser.user.pubkey !== pubkey && DUPLICATABLEABLE_LIST_KINDS.includes(listKind)}
             <Duplicate {rawList} />
         {/if}
@@ -51,13 +51,13 @@ const listKind: NDKKind = $derived(rawList.kind as NDKKind);
             <MoreVertical
                 strokeWidth="1.5"
                 size="20"
-                class="stroke-gray-500 hover:stroke-black hover:dark:stroke-white w-5 h-5"
+                class="stroke-gray-500 hover:stroke-black dark:hover:stroke-white w-5 h-5"
             />
         </button>
         <Popover triggeredBy="#listActionsButton" placement="left-start">
             <div class="flex flex-col gap-2 items-start">
                 <CopyId {nip19} />
-                <Delete {listId} {pubkey} />
+                <Delete {listId} {pubkey} listDeleted={() => {}} />
             </div>
         </Popover>
     {/if}

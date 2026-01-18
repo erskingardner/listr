@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { ListItemParams } from "$lib/types";
 import { X } from "lucide-svelte";
+import type { ListItemParams } from "$lib/types";
 
 let {
     type,
@@ -22,7 +22,7 @@ let {
 </script>
 
 <button
-    class="primaryActionButton dark:border-0 dark:bg-gray-600 dark:hover:bg-gray-500 !p-1.5 place-self-start lg:place-self-center"
+    class="primaryActionButton dark:border-0 dark:bg-gray-600 dark:hover:bg-gray-500 p-1.5! place-self-start lg:place-self-center"
     onclick={() =>
         removeUnsavedItem({
             type,

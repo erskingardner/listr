@@ -1,9 +1,9 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { UserRoundMinus, UserRoundPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 
 let { user, buttonClasses }: { user: NDKUser; buttonClasses?: string } = $props();
 
@@ -38,7 +38,7 @@ async function handleUnfollow() {
                 onclick={handleUnfollow}
                 onmouseenter={() => (followingButtonText = "Unfollow")}
                 onmouseleave={() => (followingButtonText = "Following")}
-                class="primaryActionButton bg:white hover:bg-white hover:text-red-700 hover:border-red-700 dark:bg-white dark:text-indigo-800 hover:dark:border-red-700 hover:dark:text-red-700 w-full hover:dark:bg-white justify-center {buttonClasses}"
+                class="primaryActionButton bg:white hover:bg-white hover:text-red-700 hover:border-red-700 dark:bg-white dark:text-indigo-800 dark:hover:border-red-700 dark:hover:text-red-700 w-full dark:hover:bg-white justify-center {buttonClasses}"
             >
                 <UserRoundMinus size="20" strokeWidth="1.5" class="w-5 h-5" />
                 <span class="w-16 text-left">{followingButtonText}</span>

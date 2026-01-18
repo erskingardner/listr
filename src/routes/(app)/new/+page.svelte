@@ -1,4 +1,12 @@
 <script lang="ts">
+import { NDKList, NDKNip07Signer, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
+import { Tooltip } from "flowbite-svelte";
+import { AlertTriangle, Check, Info } from "lucide-svelte";
+import toast from "svelte-hot-french-toast";
+import { zod } from "sveltekit-superforms/adapters";
+import { defaults, superForm } from "sveltekit-superforms/client";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod/v3";
 import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
 import Item from "$lib/components/lists/Item.svelte";
@@ -11,14 +19,6 @@ import {
     unixTimeNowInSeconds,
     validateTagForListKind,
 } from "$lib/utils";
-import { NDKList, NDKNip07Signer, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
-import { Tooltip } from "flowbite-svelte";
-import { AlertTriangle, Check, Info } from "lucide-svelte";
-import toast from "svelte-hot-french-toast";
-import { zod } from "sveltekit-superforms/adapters";
-import { defaults, superForm } from "sveltekit-superforms/client";
-import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
 
 let addItemSubmitting = $state(false);
 let addItemError = $state(false);
@@ -60,7 +60,7 @@ async function publishList(): Promise<string> {
     ndk.signer = signer;
 
     const list = new NDKList(ndk, {
-        kind: Number.parseInt($form.kind),
+        kind: Number.parseInt($form.kind, 10),
         pubkey: currentUser?.user?.pubkey as string,
         created_at: unixTimeNowInSeconds(),
         content: JSON.stringify($form.privateItems),
@@ -134,11 +134,11 @@ function handleListRemoval(item: string[], privateItem: boolean) {
     }
 }
 
-let placeholder = $derived(placeholderForListKind(Number.parseInt($form.kind)));
-let nameInputDisabled = $derived(Number.parseInt($form.kind) < 30000);
+let placeholder = $derived(placeholderForListKind(Number.parseInt($form.kind, 10)));
+let nameInputDisabled = $derived(Number.parseInt($form.kind, 10) < 30000);
 
 $effect(() => {
-    switch (Number.parseInt($form.kind)) {
+    switch (Number.parseInt($form.kind, 10)) {
         case 10000:
             $form.title = "Mute";
             break;

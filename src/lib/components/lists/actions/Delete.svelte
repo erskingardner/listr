@@ -1,12 +1,12 @@
 <script lang="ts">
-import { goto } from "$app/navigation";
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
 import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { db } from "@nostr-dev-kit/ndk-cache-dexie";
 import { Trash2 } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
+import { goto } from "$app/navigation";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
 
 let { listId, pubkey, listDeleted }: { listId: string; pubkey: string; listDeleted: () => void } =
     $props();
@@ -44,7 +44,7 @@ async function deleteList() {
 }
 </script>
 
-{#if currentUser.user?.pubkey === pubkey}
+{#if currentUser?.user?.pubkey === pubkey}
     <button onclick={deleteList} class="popoverActionButton">
         <Trash2 strokeWidth="1.5" size="20" class="stroke-black dark:stroke-white w-5 h-5" />
         Delete list

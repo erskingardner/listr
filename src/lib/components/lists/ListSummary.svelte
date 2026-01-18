@@ -12,8 +12,8 @@ let {
 }: { title?: string; kind?: number; date?: number; listNip19: string; authorPubkey: string } =
     $props();
 
-const timeInPast = timeAgo(date as number);
-const user = ndk.getUser({ pubkey: authorPubkey });
+const timeInPast = $derived(timeAgo(date as number));
+const user = $derived(ndk.getUser({ pubkey: authorPubkey }));
 </script>
 
 <div

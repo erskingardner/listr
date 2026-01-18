@@ -1,6 +1,4 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
 import {
     type LnPaymentInfo,
     NDKEvent,
@@ -8,13 +6,15 @@ import {
     type NDKPaymentConfirmationLN,
     type NDKSubscription,
     type NDKZapDetails,
+    zapInvoiceFromEvent,
 } from "@nostr-dev-kit/ndk";
-import { zapInvoiceFromEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { Zap } from "lucide-svelte";
 import { onDestroy, onMount } from "svelte";
 import toast from "svelte-hot-french-toast";
-import { type SendPaymentResponse, requestProvider } from "webln";
+import { requestProvider, type SendPaymentResponse } from "webln";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
 
 let { listId, nip19 }: { listId: string; nip19: string } = $props();
 
@@ -43,7 +43,7 @@ $effect(() => {
     totalZaps = zaps
         .map((event: NDKEvent) => {
             const zapInvoice = zapInvoiceFromEvent(event);
-            if (currentUser.user) {
+            if (currentUser?.user) {
                 alreadyZapped = zapInvoice?.zappee === currentUser.user.pubkey;
             }
             return (zapInvoice?.amount || 0) / 1000;
@@ -118,7 +118,7 @@ async function submitZap(e: Event) {
     class="dark:text-gray-50 dark:bg-gray-700 z-30"
 >
     <div class="panel-contents flex flex-col gap-2">
-        {#if currentUser.user}
+        {#if currentUser?.user}
             <form
                 onsubmit={submitZap}
                 class="flex flex-col gap-2 justify-start items-start"

@@ -1,6 +1,6 @@
 <script lang="ts">
-import UserName from "$lib/components/users/UserName.svelte";
 import type { NDKUser } from "@nostr-dev-kit/ndk";
+import UserName from "$lib/components/users/UserName.svelte";
 
 let { name, creator }: { name: string; creator: NDKUser } = $props();
 </script>

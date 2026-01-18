@@ -1,12 +1,12 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
 import { NDKList, NDKNip07Signer, type NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { CopyPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { v4 as uuidv4 } from "uuid";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
 
 let currentUser = $derived(getCurrentUser());
 

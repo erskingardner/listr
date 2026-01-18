@@ -1,17 +1,17 @@
 <script lang="ts">
+import { NDKKind, NDKList, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
+import { onMount } from "svelte";
+import toast from "svelte-hot-french-toast";
 import { invalidateAll } from "$app/navigation";
 import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import {
-    SUPPORTED_LIST_KINDS,
     deduplicateItems,
     filterAndSortByTitle,
     filteredItemsForListKind,
+    SUPPORTED_LIST_KINDS,
     unixTimeNowInSeconds,
 } from "$lib/utils";
-import { NDKKind, NDKList, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
-import { onMount } from "svelte";
-import toast from "svelte-hot-french-toast";
 
 type ListOption = {
     id: string;

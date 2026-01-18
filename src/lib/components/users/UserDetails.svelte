@@ -33,7 +33,7 @@ let userCardVisible = $state(false);
         <UserAvatar
             {user}
             {userProfile}
-            extraClasses="w-{avatarSize} h-{avatarSize} dark:!bg-gray-700 rounded-full overflow-hidden object-cover"
+            extraClasses="w-{avatarSize} h-{avatarSize} dark:bg-gray-700! rounded-full overflow-hidden object-cover"
         />
     </a>
     {#if userCardVisible && !noPopover}

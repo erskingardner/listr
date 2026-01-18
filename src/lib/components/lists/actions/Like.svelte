@@ -1,11 +1,12 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
-import { NDKEvent, NDKKind, NDKNip07Signer, NDKSubscription } from "@nostr-dev-kit/ndk";
+import type { NDKSubscription } from "@nostr-dev-kit/ndk";
+import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { Heart } from "lucide-svelte";
 import { onDestroy, onMount } from "svelte";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
 
 let { listId }: { listId: string } = $props();
 
@@ -13,7 +14,7 @@ let currentUser = $derived(getCurrentUser());
 let likes: NDKEvent[] = $state([]);
 let likesSub: NDKSubscription | null = $state(null);
 let alreadyLiked = $derived(
-    currentUser.user && likes.map((like) => like.pubkey).includes(currentUser.user.pubkey)
+    currentUser?.user && likes.map((like) => like.pubkey).includes(currentUser.user.pubkey)
 );
 
 onMount(() => {
@@ -30,7 +31,7 @@ onMount(() => {
 onDestroy(() => likesSub?.stop());
 
 function likeList() {
-    if (currentUser.user) {
+    if (currentUser?.user) {
         if (!ndk.signer) {
             const signer = new NDKNip07Signer();
             ndk.signer = signer;
@@ -70,7 +71,7 @@ function likeList() {
     />
     {likes.length > 0 ? likes.length : 0}
 </button>
-{#if !currentUser.user}
+{#if !currentUser?.user}
     <Popover
         triggeredBy="#likeButton"
         trigger="click"

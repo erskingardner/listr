@@ -1,50 +1,75 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
-	"files": { "ignoreUnknown": false, "ignore": [] },
-	"formatter": {
-		"enabled": true,
-		"useEditorconfig": true,
-		"formatWithErrors": false,
-		"indentStyle": "space",
-		"indentWidth": 4,
-		"lineEnding": "lf",
-		"lineWidth": 100,
-		"attributePosition": "auto",
-		"bracketSpacing": true,
-		"ignore": [
-			"**/.DS_Store",
-			"**/node_modules",
-			"./build",
-			"./.svelte-kit",
-			"./package",
-			"**/.env",
-			"**/.env.*",
-			"**/pnpm-lock.yaml",
-			"**/package-lock.json",
-			"**/yarn.lock"
-		]
-	},
-	"organizeImports": { "enabled": true },
-	"linter": { "enabled": true, "rules": { "recommended": true } },
-	"javascript": {
-		"formatter": {
-			"jsxQuoteStyle": "double",
-			"quoteProperties": "asNeeded",
-			"trailingCommas": "es5",
-			"semicolons": "always",
-			"arrowParentheses": "always",
-			"bracketSameLine": false,
-			"quoteStyle": "double",
-			"attributePosition": "auto",
-			"bracketSpacing": true
-		}
-	},
-	"overrides": [
+    "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+    "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
+    "files": {
+        "ignoreUnknown": false,
+        "includes": ["**", "!.svelte-kit", "!.vercel", "!node_modules", "!build"]
+    },
+    "formatter": {
+        "enabled": true,
+        "useEditorconfig": true,
+        "formatWithErrors": false,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "lf",
+        "lineWidth": 100,
+        "attributePosition": "auto",
+        "bracketSpacing": true,
+        "includes": [
+            "**",
+            "!**/.DS_Store",
+            "!**/node_modules",
+            "!build",
+            "!.svelte-kit",
+            "!package",
+            "!**/.env",
+            "!**/.env.*",
+            "!**/pnpm-lock.yaml",
+            "!**/package-lock.json",
+            "!**/yarn.lock"
+        ]
+    },
+    "assist": { "actions": { "source": { "organizeImports": "on" } } },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "suspicious": {
+                "noDocumentCookie": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "jsxQuoteStyle": "double",
+            "quoteProperties": "asNeeded",
+            "trailingCommas": "es5",
+            "semicolons": "always",
+            "arrowParentheses": "always",
+            "bracketSameLine": false,
+            "quoteStyle": "double",
+            "attributePosition": "auto",
+            "bracketSpacing": true
+        }
+    },
+    "css": {
+        "parser": {
+            "cssModules": true,
+            "tailwindDirectives": true
+        },
+        "linter": {
+            "enabled": false
+        }
+    },
+    "overrides": [
         {
-            "include": ["*.svelte"],
+            "includes": ["**/*.svelte"],
             "linter": {
                 "rules": {
+                    "correctness": {
+                        "noUnusedImports": "off",
+                        "noUnusedVariables": "off"
+                    },
                     "style": {
                         "useConst": "off",
                         "useImportType": "off"

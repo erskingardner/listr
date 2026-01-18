@@ -12,4 +12,7 @@ let { event }: { event: NDKEvent } = $props();
     privateItem={false}
     removal={false}
     editMode={false}
+    otherTagValues={undefined}
+    removeItem={() => {}}
+    removeUnsavedItem={() => {}}
 />

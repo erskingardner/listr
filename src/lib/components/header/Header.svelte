@@ -1,10 +1,10 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { signout } from "$lib/utils/auth";
 import { Menu, Search } from "lucide-svelte";
 import { expoInOut } from "svelte/easing";
 import { scale } from "svelte/transition";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { signout } from "$lib/utils/auth";
 import NewListButton from "../NewListButton.svelte";
 import UserAvatar from "../users/UserAvatar.svelte";
 import UserName from "../users/UserName.svelte";
@@ -28,7 +28,7 @@ function toggleRelayMenu() {
 </script>
 
 <div
-    class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
+    class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8"
 >
     <button
         type="button"
@@ -51,7 +51,7 @@ function toggleRelayMenu() {
             />
             <input
                 id="q"
-                class="block h-full w-full border-0 py-0 pl-8 pr-2 dark:bg-gray-800 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 placeholder:dark:text-gray-200 focus:ring-0 sm:text-sm"
+                class="block h-full w-full border-0 py-0 pl-8 pr-2 dark:bg-gray-800 text-gray-900 dark:text-gray-50 placeholder:text-gray-400 dark:placeholder:text-gray-200 focus:ring-0 sm:text-sm"
                 placeholder={`e.g. "JeffG", "Content Creators"...`}
                 type="search"
                 name="q"
@@ -120,7 +120,7 @@ function toggleRelayMenu() {
                             onpointerleave={toggleProfileMenu}
                             in:scale={{ duration: 100, easing: expoInOut, start: 0.95 }}
                             out:scale={{ duration: 75, easing: expoInOut, start: 0.95 }}
-                            class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 dark:text-gray-50 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                            class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white dark:bg-gray-700 dark:text-gray-50 py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-hidden"
                             role="menu"
                             aria-orientation="vertical"
                             aria-labelledby="user-menu-button"

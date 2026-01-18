@@ -1,26 +1,31 @@
 <script lang="ts">
-import { getCurrentUser } from "$lib/stores/currentUser.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
 import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
 import { Info } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
+import { getCurrentUser } from "$lib/stores/currentUser.svelte";
+import ndk from "$lib/stores/ndk.svelte";
+import { unixTimeNowInSeconds } from "$lib/utils";
 
 let currentUser = $derived(getCurrentUser());
-let devMode = $state(!!currentUser?.settings?.devMode);
+let devMode = $state(false);
+
+$effect(() => {
+    devMode = !!currentUser?.settings?.devMode;
+});
 
 async function saveSettings(e: SubmitEvent) {
     e.preventDefault();
-    if (!currentUser.user) return;
+    if (!currentUser?.user) return;
 
+    const user = currentUser.user;
     const settingsObj: App.UserSettings = {
         devMode: devMode ? devMode : false,
     };
 
     const settingsEvent = new NDKEvent(ndk, {
         kind: NDKKind.AppSpecificData,
-        pubkey: currentUser.user.pubkey,
+        pubkey: user.pubkey,
         created_at: unixTimeNowInSeconds(),
         tags: [["d", "listr/settings/v1"]],
         content: JSON.stringify(settingsObj),
@@ -32,7 +37,7 @@ async function saveSettings(e: SubmitEvent) {
         ndk.signer = signer;
     }
 
-    await settingsEvent.encrypt(currentUser.user);
+    await settingsEvent.encrypt(user);
     await settingsEvent.publish();
     currentUser.settings = settingsObj;
     toast.success("Settings updated");

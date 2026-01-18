@@ -1,11 +1,11 @@
 <script lang="ts">
+import type { NDKUser } from "@nostr-dev-kit/ndk";
+import { NDKArticle } from "@nostr-dev-kit/ndk";
+import { Smile } from "lucide-svelte";
 import UserName from "$lib/components/users/UserName.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 import type { ListItemParams } from "$lib/types";
 import { formattedDate } from "$lib/utils";
-import type { NDKUser } from "@nostr-dev-kit/ndk";
-import { NDKArticle } from "@nostr-dev-kit/ndk";
-import { Smile } from "lucide-svelte";
 import RemoveItem from "../actions/RemoveItem.svelte";
 import Unstage from "../actions/Unstage.svelte";
 import CommunityItem from "./CommunityItem.svelte";
@@ -35,10 +35,10 @@ let {
     removeUnsavedItem: (params: ListItemParams) => void;
 } = $props();
 
-const tagIdSplit = id.split(":");
-const kind: number = Number.parseInt(tagIdSplit[0]);
-const creator: NDKUser = ndk.getUser({ pubkey: tagIdSplit[1] });
-const name: string = tagIdSplit[2];
+const tagIdSplit = $derived(id.split(":"));
+const kind: number = $derived(Number.parseInt(tagIdSplit[0], 10));
+const creator: NDKUser = $derived(ndk.getUser({ pubkey: tagIdSplit[1] }));
+const name: string = $derived(tagIdSplit[2]);
 
 let article: NDKArticle | undefined = $state(undefined);
 

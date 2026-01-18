@@ -1,9 +1,9 @@
 <script lang="ts">
+import type { NostrEvent } from "@nostr-dev-kit/ndk";
+import { CheckCircle, Share } from "lucide-svelte";
 import { page } from "$app/stores";
 import ndk from "$lib/stores/ndk.svelte";
 import { copyToClipboard } from "$lib/utils";
-import type { NostrEvent } from "@nostr-dev-kit/ndk";
-import { CheckCircle, Share } from "lucide-svelte";
 
 let {
     pubkey,
@@ -16,7 +16,7 @@ let {
 } = $props();
 
 let tooltipVisible = $state(false);
-const user = ndk.getUser({ pubkey: pubkey });
+const user = $derived(ndk.getUser({ pubkey: pubkey }));
 
 async function copyShareUrl() {
     tooltipVisible = true;
