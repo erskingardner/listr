@@ -55,7 +55,14 @@ export async function stringInputToTag(
     // Handle hashtags (e.g. "#bitcoin")
     if (input.startsWith("#")) tag = ["t", input.substring(1)];
     // Handle URLs
-    if (input.match(/https?:\/\//)) tag = ["r", input];
+    try {
+        const url = new URL(input);
+        if (["http:", "https:"].includes(url.protocol)) {
+            tag = ["r", url.href];
+        }
+    } catch {
+        // Invalid URL, continue to other checks
+    }
     // Handle relay URLs
     if (input.match(/wss?:\/\//)) {
         if (listKind !== NDKKind.RelayList) {
