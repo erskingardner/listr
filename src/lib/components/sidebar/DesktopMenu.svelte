@@ -7,6 +7,14 @@ import NavMenu from "./NavMenu.svelte";
 let { donateButtonClicked }: { donateButtonClicked: () => void } = $props();
 </script>
 
+{#snippet lightIcon()}
+    <SunMoon strokeWidth="1.5" size="24" />
+{/snippet}
+
+{#snippet darkIcon()}
+    <SunMoon strokeWidth="1.5" size="24" />
+{/snippet}
+
 <!-- Static sidebar for desktop -->
 <div class="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col">
     <!-- Sidebar component, swap this element with another sidebar if you like -->
@@ -16,14 +24,7 @@ let { donateButtonClicked }: { donateButtonClicked: () => void } = $props();
                 <span class="sr-only">Listr</span>
                 <Logo />
             </a>
-            <DarkMode btnClass="text:black dark:text-white hover:text-gray-500">
-                <svelte:fragment slot="lightIcon">
-                    <SunMoon strokeWidth="1.5" size="24" />
-                </svelte:fragment>
-                <svelte:fragment slot="darkIcon">
-                    <SunMoon strokeWidth="1.5" size="24" />
-                </svelte:fragment>
-            </DarkMode>
+            <DarkMode class="text-black dark:text-white hover:text-gray-500" {lightIcon} {darkIcon} />
         </div>
         <NavMenu {donateButtonClicked} />
     </div>

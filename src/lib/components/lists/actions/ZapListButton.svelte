@@ -78,10 +78,10 @@ async function submitZap(e: Event) {
                 toast.error("Zap failed. Please try again.");
             }
         },
-        onComplete: (results) => {
+        onComplete: (results: Map<unknown, unknown>) => {
             console.log("Zap results", results);
             let hasError = false;
-            results.forEach((result, key) => {
+            results.forEach((result: unknown, key: unknown) => {
                 if (result instanceof Error) {
                     hasError = true;
                     console.error(`Error for ${key}:`, result);
@@ -112,7 +112,7 @@ async function submitZap(e: Event) {
     {totalZaps || 0}
 </button>
 <Popover
-    bind:open={popoverOpen}
+    bind:isOpen={popoverOpen}
     trigger="click"
     placement="left-end"
     class="dark:text-gray-50 dark:bg-gray-700 z-30"

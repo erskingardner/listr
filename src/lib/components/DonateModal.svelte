@@ -50,7 +50,6 @@ async function submitZap() {
     outsideclose={true}
     placement="top-center"
     class="w-96"
-    backdropClass="fixed inset-0 z-40 bg-black/60"
 >
     <div class="p-4">
         <form

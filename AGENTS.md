@@ -52,7 +52,7 @@ pnpm install
     - **Parameterized Lists (3xxxx)**: `30000` (Follow Sets), `30001` (Categorized Lists/Bookmarks), `30002` (Relay Sets).
 - **Authentication**: Supports NIP-07 (Browser Extension), NIP-46 (Bunker), and Private Key login.
 - **Relays**:
-    - Default explicit relays: `purplepag.es`, `relay.nostr.band`, `relay.snort.social`, `relay.damus.io`, `relay.primal.net`.
+    - Default explicit relays: `purplepag.es`, `relay.snort.social`, `relay.damus.io`, `relay.primal.net`.
     - Outbox relays: `purplepag.es`, `relay.primal.net`.
 
 ## Guidelines for AI Agents

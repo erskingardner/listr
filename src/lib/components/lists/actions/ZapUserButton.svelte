@@ -69,7 +69,7 @@ let displayableName = $derived.by(() => {
     Zap
 </button>
 <Popover
-    bind:open={popoverOpen}
+    bind:isOpen={popoverOpen}
     trigger="click"
     placement="left"
     class="dark:text-gray-50 dark:bg-gray-700"

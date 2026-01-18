@@ -87,13 +87,12 @@ onMount(async () => {
             <Tabs
                 class="border-b border-b-gray-300"
                 contentClass="p-0 rounded-lg dark:bg-gray-800 mt-4"
-                inactiveClasses="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
             >
                     <TabItem
                         open
                         title="Following"
-                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                        defaultClass="text-base"
+                        activeClass="border-b border-b-indigo-600 p-4 text-base"
+                        inactiveClass="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 text-base"
                     >
                         {#if followingLists.length === 0}
                             <div class="flex flex-row items-center justify-center my-12">
@@ -113,9 +112,8 @@ onMount(async () => {
                     </TabItem>
                     <TabItem
                         title="Global"
-                        style="underline"
-                        activeClasses="border-b border-b-indigo-600 p-4 text-base"
-                        defaultClass="text-base"
+                        activeClass="border-b border-b-indigo-600 p-4 text-base"
+                        inactiveClass="p-4 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300 text-base"
                     >
                         {#each globalLists as list}
                             <ListSummary

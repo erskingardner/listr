@@ -333,20 +333,22 @@ function toggleDrawerVisible() {
     <meta name="description" content={`${listTitle} a list on Listr`} />
 </svelte:head>
 
+{#snippet homeIcon()}
+    <Home strokeWidth="1.5" size="16" class="w-4 h-4 shrink-0" />
+{/snippet}
+
 {#if user && list}
     <Breadcrumb
         aria-label="User list breadcrumb"
-        navClass="flex flex-row gap-2 w-full my-6"
-        classOl="flex flex-row gap-2 items-center w-full"
+        class="flex flex-row gap-2 w-full my-6"
+        olClass="flex flex-row gap-2 items-center w-full"
     >
         <BreadcrumbItem
             href="/feed"
             homeClass="flex flex-row gap-1.5 items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white "
             home
+            icon={homeIcon}
         >
-            <svelte:fragment slot="icon">
-                <Home strokeWidth="1.5" size="16" class="w-4 h-4 shrink-0" />
-            </svelte:fragment>
             Activity Feed
         </BreadcrumbItem>
         <BreadcrumbItem href="/{user.npub}" class="flex flex-row gap-1.5 items-center"

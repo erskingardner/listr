@@ -9,7 +9,6 @@ import ndk from "$lib/stores/ndk.svelte";
 import { SUPPORTED_LIST_KINDS } from "$lib/utils";
 
 const searchRelayUrls = [
-    "wss://relay.nostr.band",
     "wss://relay.primal.net",
     "wss://relay.noswhere.com",
     "wss://purplepag.es",
@@ -18,7 +17,7 @@ const searchRelayUrls = [
 
 const searchRelays: NDKRelaySet = new NDKRelaySet(new Set(), ndk);
 for (const url of searchRelayUrls) {
-    searchRelays.addRelay(new NDKRelay(url));
+    searchRelays.addRelay(new NDKRelay(url, undefined, ndk));
 }
 
 let query: string | null = $derived($page.url.searchParams.get("q"));

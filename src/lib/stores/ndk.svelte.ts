@@ -10,7 +10,6 @@ const cacheAdapter: NDKCacheAdapter | undefined = browser
 export const ndkStore = new NDK({
     explicitRelayUrls: [
         "wss://purplepag.es",
-        "wss://relay.nostr.band",
         "wss://relay.snort.social",
         "wss://relay.damus.io",
         "wss://relay.primal.net",
@@ -32,7 +31,6 @@ export const bunkerNDKStore = new NDK({
         "wss://relay.nsecbunker.com",
         "wss://relay.damus.io",
         "wss://relay.primal.net",
-        "wss://relay.nostr.band",
     ],
     enableOutboxModel: false,
 });
