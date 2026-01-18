@@ -54,7 +54,7 @@ onMount(() => {
     donateButtonClicked={() => (donateModal = true)}
 />
 <DesktopMenu donateButtonClicked={() => (donateModal = true)} />
-<div class="lg:pl-72">
+<div class="lg:pl-72 overflow-x-hidden">
     <Header openMobileMenu={toggleMobileMenu} />
     <main class="py-4 sm:py-6 lg:py-10">
         <div class="px-4 sm:px-6 lg:px-8">

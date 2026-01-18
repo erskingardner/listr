@@ -6,7 +6,12 @@ import Loader from "$lib/components/Loader.svelte";
 import ListSummary from "$lib/components/lists/ListSummary.svelte";
 import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
-import { FEED_LIST_KINDS, filteredLists, unixTimeNowInSeconds } from "$lib/utils";
+import {
+    FEED_LIST_KINDS,
+    filteredLists,
+    getListDisplayTitle,
+    unixTimeNowInSeconds,
+} from "$lib/utils";
 
 let currentUser = $derived(getCurrentUser());
 let loading = $state(true);
@@ -101,7 +106,7 @@ onMount(async () => {
                         {:else}
                             {#each followingLists as list}
                                 <ListSummary
-                                    title={list.title}
+                                    title={getListDisplayTitle(list)}
                                     kind={list.kind}
                                     date={list.created_at}
                                     authorPubkey={list.pubkey}
@@ -117,7 +122,7 @@ onMount(async () => {
                     >
                         {#each globalLists as list}
                             <ListSummary
-                                title={list.title}
+                                title={getListDisplayTitle(list)}
                                 kind={list.kind}
                                 date={list.created_at}
                                 authorPubkey={list.pubkey}
@@ -129,7 +134,7 @@ onMount(async () => {
             {:else if globalLists && globalLists.length > 0}
                 {#each globalLists as list}
                     <ListSummary
-                        title={list.title}
+                        title={getListDisplayTitle(list)}
                         kind={list.kind}
                         date={list.created_at}
                         authorPubkey={list.pubkey}

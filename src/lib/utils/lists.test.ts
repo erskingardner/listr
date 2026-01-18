@@ -10,7 +10,9 @@ import {
     filterAndSortByTitle,
     filteredItemsForListKind,
     filteredLists,
+    getListDisplayTitle,
     ITEM_TYPES_FOR_LIST_KINDS,
+    KIND_FALLBACK_TITLES,
     kindIsRelayList,
     LIST_FILTER_REGEXP,
     LIST_MUTE_FILTER_REGEXP,
@@ -22,6 +24,31 @@ import {
 } from "./lists";
 
 describe("lists utility functions", () => {
+    /**
+     * Helper to create mock NDKList objects for testing.
+     */
+    const createMockList = (
+        overrides: Partial<{
+            id: string;
+            title: string;
+            pubkey: string;
+            kind: number;
+            created_at: number;
+            tagId: () => string;
+        }>
+    ): NDKList => {
+        const defaults = {
+            id: "default-id",
+            title: "Default Title",
+            pubkey: "a".repeat(64),
+            kind: NDKKind.BookmarkList,
+            created_at: 1000,
+            tagId: () =>
+                `${overrides.kind || NDKKind.BookmarkList}:${overrides.pubkey || "a".repeat(64)}:${overrides.id || "default-id"}`,
+        };
+        return { ...defaults, ...overrides } as unknown as NDKList;
+    };
+
     describe("deduplicateItems", () => {
         it("should remove duplicate items", () => {
             const items: NDKTag[] = [
@@ -195,28 +222,6 @@ describe("lists utility functions", () => {
     });
 
     describe("filterAndSortByTitle", () => {
-        const createMockList = (
-            overrides: Partial<{
-                id: string;
-                title: string;
-                pubkey: string;
-                kind: number;
-                created_at: number;
-                tagId: () => string;
-            }>
-        ): NDKList => {
-            const defaults = {
-                id: "default-id",
-                title: "Default Title",
-                pubkey: "a".repeat(64),
-                kind: NDKKind.BookmarkList,
-                created_at: 1000,
-                tagId: () =>
-                    `${overrides.kind || NDKKind.BookmarkList}:${overrides.pubkey || "a".repeat(64)}:${overrides.id || "default-id"}`,
-            };
-            return { ...defaults, ...overrides } as unknown as NDKList;
-        };
-
         it("should filter out blocked pubkeys", () => {
             const lists = [
                 createMockList({ id: "1", title: "Good List", pubkey: "b".repeat(64) }),
@@ -480,24 +485,6 @@ describe("lists utility functions", () => {
     });
 
     describe("filteredLists", () => {
-        const createMockList = (
-            overrides: Partial<{
-                id: string;
-                title: string;
-                kind: number;
-                tagId: () => string;
-            }>
-        ): NDKList => {
-            const defaults = {
-                id: "default-id",
-                title: "Default Title",
-                kind: NDKKind.BookmarkList,
-                tagId: () =>
-                    `${overrides.kind || NDKKind.BookmarkList}:pubkey:${overrides.id || "default-id"}`,
-            };
-            return { ...defaults, ...overrides } as unknown as NDKList;
-        };
-
         it("should filter out lists with titles matching LIST_FILTER_REGEXP", () => {
             const lists = [
                 createMockList({ id: "1", title: "Good List" }),
@@ -706,6 +693,86 @@ describe("lists utility functions", () => {
             for (const kind of UNIQUE_LIST_KINDS) {
                 expect(kind).toBeLessThan(30000);
             }
+        });
+    });
+
+    describe("getListDisplayTitle", () => {
+        it("should return the list title when it is a normal readable title", () => {
+            const list = createMockList({
+                title: "My Reading List",
+                kind: NDKKind.BookmarkSet,
+            });
+            expect(getListDisplayTitle(list)).toBe("My Reading List");
+        });
+
+        it("should return fallback title for kind when title looks like a kind:pubkey identifier", () => {
+            const list = createMockList({
+                title: "30023:006532cb996d2840ca4d9771e60abc123",
+                kind: NDKKind.ArticleCurationSet,
+            });
+            expect(getListDisplayTitle(list)).toBe("Article Curation Set");
+        });
+
+        it("should return fallback title when title starts with url:", () => {
+            const list = createMockList({
+                title: "url:aHR0cHM6Ly9leGFtcGxlLmNvbQ==",
+                kind: NDKKind.BookmarkSet,
+            });
+            expect(getListDisplayTitle(list)).toBe("Bookmark Set");
+        });
+
+        it("should return fallback title when title starts with base64 aHR0", () => {
+            const list = createMockList({
+                title: "aHR0cHM6Ly9leGFtcGxlLmNvbS9hcnRpY2xl",
+                kind: NDKKind.ArticleCurationSet,
+            });
+            expect(getListDisplayTitle(list)).toBe("Article Curation Set");
+        });
+
+        it("should return fallback title when title is a long hex string", () => {
+            const list = createMockList({
+                title: "006532cb996d2840ca4d9771e60abc123def456789",
+                kind: NDKKind.FollowSet,
+            });
+            expect(getListDisplayTitle(list)).toBe("Follow Set");
+        });
+
+        it("should return 'Untitled List' when no title and no fallback for kind", () => {
+            const list = createMockList({
+                title: undefined,
+                kind: 99999 as number, // Unknown kind
+            });
+            expect(getListDisplayTitle(list)).toBe("Untitled List");
+        });
+
+        it("should return fallback title when title is undefined and kind has fallback", () => {
+            const list = createMockList({
+                title: undefined,
+                kind: NDKKind.FollowSet,
+            });
+            expect(getListDisplayTitle(list)).toBe("Follow Set");
+        });
+
+        it("should have fallback titles for all parameterized list kinds", () => {
+            expect(KIND_FALLBACK_TITLES[NDKKind.FollowSet]).toBe("Follow Set");
+            expect(KIND_FALLBACK_TITLES[NDKKind.CategorizedBookmarkList]).toBe(
+                "Categorized Bookmarks"
+            );
+            expect(KIND_FALLBACK_TITLES[NDKKind.RelaySet]).toBe("Relay Set");
+            expect(KIND_FALLBACK_TITLES[NDKKind.BookmarkSet]).toBe("Bookmark Set");
+            expect(KIND_FALLBACK_TITLES[NDKKind.ArticleCurationSet]).toBe("Article Curation Set");
+            expect(KIND_FALLBACK_TITLES[NDKKind.InterestSet]).toBe("Interest Set");
+            expect(KIND_FALLBACK_TITLES[NDKKind.EmojiSet]).toBe("Emoji Set");
+            expect(KIND_FALLBACK_TITLES[NDKKind.HighlightSet]).toBe("Highlight Set");
+        });
+
+        it("should allow normal slug-like titles through", () => {
+            const list = createMockList({
+                title: "surely-we-can-just-tax-the-billionaires",
+                kind: NDKKind.ArticleCurationSet,
+            });
+            // This is a readable slug, should be allowed through
+            expect(getListDisplayTitle(list)).toBe("surely-we-can-just-tax-the-billionaires");
         });
     });
 });

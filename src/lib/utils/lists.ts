@@ -2,6 +2,50 @@ import type { NDKEvent, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 import { NDKKind } from "@nostr-dev-kit/ndk";
 import { NOSTR_PUBKEY_REGEXP } from "./nostr";
 
+/**
+ * Fallback titles for list kinds that NDK doesn't provide defaults for.
+ * Used when a list has no title/name tag.
+ */
+export const KIND_FALLBACK_TITLES: Record<number, string> = {
+    [NDKKind.FollowSet]: "Follow Set",
+    [NDKKind.CategorizedBookmarkList]: "Categorized Bookmarks",
+    [NDKKind.RelaySet]: "Relay Set",
+    [NDKKind.BookmarkSet]: "Bookmark Set",
+    [NDKKind.ArticleCurationSet]: "Article Curation Set",
+    [NDKKind.InterestSet]: "Interest Set",
+    [NDKKind.EmojiSet]: "Emoji Set",
+    [NDKKind.HighlightSet]: "Highlight Set",
+    10050: "Inbox Relays",
+    10051: "Key Package Relays",
+};
+
+/**
+ * Pattern to detect non-human-readable d-tag values used as titles.
+ * Matches:
+ * - Kind identifiers like "30023:pubkey..." (addressable event references)
+ * - Base64-like strings (url:aHR0..., aHR0...)
+ * - Long hex strings (40+ chars of hex)
+ */
+const NON_READABLE_TITLE_REGEXP = /^(\d{5}:[a-f0-9]|url:|aHR0|[a-f0-9]{40,})/i;
+
+/**
+ * Gets a display-friendly title for a list.
+ * Falls back to kind-specific defaults if the title appears to be a raw identifier.
+ */
+export function getListDisplayTitle(list: NDKList): string {
+    const title = list.title;
+
+    // If no title or title looks like a raw identifier, use fallback
+    if (!title || NON_READABLE_TITLE_REGEXP.test(title)) {
+        const fallback = KIND_FALLBACK_TITLES[list.kind as number];
+        if (fallback) {
+            return fallback;
+        }
+    }
+
+    return title || "Untitled List";
+}
+
 export const SUPPORTED_LIST_KINDS = [
     // 10000-19999: Lists
     NDKKind.Contacts,

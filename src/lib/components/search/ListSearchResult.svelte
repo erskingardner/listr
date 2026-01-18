@@ -1,5 +1,6 @@
 <script lang="ts">
 import { type NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
+import { getListDisplayTitle } from "$lib/utils/lists";
 import ListSummary from "../lists/ListSummary.svelte";
 
 let { event }: { event: NDKEvent } = $props();
@@ -8,7 +9,7 @@ let list = $derived(NDKList.from(event));
 </script>
 
 <ListSummary
-    title={list.title}
+    title={getListDisplayTitle(list)}
     kind={list.kind}
     date={list.created_at}
     listNip19={list.encode()}

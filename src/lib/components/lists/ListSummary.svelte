@@ -26,7 +26,8 @@ const user = $derived(ndk.getUser({ pubkey: authorPubkey }));
     <div class="lg:col-span-2">
         Updated their <a
             href="/{user.npub}/{kind}/{listNip19}"
-            class="font-bold underline hover:no-underline">{title}</a
+            class="font-bold underline hover:no-underline truncate inline-block max-w-48 align-bottom"
+            title={title}>{title}</a
         > list
     </div>
 

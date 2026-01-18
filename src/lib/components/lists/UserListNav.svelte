@@ -5,7 +5,7 @@ import { nip19 } from "nostr-tools";
 import { onDestroy, onMount } from "svelte";
 import { page } from "$app/stores";
 import ndk from "$lib/stores/ndk.svelte";
-import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
+import { filterAndSortByTitle, getListDisplayTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
 
 let { userPubkey }: { userPubkey: string } = $props();
 
@@ -58,7 +58,7 @@ onDestroy(() => {
                     ? 'bg-gray-100 dark:bg-gray-700'
                     : ''} w-full block rounded-md text-left truncate"
             >
-                {list.title}
+                {getListDisplayTitle(list)}
             </a>
         {/each}
     {/if}
