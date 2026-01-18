@@ -6,11 +6,13 @@ let {
     removals,
     titleChanged,
     descriptionChanged,
+    imageChanged = false,
 }: {
     additions: NDKTag[];
     removals: NDKTag[];
     titleChanged: boolean;
     descriptionChanged: boolean;
+    imageChanged?: boolean;
 } = $props();
 </script>
 
@@ -19,7 +21,7 @@ let {
         Name updated
     {/if}
 
-    {#if titleChanged && descriptionChanged}
+    {#if (titleChanged) && (descriptionChanged || imageChanged)}
         /
     {/if}
 
@@ -27,7 +29,15 @@ let {
         Description updated
     {/if}
 
-    {#if (titleChanged || descriptionChanged) && (additions.length > 0 || removals.length > 0)}
+    {#if (titleChanged || descriptionChanged) && imageChanged}
+        /
+    {/if}
+
+    {#if imageChanged}
+        Image updated
+    {/if}
+
+    {#if (titleChanged || descriptionChanged || imageChanged) && (additions.length > 0 || removals.length > 0)}
         /
     {/if}
 

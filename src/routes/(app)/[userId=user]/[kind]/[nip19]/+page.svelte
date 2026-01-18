@@ -57,9 +57,11 @@ let unsavedPublicRemovals: NDKTag[] = $state([]);
 let unsavedPrivateRemovals: NDKTag[] = $state([]);
 let listTitle: string | undefined = $state(undefined);
 let listDescription: string | undefined = $state(undefined);
+let listImage: string | undefined = $state(undefined);
 let listCategory: string | undefined = $state(undefined);
 let initialListTitle: string | undefined = $state(undefined);
 let initialListDescription: string | undefined = $state(undefined);
+let initialListImage: string | undefined = $state(undefined);
 let initialListCategory: string | undefined = $state(undefined);
 
 let publishingChanges = $state(false);
@@ -73,6 +75,7 @@ let unpublishedChanges = $derived(
         unsavedPublicRemovals.length > 0 ||
         listTitle !== initialListTitle ||
         listDescription !== initialListDescription ||
+        listImage !== initialListImage ||
         listCategory !== initialListCategory
 );
 
@@ -115,9 +118,11 @@ function fetchEvent() {
         let tmpList = NDKList.from(event as NDKEvent);
         listTitle = getListDisplayTitle(tmpList);
         listDescription = tmpList.description;
+        listImage = tmpList.tagValue("image");
         listCategory = tmpList.tags.find((tag: NDKTag) => tag[0] === "l")?.[1] || undefined;
         initialListTitle = listTitle;
         initialListDescription = listDescription;
+        initialListImage = listImage;
         initialListCategory = listCategory;
         updateListItems();
     });
@@ -169,6 +174,7 @@ function clearTempStores() {
     unsavedPrivateRemovals = [];
     listTitle = initialListTitle;
     listDescription = initialListDescription;
+    listImage = initialListImage;
     listCategory = initialListCategory;
 }
 
@@ -275,6 +281,10 @@ async function publishList(): Promise<void> {
 
         list.title = listTitle;
         list.description = listDescription;
+
+        if (listImage) {
+            list.tags.push(["image", listImage]);
+        }
 
         if (listCategory) {
             list.tags.push(["L", "lol.listr.ontology"]);
@@ -398,6 +408,13 @@ function toggleDrawerVisible() {
             <div
                 class="flex flex-col gap-2 border border-gray-30 dark:border-gray-700 rounded-md shadow-md p-4 grow"
             >
+                {#if listImage}
+                    <img
+                        src={listImage}
+                        alt={listTitle}
+                        class="w-full h-32 lg:h-48 object-cover rounded-md"
+                    />
+                {/if}
                 <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
                     <div class="flex flex-col gap-1 w-full lg:w-auto">
                         <div
@@ -455,6 +472,13 @@ function toggleDrawerVisible() {
                                     bind:value={listDescription}
                                     class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
                                 />
+                                <label for="listImage" class="font-medium">Cover Image URL</label>
+                                <input
+                                    type="text"
+                                    name="listImage"
+                                    bind:value={listImage}
+                                    class="border-gray-400 col-span-2 rounded-md bg-transparent disabled:border-gray-200 disabled:bg-gray-100 text-sm"
+                                />
                                 <label for="listCategory" class="font-medium">Category</label>
                                 <select
                                     name="listCategory"
@@ -490,6 +514,7 @@ function toggleDrawerVisible() {
                                 <ChangesCount
                                     titleChanged={listTitle !== initialListTitle}
                                     descriptionChanged={listDescription !== initialListDescription}
+                                    imageChanged={listImage !== initialListImage}
                                     additions={[...unsavedPublicItems, ...unsavedPrivateItems]}
                                     removals={[...unsavedPublicRemovals, ...unsavedPrivateRemovals]}
                                 />
