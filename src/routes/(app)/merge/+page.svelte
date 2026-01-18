@@ -23,12 +23,6 @@ let currentUser = $derived(ndk.$currentUser);
 
 let lists: NDKList[] = $state([]);
 let options: ListOption[] = $state([]);
-let showKindMismatchWarning = $derived.by(() => {
-    if (fromList && toList) {
-        return fromList.kind !== toList.kind;
-    }
-    return false;
-});
 
 let deleteFromList = $state(false);
 let mergeFromId: string | undefined = $state(undefined);
@@ -39,6 +33,12 @@ let fromList: NDKList | undefined = $derived(
 let toList: NDKList | undefined = $derived(
     mergeToId ? lists?.find((list) => list.id === mergeToId) : undefined
 );
+let showKindMismatchWarning = $derived.by(() => {
+    if (fromList && toList) {
+        return fromList.kind !== toList.kind;
+    }
+    return false;
+});
 
 onMount(async () => {
     if (!currentUser) return;

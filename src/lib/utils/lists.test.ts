@@ -11,6 +11,8 @@ import {
     filteredItemsForListKind,
     filteredLists,
     getListDisplayTitle,
+    getTitleFromTags,
+    hasEncryptedContent,
     ITEM_TYPES_FOR_LIST_KINDS,
     KIND_FALLBACK_TITLES,
     kindIsRelayList,
@@ -34,6 +36,7 @@ describe("lists utility functions", () => {
             pubkey: string;
             kind: number;
             created_at: number;
+            content: string;
             tagId: () => string;
         }>
     ): NDKList => {
@@ -43,6 +46,7 @@ describe("lists utility functions", () => {
             pubkey: "a".repeat(64),
             kind: NDKKind.BookmarkList,
             created_at: 1000,
+            content: "",
             tagId: () =>
                 `${overrides.kind || NDKKind.BookmarkList}:${overrides.pubkey || "a".repeat(64)}:${overrides.id || "default-id"}`,
         };
@@ -244,14 +248,60 @@ describe("lists utility functions", () => {
             expect(result[0].title).toBe("Good List");
         });
 
-        it("should filter out lists without titles", () => {
+        it("should filter out lists without titles unless they have encrypted content", () => {
             const lists = [
                 createMockList({ id: "1", title: "Has Title" }),
                 createMockList({ id: "2", title: undefined as unknown as string }),
                 createMockList({ id: "3", title: "" }),
+                createMockList({
+                    id: "4",
+                    title: undefined as unknown as string,
+                    content: "encrypted-private-list",
+                    kind: NDKKind.FollowSet,
+                }),
+            ];
+            const result = filterAndSortByTitle(lists);
+            // Should keep "Has Title" and the encrypted list
+            expect(result).toHaveLength(2);
+        });
+
+        it("should keep lists with encrypted content even without public title", () => {
+            const lists = [
+                createMockList({
+                    id: "1",
+                    title: undefined as unknown as string,
+                    content: "encrypted-content",
+                    kind: NDKKind.FollowSet,
+                }),
             ];
             const result = filterAndSortByTitle(lists);
             expect(result).toHaveLength(1);
+        });
+
+        it("should filter out encrypted lists if their title matches filter pattern", () => {
+            const lists = [
+                createMockList({
+                    id: "1",
+                    title: "chats/abc123",
+                    content: "encrypted-content",
+                    kind: NDKKind.FollowSet,
+                }),
+                createMockList({
+                    id: "2",
+                    title: "notifications/xyz",
+                    content: "encrypted-content",
+                    kind: NDKKind.FollowSet,
+                }),
+                createMockList({
+                    id: "3",
+                    title: "/hidden-list",
+                    content: "encrypted-content",
+                    kind: NDKKind.FollowSet,
+                }),
+            ];
+            const result = filterAndSortByTitle(lists);
+            // All should be filtered out because titles match LIST_FILTER_REGEXP
+            expect(result).toHaveLength(0);
         });
 
         it("should sort lists alphabetically by title", () => {
@@ -574,13 +624,51 @@ describe("lists utility functions", () => {
             expect(result).toEqual([]);
         });
 
-        it("should filter out lists without titles", () => {
+        it("should filter out lists without titles unless they have encrypted content", () => {
             const lists = [
                 createMockList({ id: "1", title: "Has Title" }),
                 createMockList({ id: "2", title: undefined as unknown as string }),
+                createMockList({
+                    id: "3",
+                    title: undefined as unknown as string,
+                    content: "encrypted-content",
+                }),
             ];
             const result = filteredLists(lists);
+            // Should keep "Has Title" and the encrypted list
+            expect(result).toHaveLength(2);
+        });
+
+        it("should not filter encrypted lists by mute title since title is unknown", () => {
+            const lists = [
+                createMockList({
+                    id: "1",
+                    title: undefined as unknown as string,
+                    content: "encrypted-content",
+                }),
+            ];
+            const result = filteredLists(lists, undefined, true);
+            // Encrypted list should be kept since we can't know its title
             expect(result).toHaveLength(1);
+        });
+
+        it("should filter out encrypted lists if their title matches filter pattern", () => {
+            const lists = [
+                createMockList({
+                    id: "1",
+                    title: "chats/abc123",
+                    content: "encrypted-content",
+                }),
+                createMockList({
+                    id: "2",
+                    title: "Good List",
+                    content: "encrypted-content",
+                }),
+            ];
+            const result = filteredLists(lists);
+            // Only the good list should remain
+            expect(result).toHaveLength(1);
+            expect(result[0].title).toBe("Good List");
         });
     });
 
@@ -696,6 +784,60 @@ describe("lists utility functions", () => {
         });
     });
 
+    describe("hasEncryptedContent", () => {
+        it("should return true when content is non-empty", () => {
+            const list = createMockList({
+                content: "encrypted-content-here",
+            });
+            expect(hasEncryptedContent(list)).toBe(true);
+        });
+
+        it("should return false when content is empty string", () => {
+            const list = createMockList({
+                content: "",
+            });
+            expect(hasEncryptedContent(list)).toBe(false);
+        });
+
+        it("should return false when content is undefined", () => {
+            const list = createMockList({
+                content: undefined as unknown as string,
+            });
+            expect(hasEncryptedContent(list)).toBe(false);
+        });
+    });
+
+    describe("getTitleFromTags", () => {
+        it("should extract title from tags array", () => {
+            const tags: NDKTag[] = [
+                ["p", "pubkey1"],
+                ["title", "My Private List"],
+                ["d", "list-id"],
+            ];
+            expect(getTitleFromTags(tags)).toBe("My Private List");
+        });
+
+        it("should return undefined when no title tag exists", () => {
+            const tags: NDKTag[] = [
+                ["p", "pubkey1"],
+                ["d", "list-id"],
+            ];
+            expect(getTitleFromTags(tags)).toBeUndefined();
+        });
+
+        it("should return undefined for empty tags array", () => {
+            expect(getTitleFromTags([])).toBeUndefined();
+        });
+
+        it("should return first title if multiple exist", () => {
+            const tags: NDKTag[] = [
+                ["title", "First Title"],
+                ["title", "Second Title"],
+            ];
+            expect(getTitleFromTags(tags)).toBe("First Title");
+        });
+    });
+
     describe("getListDisplayTitle", () => {
         it("should return the list title when it is a normal readable title", () => {
             const list = createMockList({
@@ -781,6 +923,57 @@ describe("lists utility functions", () => {
                 kind: 10050,
             });
             expect(getListDisplayTitle(list)).toBe("Inbox Relays");
+        });
+
+        it("should return 'Private List' when no title but has encrypted content", () => {
+            const list = createMockList({
+                title: undefined,
+                kind: 99999 as number, // Unknown kind with no fallback
+                content: "encrypted-content",
+            });
+            expect(getListDisplayTitle(list)).toBe("Private List");
+        });
+
+        it("should return 'Private List' when title is non-readable identifier but has encrypted content", () => {
+            const list = createMockList({
+                title: "aHR0cHM6Ly9leGFtcGxlLmNvbQ==",
+                kind: 99999 as number, // Unknown kind with no fallback
+                content: "encrypted-content",
+            });
+            expect(getListDisplayTitle(list)).toBe("Private List");
+        });
+
+        it("should use decrypted title when provided", () => {
+            const list = createMockList({
+                title: undefined,
+                kind: 99999 as number,
+                content: "encrypted-content",
+            });
+            const decryptedTags: NDKTag[] = [
+                ["title", "My Secret List"],
+                ["p", "pubkey1"],
+            ];
+            expect(getListDisplayTitle(list, decryptedTags)).toBe("My Secret List");
+        });
+
+        it("should prefer decrypted title over public title", () => {
+            const list = createMockList({
+                title: "Public Title",
+                kind: NDKKind.FollowSet,
+                content: "encrypted-content",
+            });
+            const decryptedTags: NDKTag[] = [["title", "Private Title"]];
+            expect(getListDisplayTitle(list, decryptedTags)).toBe("Private Title");
+        });
+
+        it("should fall back to public title if decrypted title is non-readable", () => {
+            const list = createMockList({
+                title: "Public Title",
+                kind: NDKKind.FollowSet,
+                content: "encrypted-content",
+            });
+            const decryptedTags: NDKTag[] = [["title", "aHR0cHM6Ly9leGFtcGxlLmNvbQ=="]];
+            expect(getListDisplayTitle(list, decryptedTags)).toBe("Public Title");
         });
     });
 });

@@ -36,10 +36,31 @@ const NDK_DEFAULT_TITLES_TO_OVERRIDE: Record<string, number> = {
 };
 
 /**
+ * Extracts a title from decrypted tags.
+ * NIP-51 allows the "title" tag to be in encrypted content for fully private lists.
+ */
+export function getTitleFromTags(tags: NDKTag[]): string | undefined {
+    const titleTag = tags.find((tag) => tag[0] === "title");
+    return titleTag?.[1];
+}
+
+/**
  * Gets a display-friendly title for a list.
  * Falls back to kind-specific defaults if the title appears to be a raw identifier.
+ * For lists with encrypted content but no public title, returns "Private List" indicator.
+ *
+ * @param list - The list to get the title for
+ * @param decryptedTags - Optional decrypted tags (for extracting encrypted title)
  */
-export function getListDisplayTitle(list: NDKList): string {
+export function getListDisplayTitle(list: NDKList, decryptedTags?: NDKTag[]): string {
+    // First check for title in decrypted tags (for fully private lists)
+    if (decryptedTags) {
+        const encryptedTitle = getTitleFromTags(decryptedTags);
+        if (encryptedTitle && !NON_READABLE_TITLE_REGEXP.test(encryptedTitle)) {
+            return encryptedTitle;
+        }
+    }
+
     const title = list.title;
     const kind = list.kind as number;
 
@@ -56,6 +77,10 @@ export function getListDisplayTitle(list: NDKList): string {
         const fallback = KIND_FALLBACK_TITLES[kind];
         if (fallback) {
             return fallback;
+        }
+        // If no fallback and list has encrypted content, it may be a fully private list
+        if (hasEncryptedContent(list)) {
+            return "Private List";
         }
     }
 
@@ -151,14 +176,39 @@ export const LIST_FILTER_REGEXP = /^(chats|notifications|\/)/;
 export const LIST_MUTE_FILTER_REGEXP = /^mute|Mute/;
 export const LISTR_NPUB = "npub1lstr2kmdthkgfuzne8e4cn2nhr646x8jt25szdj7t4wr6xemtuuq3lczsj";
 
+/**
+ * Checks if a list has encrypted content that may contain private tags.
+ * Lists with encrypted content should not be filtered out even if they lack a public title,
+ * as the title may be encrypted (for "fully private" lists created by clients like Gossip).
+ */
+export function hasEncryptedContent(list: NDKList): boolean {
+    return list.content !== undefined && list.content.length > 0;
+}
+
+/**
+ * Checks if a list's title matches unwanted patterns (chats, notifications, etc.)
+ * This checks the title property which NDK may derive from the d tag.
+ */
+function shouldFilterByTitle(list: NDKList): boolean {
+    const title = list.title;
+    if (!title) return false;
+    return LIST_FILTER_REGEXP.test(title);
+}
+
 export const filterAndSortByTitle = (lists: NDKList[], deletions?: NDKEvent[]) => {
     // Filter blocked users
     const userFiltered = lists.filter((list) => !BLOCKED_PUBKEYS.includes(list.pubkey));
 
-    // Filter by title
-    const titleFiltered = userFiltered.filter(
-        (list) => list.title && !list.title.match(LIST_FILTER_REGEXP)
-    );
+    // Filter by title - but keep lists with encrypted content (may have encrypted title)
+    // However, still filter out lists with unwanted title patterns (chats, notifications, etc.)
+    const titleFiltered = userFiltered.filter((list) => {
+        // Always filter out lists with unwanted title patterns
+        if (shouldFilterByTitle(list)) {
+            return false;
+        }
+        // Keep if has a valid title or has encrypted content (may have encrypted title)
+        return list.title || hasEncryptedContent(list);
+    });
 
     // Remove duplicates by list.id (keep the most recent version)
     const uniqueById = titleFiltered.reduce((acc, current) => {
@@ -236,12 +286,26 @@ function filterLatestUniqueKindEvents(events: NDKList[]): NDKList[] {
 }
 
 export const filteredLists = (lists: NDKList[], deletions?: NDKEvent[], filterMute = false) => {
-    let titleFiltered = lists.filter((list) => list.title && !list.title.match(LIST_FILTER_REGEXP));
+    // Filter by title - but keep lists with encrypted content (may have encrypted title)
+    // However, still filter out lists with unwanted title patterns (chats, notifications, etc.)
+    let titleFiltered = lists.filter((list) => {
+        // Always filter out lists with unwanted title patterns
+        if (shouldFilterByTitle(list)) {
+            return false;
+        }
+        // Keep if has a valid title or has encrypted content (may have encrypted title)
+        return list.title || hasEncryptedContent(list);
+    });
 
     if (filterMute) {
-        titleFiltered = titleFiltered.filter(
-            (list) => list.title && !list.title.match(LIST_MUTE_FILTER_REGEXP)
-        );
+        titleFiltered = titleFiltered.filter((list) => {
+            // If list has a title, check if it matches mute pattern
+            if (list.title) {
+                return !list.title.match(LIST_MUTE_FILTER_REGEXP);
+            }
+            // If no title but has encrypted content, keep it (can't know if it's a mute list)
+            return hasEncryptedContent(list);
+        });
     }
 
     let deleteFiltered: NDKList[] | undefined;
