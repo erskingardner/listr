@@ -6,13 +6,14 @@ import {
     type NDKPaymentConfirmationLN,
     type NDKSubscription,
     type NDKZapDetails,
+    NDKZapper,
     zapInvoiceFromEvent,
 } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
 import { Zap } from "lucide-svelte";
 import { onDestroy, onMount } from "svelte";
 import toast from "svelte-hot-french-toast";
-import { requestProvider, type SendPaymentResponse } from "webln";
+import { requestProvider } from "webln";
 import { getCurrentUser } from "$lib/stores/currentUser.svelte";
 import ndk from "$lib/stores/ndk.svelte";
 
@@ -51,7 +52,6 @@ $effect(() => {
         .reduce((subTotal, value) => subTotal + value, 0);
 });
 
-// TODO: THIS IS BROKEN - Fix and add the list zap back again
 async function submitZap(e: Event) {
     e.preventDefault();
     const signer = new NDKNip07Signer();
@@ -64,24 +64,26 @@ async function submitZap(e: Event) {
     }
     console.log("Zapping event", event);
 
-    ndk.zap(event, amount * 1000, {
+    const zapper = new NDKZapper(event, amount * 1000, "msat", {
         comment,
-        onLnPay: async (invoice: NDKZapDetails<LnPaymentInfo>) => {
-            const zapRequest = zapInvoiceFromEvent(invoice.target as NDKEvent);
+        ndk,
+        signer,
+        lnPay: async (payment: NDKZapDetails<LnPaymentInfo>) => {
             try {
                 const webln = await requestProvider();
-                const paymentResponse = await webln.sendPayment(JSON.stringify(zapRequest));
+                const paymentResponse = await webln.sendPayment(payment.pr);
                 console.log("Payment response", paymentResponse);
                 return { preimage: paymentResponse.preimage } as NDKPaymentConfirmationLN;
             } catch (error) {
                 console.log("payment error:", error);
                 toast.error("Zap failed. Please try again.");
+                throw error;
             }
         },
-        onComplete: (results: Map<unknown, unknown>) => {
+        onComplete: (results) => {
             console.log("Zap results", results);
             let hasError = false;
-            results.forEach((result: unknown, key: unknown) => {
+            results.forEach((result, key) => {
                 if (result instanceof Error) {
                     hasError = true;
                     console.error(`Error for ${key}:`, result);
@@ -96,6 +98,12 @@ async function submitZap(e: Event) {
             }
         },
     });
+
+    try {
+        await zapper.zap();
+    } catch (error) {
+        console.error("Zap error:", error);
+    }
 }
 </script>
 

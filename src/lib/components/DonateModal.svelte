@@ -1,5 +1,11 @@
 <script lang="ts">
-import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
+import {
+    type LnPaymentInfo,
+    NDKNip07Signer,
+    type NDKPaymentConfirmationLN,
+    type NDKZapDetails,
+    NDKZapper,
+} from "@nostr-dev-kit/ndk";
 import { Modal } from "flowbite-svelte";
 import { Zap } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
@@ -18,27 +24,43 @@ export let modalOpen: boolean;
 async function submitZap() {
     const signer = new NDKNip07Signer();
     ndk.signer = signer;
-    let zapRequest = await listrUser.zap(amount * 1000, comment);
 
-    if (!zapRequest) {
-        console.log("No payment request");
-        return;
-    }
+    const zapper = new NDKZapper(listrUser, amount * 1000, "msat", {
+        comment,
+        ndk,
+        signer,
+        lnPay: async (payment: NDKZapDetails<LnPaymentInfo>) => {
+            try {
+                const webln = await requestProvider();
+                const response = await webln.sendPayment(payment.pr);
+                return { preimage: response.preimage } as NDKPaymentConfirmationLN;
+            } catch (err) {
+                console.error(err);
+                throw err;
+            }
+        },
+        onComplete: (results) => {
+            let hasError = false;
+            results.forEach((result) => {
+                if (result instanceof Error) {
+                    hasError = true;
+                }
+            });
 
-    try {
-        const webln = await requestProvider();
-        webln
-            .sendPayment(zapRequest as string)
-            .then(() => {
+            if (hasError) {
+                toast.error("Zap failed. Please try again.");
+            } else {
                 toast.success("Zap successful!");
                 modalOpen = false;
-            })
-            .catch((err) => {
-                console.error(err);
-                toast.error("Zap failed. Please try again.");
-            });
+            }
+        },
+    });
+
+    try {
+        await zapper.zap();
     } catch (error) {
         console.log(error);
+        toast.error("Zap failed. Please try again.");
     }
 }
 </script>
