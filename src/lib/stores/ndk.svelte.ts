@@ -22,6 +22,23 @@ const ndk: NDKSvelteWithSession = createNDK({
 
 ndk.connect().then(() => console.log("NDK Connected"));
 
+$effect.root(() => {
+    $effect(() => {
+        const user = ndk.activeUser;
+        if (user) {
+            ndk.fetchEvent({ kinds: [10002], authors: [user.pubkey] }).then((event) => {
+                if (event) {
+                    for (const tag of event.tags) {
+                        if (tag[0] === "r") {
+                            ndk.addExplicitRelay(tag[1], undefined, false);
+                        }
+                    }
+                }
+            });
+        }
+    });
+});
+
 // Export the NDK instance both as default and named export for compatibility
 export const ndkStore = ndk;
 export default ndk;
