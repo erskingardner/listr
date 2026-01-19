@@ -150,8 +150,8 @@ describe("lists utility functions", () => {
             expect(placeholder).toContain("npub");
         });
 
-        it("should return empty string for unknown kinds", () => {
-            expect(placeholderForListKind(99999)).toBe("");
+        it("should return default placeholder for unknown kinds", () => {
+            expect(placeholderForListKind(99999)).toBe("NIP-19 identifier, URL, or text");
         });
     });
 

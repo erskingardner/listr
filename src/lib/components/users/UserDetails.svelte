@@ -53,11 +53,23 @@ const avatarSizeClass = $derived(`w-${avatarSize} h-${avatarSize}`);
     {/if}
 {/snippet}
 <User.Root ndk={ndkSvelte} pubkey={user.pubkey} profile={userProfile}>
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
         class="flex flex-row gap-2 items-center relative"
         onmouseleave={() => (userCardVisible = false)}
+        onfocusout={(e: FocusEvent) => {
+            // Hide card when focus leaves the container entirely
+            const container = e.currentTarget as HTMLElement;
+            if (!container.contains(e.relatedTarget as Node)) {
+                userCardVisible = false;
+            }
+        }}
     >
-        <a href="/{user.npub}" onmouseenter={() => (userCardVisible = true)}>
+        <a
+            href="/{user.npub}"
+            onmouseenter={() => (userCardVisible = true)}
+            onfocus={() => (userCardVisible = true)}
+        >
             <User.Avatar class="{avatarSizeClass} dark:bg-gray-700 rounded-full overflow-hidden object-cover" />
         </a>
         {#if userCardVisible && !noPopover}

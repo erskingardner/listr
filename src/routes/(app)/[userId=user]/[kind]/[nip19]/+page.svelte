@@ -32,6 +32,7 @@ import {
     getTitleFromTags,
     unixTimeNowInSeconds,
 } from "$lib/utils";
+import { clearDraft, loadDraft, saveDraft } from "$lib/utils/drafts";
 
 let currentUser = $derived(ndk.$currentUser);
 
@@ -109,6 +110,48 @@ $effect(() => {
 
     if (listNip19 && (!event || event.dTag !== decodedListNip19?.identifier)) {
         fetchEvent();
+    }
+});
+
+// Load draft from localStorage on mount
+$effect(() => {
+    if (listNip19 && list) {
+        const draft = loadDraft(listNip19);
+        if (draft) {
+            const shouldRestore = confirm(
+                "You have unsaved changes from a previous session. Would you like to restore them?"
+            );
+            if (shouldRestore) {
+                unsavedPublicItems = draft.unsavedPublicItems;
+                unsavedPrivateItems = draft.unsavedPrivateItems;
+                unsavedPublicRemovals = draft.unsavedPublicRemovals;
+                unsavedPrivateRemovals = draft.unsavedPrivateRemovals;
+                if (draft.listTitle !== undefined) listTitle = draft.listTitle;
+                if (draft.listDescription !== undefined) listDescription = draft.listDescription;
+                if (draft.listImage !== undefined) listImage = draft.listImage;
+                if (draft.listCategory !== undefined) listCategory = draft.listCategory;
+                editMode = true;
+            } else {
+                clearDraft();
+            }
+        }
+    }
+});
+
+// Auto-save draft to localStorage when there are unpublished changes
+$effect(() => {
+    if (listNip19 && unpublishedChanges) {
+        saveDraft(listNip19, {
+            unsavedPublicItems,
+            unsavedPrivateItems,
+            unsavedPublicRemovals,
+            unsavedPrivateRemovals,
+            listTitle: listTitle !== initialListTitle ? listTitle : undefined,
+            listDescription:
+                listDescription !== initialListDescription ? listDescription : undefined,
+            listImage: listImage !== initialListImage ? listImage : undefined,
+            listCategory: listCategory !== initialListCategory ? listCategory : undefined,
+        });
     }
 });
 
@@ -209,6 +252,7 @@ function clearTempStores() {
     listDescription = initialListDescription;
     listImage = initialListImage;
     listCategory = initialListCategory;
+    clearDraft();
 }
 
 function itemAlreadyIncluded(tag: NDKTag): boolean {

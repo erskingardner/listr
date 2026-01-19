@@ -190,13 +190,15 @@ describe("nostr utility functions", () => {
         it("should handle URL input", async () => {
             const result = await stringInputToTag("https://example.com", 10003);
 
-            expect(result).toEqual(["r", "https://example.com"]);
+            // URL constructor normalizes bare domains by adding trailing slash
+            expect(result).toEqual(["r", "https://example.com/"]);
         });
 
         it("should handle http URL input", async () => {
             const result = await stringInputToTag("http://example.com", 10003);
 
-            expect(result).toEqual(["r", "http://example.com"]);
+            // URL constructor normalizes bare domains by adding trailing slash
+            expect(result).toEqual(["r", "http://example.com/"]);
         });
 
         it("should handle wss relay URL for non-RelayList kinds", async () => {
