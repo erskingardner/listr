@@ -108,7 +108,13 @@ $effect(() => {
         });
     }
 
-    if (listNip19 && (!event || event.dTag !== decodedListNip19?.identifier)) {
+    if (
+        listNip19 &&
+        (!event ||
+            event.dTag !== decodedListNip19?.identifier ||
+            event.kind !== decodedListNip19?.kind ||
+            event.pubkey !== decodedListNip19?.pubkey)
+    ) {
         fetchEvent();
     }
 });
@@ -242,16 +248,23 @@ beforeNavigate(() => {
 afterNavigate(() => clearTempStores());
 
 function clearTempStores() {
-    privateItems = initialPrivateItems || [];
-    publicItems = initialPublicItems;
+    event = null;
+    privateItems = [];
+    publicItems = [];
+    initialPrivateItems = [];
+    initialPublicItems = [];
     unsavedPublicItems = [];
     unsavedPrivateItems = [];
     unsavedPublicRemovals = [];
     unsavedPrivateRemovals = [];
-    listTitle = initialListTitle;
-    listDescription = initialListDescription;
-    listImage = initialListImage;
-    listCategory = initialListCategory;
+    listTitle = undefined;
+    listDescription = undefined;
+    listImage = undefined;
+    listCategory = undefined;
+    initialListTitle = undefined;
+    initialListDescription = undefined;
+    initialListImage = undefined;
+    initialListCategory = undefined;
     clearDraft();
 }
 
