@@ -61,6 +61,10 @@ export function createProfileFetcher(
         loading: false,
     });
 
+    // Track last fetched pubkey to avoid unnecessary refetches
+    // Using an object to allow mutation within the $effect closure
+    const fetchTracker = { lastPubkey: null as string | null };
+
     async function fetchProfile(payload: NDKUser | string) {
         state.loading = true;
 
@@ -116,9 +120,19 @@ export function createProfileFetcher(
     $effect(() => {
         const { user } = config();
         if (user) {
+            // Get the pubkey to check if we need to refetch
+            const pubkey = typeof user === "string" ? user : user.pubkey;
+
+            // Skip if we already fetched this pubkey and have a profile
+            if (pubkey === fetchTracker.lastPubkey && state.profile) {
+                return;
+            }
+
+            fetchTracker.lastPubkey = pubkey;
             fetchProfile(user);
         } else {
             // Reset state when user becomes falsy
+            fetchTracker.lastPubkey = null;
             state.profile = null;
             state.user = null;
             state.loading = false;
