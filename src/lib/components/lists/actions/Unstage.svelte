@@ -22,6 +22,7 @@ let {
 </script>
 
 <button
+    type="button"
     class="primaryActionButton dark:border-0 dark:bg-gray-600 dark:hover:bg-gray-500 p-1.5! place-self-start lg:place-self-center"
     onclick={() =>
         removeUnsavedItem({
