@@ -80,6 +80,10 @@ let unpublishedChanges = $derived(
         listCategory !== initialListCategory
 );
 
+// Title to show in the UI (header, breadcrumb, page title). Falls back to a
+// kind-specific display title when the event has no title tag.
+let listDisplayTitle = $derived(list ? listTitle || getListDisplayTitle(list) : listTitle);
+
 let itemCount = $derived.by(() => {
     return (
         publicItems.filter(
@@ -183,7 +187,9 @@ $effect(() => {
             const categoryChanged = listCategory !== initialListCategory;
 
             if (!titleChanged) {
-                listTitle = getListDisplayTitle(list);
+                // Only use the event's actual title tag for the input field;
+                // display fallbacks are handled by listDisplayTitle
+                listTitle = list.tagValue("title");
                 initialListTitle = listTitle;
             }
             if (!descChanged) {
@@ -470,8 +476,8 @@ function toggleDrawerVisible() {
 </script>
 
 <svelte:head>
-    <title>{`${listTitle} - Listr`}</title>
-    <meta name="description" content={`${listTitle} a list on Listr`} />
+    <title>{`${listDisplayTitle} - Listr`}</title>
+    <meta name="description" content={`${listDisplayTitle} a list on Listr`} />
 </svelte:head>
 
 {#snippet homeIcon()}
@@ -495,7 +501,7 @@ function toggleDrawerVisible() {
         <BreadcrumbItem href="/{user.npub}" class="flex flex-row gap-1.5 items-center"
             >{displayableName}</BreadcrumbItem
         >
-        <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listTitle}</BreadcrumbItem>
+        <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listDisplayTitle}</BreadcrumbItem>
     </Breadcrumb>
 
     <!-- List of the user's lists -->
@@ -522,7 +528,7 @@ function toggleDrawerVisible() {
                 {#if listImage}
                     <img
                         src={listImage}
-                        alt={listTitle}
+                        alt={listDisplayTitle}
                         class="w-full h-32 lg:h-48 object-cover rounded-md"
                     />
                 {/if}
@@ -531,7 +537,7 @@ function toggleDrawerVisible() {
                         <div
                             class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
                         >
-                            {listTitle}
+                            {listDisplayTitle}
                                 {#if false /* TODO: Implement settings via ndk.$sessionEvent or localStorage */}
                                 <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
                                 <Tooltip
