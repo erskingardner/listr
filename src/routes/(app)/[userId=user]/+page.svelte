@@ -7,7 +7,7 @@ import { page } from "$app/stores";
 import FollowPackCard from "$lib/components/lists/FollowPackCard.svelte";
 import ListCard from "$lib/components/lists/ListCard.svelte";
 import ndk from "$lib/stores/ndk.svelte";
-import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
+import { filterAndSortByTitle, formatNip05, SUPPORTED_LIST_KINDS } from "$lib/utils";
 
 let userId = $derived($page.params.userId);
 let user: NDKUser = $derived(ndk.getUser({ npub: userId }));
@@ -56,7 +56,7 @@ $effect(() => {
             displayableName =
                 profile?.displayName ||
                 profile?.name ||
-                profile?.nip05 ||
+                formatNip05(profile?.nip05) ||
                 `${user?.npub.slice(0, 9)}...` ||
                 "";
         });

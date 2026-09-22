@@ -13,6 +13,7 @@ import { Zap } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { requestProvider } from "webln";
 import ndk from "$lib/stores/ndk.svelte";
+import { formatNip05 } from "$lib/utils/nostr";
 
 let { user, extraClasses }: { user: NDKUser; extraClasses?: string } = $props();
 
@@ -79,7 +80,7 @@ let displayableName = $derived.by(() => {
         return (
             profile?.displayName ||
             profile?.name ||
-            profile?.nip05 ||
+            formatNip05(profile?.nip05) ||
             `${user?.npub.slice(0, 9)}...`
         );
     }
