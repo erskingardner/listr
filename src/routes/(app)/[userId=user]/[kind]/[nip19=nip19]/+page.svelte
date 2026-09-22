@@ -414,15 +414,7 @@ async function publishList(): Promise<void> {
             const listTags = rawList.tags;
             const dTagValue = listTags.filter((tag) => tag[0] === "d")[0][1];
 
-            if (dTagValue === list.title) {
-                newListConfirmation = confirm(
-                    "Updating this list will upgrade the format of the list to allow editing the list name going forward. Do you want to proceed?\n\nWe suggest deleting the original list after the new list is created."
-                );
-                const uuid = uuidv4();
-                list.tags.push(["d", `listr-${uuid}`]);
-            } else {
-                list.tags.push(["d", dTagValue]);
-            }
+            list.tags.push(["d", dTagValue]);
         }
 
         if (newPrivateItems.length > 0) {
