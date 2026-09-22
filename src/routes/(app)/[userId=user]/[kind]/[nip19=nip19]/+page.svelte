@@ -28,6 +28,7 @@ import type { AddressPointer, ListItemParams } from "$lib/types";
 import {
     deduplicateItems,
     ensurePubkeys,
+    formatNip05,
     getListDisplayTitle,
     getTitleFromTags,
     unixTimeNowInSeconds,
@@ -463,7 +464,7 @@ let displayableName = $derived.by(() => {
         return (
             profile?.displayName ||
             profile?.name ||
-            profile?.nip05 ||
+            formatNip05(profile?.nip05) ||
             `${user?.npub.slice(0, 9)}...`
         );
     }

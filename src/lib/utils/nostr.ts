@@ -13,6 +13,22 @@ export const NOSTR_BECH32_REGEXP =
     /^(npub|nprofile|note|nevent|naddr)1[023456789acdefghjklmnpqrstuvwxyz]+/;
 export const NOSTR_PUBKEY_REGEXP = /^[0-9a-fA-F]{64}$/;
 export const NIP05_REGEXP = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/**
+ * Matches domain-only NIP-05 identifiers (e.g. "domain.com").
+ * These are treated as the root identifier "_@domain.com".
+ */
+export const NIP05_DOMAIN_REGEXP = /^[\w-]+(\.[\w-]+)+$/;
+
+/**
+ * Formats a NIP-05 identifier for display, hiding the root identifier prefix
+ * (e.g. "_@domain.com" is displayed as "domain.com").
+ *
+ * @param nip05 - The NIP-05 identifier to format
+ */
+export function formatNip05(nip05: string | undefined): string {
+    if (!nip05) return "";
+    return nip05.startsWith("_@") ? nip05.slice(2) : nip05;
+}
 
 export function nip19ToTag(nip19Id: string): string[] | undefined {
     const decoded = nip19.decode(nip19Id);
@@ -77,8 +93,8 @@ export async function stringInputToTag(
         const url = input.split(",")[1].trim();
         return ["emoji", shortcode, url];
     }
-    // Handle NIP-05
-    if (input.match(NIP05_REGEXP)) {
+    // Handle NIP-05 (name@domain.com, or domain-only which resolves the _@domain.com root identifier)
+    if (input.match(NIP05_REGEXP) || input.match(NIP05_DOMAIN_REGEXP)) {
         const profile = await nip05.queryProfile(input);
         if (profile?.pubkey) {
             tag = ["p", profile.pubkey];

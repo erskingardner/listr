@@ -3,6 +3,7 @@ import { nip05 } from "nostr-tools";
 import { describe, expect, it, vi } from "vitest";
 import {
     aTagToNip19,
+    formatNip05,
     NOSTR_BECH32_REGEXP,
     NOSTR_PUBKEY_REGEXP,
     nip19ToTag,
@@ -254,6 +255,39 @@ describe("nostr utility functions", () => {
             ]);
         });
 
+        it("should resolve domain-only NIP-05 identifier", async () => {
+            vi.mocked(nip05.queryProfile).mockResolvedValue({
+                pubkey: "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                relays: [],
+            });
+            const result = await stringInputToTag("example.com", 30000);
+            // nostr-tools queries the _@example.com root identifier for domain-only input
+            expect(nip05.queryProfile).toHaveBeenCalledWith("example.com");
+            expect(result).toEqual([
+                "p",
+                "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            ]);
+        });
+
+        it("should resolve domain-only NIP-05 identifier with subdomain", async () => {
+            vi.mocked(nip05.queryProfile).mockResolvedValue({
+                pubkey: "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+                relays: [],
+            });
+            const result = await stringInputToTag("sub.example.com", 30000);
+            expect(nip05.queryProfile).toHaveBeenCalledWith("sub.example.com");
+            expect(result).toEqual([
+                "p",
+                "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            ]);
+        });
+
+        it("should return undefined for domain-only NIP-05 identifier that doesn't resolve", async () => {
+            vi.mocked(nip05.queryProfile).mockResolvedValue(null);
+            const result = await stringInputToTag("example.com", 30000);
+            expect(result).toBeUndefined();
+        });
+
         it("should add markers to tag if provided", async () => {
             const result = await stringInputToTag("#bitcoin", 10000, ["marker1", "marker2"]);
 
@@ -298,6 +332,25 @@ describe("nostr utility functions", () => {
             const result = aTagToNip19(aTag);
 
             expect(result).toMatch(/^naddr1/);
+        });
+    });
+
+    describe("formatNip05", () => {
+        it("should hide the root identifier prefix", () => {
+            expect(formatNip05("_@domain.com")).toBe("domain.com");
+        });
+
+        it("should leave named identifiers unchanged", () => {
+            expect(formatNip05("user@domain.com")).toBe("user@domain.com");
+        });
+
+        it("should leave domain-only identifiers unchanged", () => {
+            expect(formatNip05("domain.com")).toBe("domain.com");
+        });
+
+        it("should return an empty string for undefined or empty input", () => {
+            expect(formatNip05(undefined)).toBe("");
+            expect(formatNip05("")).toBe("");
         });
     });
 });
