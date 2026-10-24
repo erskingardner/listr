@@ -1,6 +1,6 @@
 <script lang="ts">
-import { Tag } from "lucide-svelte";
-import type { ListItemParams } from "$lib/types";
+import { Tag } from "@lucide/svelte";
+import type { ListItemParams } from "#lib/types.ts";
 import RemoveItem from "../actions/RemoveItem.svelte";
 import Unstage from "../actions/Unstage.svelte";
 import ItemActions from "./ItemActions.svelte";

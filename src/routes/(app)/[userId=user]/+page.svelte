@@ -1,15 +1,15 @@
 <script lang="ts">
+import { Home } from "@lucide/svelte";
 import type { NDKEvent, NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
-import { Home } from "lucide-svelte";
-import { page } from "$app/stores";
-import FollowPackCard from "$lib/components/lists/FollowPackCard.svelte";
-import ListCard from "$lib/components/lists/ListCard.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
+import FollowPackCard from "#lib/components/lists/FollowPackCard.svelte";
+import ListCard from "#lib/components/lists/ListCard.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "#lib/utils/index.ts";
+import { page } from "$app/state";
 
-let userId = $derived($page.params.userId);
+let userId = $derived(page.params.userId);
 let user: NDKUser = $derived(ndk.getUser({ npub: userId }));
 let profile: NDKUserProfile | null = $state(null);
 let displayableName: string = $state("");

@@ -1,10 +1,10 @@
 <script lang="ts">
 import "../../app.css";
 import { Toaster } from "svelte-hot-french-toast";
-import DonateModal from "$lib/components/DonateModal.svelte";
-import Header from "$lib/components/header/Header.svelte";
-import DesktopMenu from "$lib/components/sidebar/DesktopMenu.svelte";
-import MobileMenu from "$lib/components/sidebar/MobileMenu.svelte";
+import DonateModal from "#lib/components/DonateModal.svelte";
+import Header from "#lib/components/header/Header.svelte";
+import DesktopMenu from "#lib/components/sidebar/DesktopMenu.svelte";
+import MobileMenu from "#lib/components/sidebar/MobileMenu.svelte";
 
 let { children } = $props();
 

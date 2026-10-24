@@ -1,6 +1,6 @@
 <script lang="ts">
+import { SunMoon } from "@lucide/svelte";
 import { DarkMode } from "flowbite-svelte";
-import { SunMoon } from "lucide-svelte";
 import Logo from "./Logo.svelte";
 import NavMenu from "./NavMenu.svelte";
 

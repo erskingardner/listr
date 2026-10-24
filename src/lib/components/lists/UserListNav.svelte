@@ -1,9 +1,13 @@
 <script lang="ts">
 import { type NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { nip19 } from "nostr-tools";
-import { page } from "$app/stores";
-import ndk from "$lib/stores/ndk.svelte";
-import { filterAndSortByTitle, getListDisplayTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import {
+    filterAndSortByTitle,
+    getListDisplayTitle,
+    SUPPORTED_LIST_KINDS,
+} from "#lib/utils/index.ts";
+import { page } from "$app/state";
 
 let { userPubkey }: { userPubkey: string } = $props();
 
@@ -35,7 +39,7 @@ let filteredLists: NDKList[] = $derived(filterAndSortByTitle(lists, deletedEvent
         {#each filteredLists as list}
             <a
                 href="/{nip19.npubEncode(userPubkey)}/{list.kind}/{list.encode()}"
-                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold {$page.url
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold {page.url
                     .pathname === `/${nip19.npubEncode(userPubkey)}/${list.kind}/${list.encode()}`
                     ? 'bg-gray-100 dark:bg-gray-700'
                     : ''} w-full block rounded-md text-left truncate"

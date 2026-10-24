@@ -1,6 +1,6 @@
 import NDKCacheDexie from "@nostr-dev-kit/cache-dexie";
 import { createNDK, type NDKSvelteWithSession } from "@nostr-dev-kit/svelte";
-import { browser } from "$app/environment";
+import { browser } from "$app/env";
 
 const cacheAdapter = browser ? new NDKCacheDexie({ dbName: "listr-v2" }) : undefined;
 

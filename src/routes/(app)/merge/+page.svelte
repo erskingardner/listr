@@ -2,15 +2,15 @@
 import { NDKKind, NDKList, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
 import { onMount } from "svelte";
 import toast from "svelte-hot-french-toast";
-import { invalidateAll } from "$app/navigation";
-import ndk from "$lib/stores/ndk.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 import {
     deduplicateItems,
     filterAndSortByTitle,
     filteredItemsForListKind,
     SUPPORTED_LIST_KINDS,
     unixTimeNowInSeconds,
-} from "$lib/utils";
+} from "#lib/utils/index.ts";
+import { refreshAll } from "$app/navigation";
 
 type ListOption = {
     id: string;
@@ -155,7 +155,7 @@ async function mergeLists(e: Event) {
         .publish()
         .then(async () => {
             toast.success("Your lists were merged");
-            invalidateAll();
+            refreshAll();
             resetTempStores();
             if (deleteFromList) await createDeleteFromListEvent();
         })
@@ -180,7 +180,7 @@ async function createDeleteFromListEvent() {
         .publish()
         .then(() => {
             toast.success(`"Merge from" list deleted`);
-            invalidateAll();
+            refreshAll();
         })
         .catch((error) => {
             console.error(error);

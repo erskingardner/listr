@@ -1,9 +1,9 @@
 <script lang="ts">
+import { MoreVertical } from "@lucide/svelte";
 import type { NDKKind, NDKTag, NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
-import { MoreVertical } from "lucide-svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { DUPLICATABLEABLE_LIST_KINDS } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { DUPLICATABLEABLE_LIST_KINDS } from "#lib/utils/index.ts";
 import CopyId from "./CopyId.svelte";
 import Delete from "./Delete.svelte";
 import Duplicate from "./Duplicate.svelte";

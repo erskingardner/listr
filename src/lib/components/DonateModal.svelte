@@ -1,4 +1,5 @@
 <script lang="ts">
+import { Zap } from "@lucide/svelte";
 import {
     type LnPaymentInfo,
     NDKNip07Signer,
@@ -7,10 +8,9 @@ import {
     NDKZapper,
 } from "@nostr-dev-kit/ndk";
 import { Modal } from "flowbite-svelte";
-import { Zap } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { requestProvider } from "webln";
-import ndk from "$lib/stores/ndk.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 const listrUser = ndk.getUser({
     npub: "npub1lstr2kmdthkgfuzne8e4cn2nhr646x8jt25szdj7t4wr6xemtuuq3lczsj",

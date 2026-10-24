@@ -3,15 +3,15 @@ import type { NDKEvent } from "@nostr-dev-kit/ndk";
 import { NDKList } from "@nostr-dev-kit/ndk";
 import { TabItem, Tabs } from "flowbite-svelte";
 import { onMount } from "svelte";
-import Loader from "$lib/components/Loader.svelte";
-import ListSummary from "$lib/components/lists/ListSummary.svelte";
-import ndk from "$lib/stores/ndk.svelte";
+import Loader from "#lib/components/Loader.svelte";
+import ListSummary from "#lib/components/lists/ListSummary.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 import {
     FEED_LIST_KINDS,
     filteredLists,
     getListDisplayTitle,
     unixTimeNowInSeconds,
-} from "$lib/utils";
+} from "#lib/utils/index.ts";
 
 /** Maximum number of authors to include in a single relay filter request */
 const MAX_AUTHORS_PER_QUERY = 400;

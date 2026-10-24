@@ -1,8 +1,8 @@
 <script lang="ts">
+import { LogIn } from "@lucide/svelte";
 import { NDKNip07Signer } from "@nostr-dev-kit/ndk";
-import { LogIn } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
-import ndk from "$lib/stores/ndk.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 let { buttonClass = "" }: { buttonClass?: string } = $props();
 

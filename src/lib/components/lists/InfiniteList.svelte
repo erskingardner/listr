@@ -1,6 +1,6 @@
 <script lang="ts">
+import { Loader2 } from "@lucide/svelte";
 import type { NDKTag } from "@nostr-dev-kit/ndk";
-import { Loader2 } from "lucide-svelte";
 import type { Snippet } from "svelte";
 
 const PAGE_SIZE = 50;

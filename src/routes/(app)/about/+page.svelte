@@ -1,7 +1,7 @@
 <script lang="ts">
+import UserDetails from "#lib/components/users/UserDetails.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 import { goto } from "$app/navigation";
-import UserDetails from "$lib/components/users/UserDetails.svelte";
-import ndk from "$lib/stores/ndk.svelte";
 
 const ids: string[] = [
     "3bf0c63fcb93463407af97a5e5ee64fa883d107ef9e558472c4eb9aaaefa459d", // Fiatjaf

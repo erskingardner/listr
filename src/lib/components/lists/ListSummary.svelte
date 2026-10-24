@@ -1,6 +1,6 @@
 <script lang="ts">
-import ndk from "$lib/stores/ndk.svelte";
-import { timeAgo } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { timeAgo } from "#lib/utils/index.ts";
 import UserDetails from "../users/UserDetails.svelte";
 
 let {

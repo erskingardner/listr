@@ -1,8 +1,8 @@
 <script lang="ts">
+import { Database, Link } from "@lucide/svelte";
 import { Tooltip } from "flowbite-svelte";
-import { Database, Link } from "lucide-svelte";
-import type { ListItemParams } from "$lib/types";
-import { kindIsRelayList } from "$lib/utils";
+import type { ListItemParams } from "#lib/types.ts";
+import { kindIsRelayList } from "#lib/utils/index.ts";
 import RemoveItem from "../actions/RemoveItem.svelte";
 import Unstage from "../actions/Unstage.svelte";
 import ItemActions from "./ItemActions.svelte";

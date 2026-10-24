@@ -1,8 +1,15 @@
+import adapter from "@sveltejs/adapter-vercel";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-    plugins: [sveltekit()],
+    plugins: [
+        sveltekit({
+            preprocess: vitePreprocess(),
+            adapter: adapter({ runtime: "nodejs24.x" }),
+        }),
+    ],
     test: {
         include: ["src/**/*.{test,spec}.{js,ts}"],
         environment: "jsdom",
