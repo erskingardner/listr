@@ -1,16 +1,16 @@
 <script lang="ts">
+import { Smile } from "@lucide/svelte";
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { NDKArticle } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
-import { Smile } from "lucide-svelte";
-import { User } from "$lib/ndk/ui/user";
-import ndk from "$lib/stores/ndk.svelte";
+import { User } from "#lib/ndk/ui/user/index.ts";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 // Cast ndk to NDKSvelte for component compatibility
 const ndkSvelte = ndk as unknown as NDKSvelte;
 
-import type { ListItemParams } from "$lib/types";
-import { formattedDate } from "$lib/utils";
+import type { ListItemParams } from "#lib/types.ts";
+import { formattedDate } from "#lib/utils/index.ts";
 import RemoveItem from "../actions/RemoveItem.svelte";
 import Unstage from "../actions/Unstage.svelte";
 import CommunityItem from "./CommunityItem.svelte";

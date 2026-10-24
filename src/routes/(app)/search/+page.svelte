@@ -1,11 +1,11 @@
 <script lang="ts">
 import { NDKKind, NDKRelay, NDKRelaySet } from "@nostr-dev-kit/ndk";
-import { page } from "$app/stores";
-import Loader from "$lib/components/Loader.svelte";
-import ListSearchResult from "$lib/components/search/ListSearchResult.svelte";
-import UserSearchResult from "$lib/components/search/UserSearchResult.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { SUPPORTED_LIST_KINDS } from "$lib/utils";
+import Loader from "#lib/components/Loader.svelte";
+import ListSearchResult from "#lib/components/search/ListSearchResult.svelte";
+import UserSearchResult from "#lib/components/search/UserSearchResult.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { SUPPORTED_LIST_KINDS } from "#lib/utils/index.ts";
+import { page } from "$app/state";
 
 const searchRelayUrls = [
     "wss://relay.primal.net",
@@ -19,7 +19,7 @@ for (const url of searchRelayUrls) {
     searchRelays.addRelay(new NDKRelay(url, undefined, ndk));
 }
 
-let query: string | null = $derived($page.url.searchParams.get("q"));
+let query: string | null = $derived(page.url.searchParams.get("q"));
 
 let sub = ndk.$subscribe(() =>
     query

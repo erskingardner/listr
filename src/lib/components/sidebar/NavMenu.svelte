@@ -1,10 +1,14 @@
 <script lang="ts">
+import { CodeXml, HelpCircle, LifeBuoy, Merge, Newspaper, UsersRound } from "@lucide/svelte";
 import { type NDKEvent, NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
-import { Github, HelpCircle, LifeBuoy, Merge, Newspaper, UsersRound } from "lucide-svelte";
-import { page } from "$app/stores";
-import ndk from "$lib/stores/ndk.svelte";
-import { filterAndSortByTitle, getListDisplayTitle, SUPPORTED_LIST_KINDS } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import {
+    filterAndSortByTitle,
+    getListDisplayTitle,
+    SUPPORTED_LIST_KINDS,
+} from "#lib/utils/index.ts";
+import { page } from "$app/state";
 import DonateButton from "../DonateButton.svelte";
 import SigninSelector from "../header/SigninSelector.svelte";
 import NewListButton from "../NewListButton.svelte";
@@ -65,7 +69,7 @@ let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvent
                 <li>
                     <a
                         href="/feed"
-                        class="{$page.url.pathname === '/feed'
+                        class="{page.url.pathname === '/feed'
                             ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                             : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         onclick={closeMobileMenu}
@@ -77,7 +81,7 @@ let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvent
                 <li>
                     <a
                         href="/packs"
-                        class="{$page.url.pathname === '/packs'
+                        class="{page.url.pathname === '/packs'
                             ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                             : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         onclick={closeMobileMenu}
@@ -90,7 +94,7 @@ let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvent
                     <li>
                         <a
                             href="/merge"
-                            class="{$page.url.pathname === '/merge'
+                            class="{page.url.pathname === '/merge'
                                 ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                                 : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                             onclick={closeMobileMenu}
@@ -103,7 +107,7 @@ let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvent
                 <li>
                     <a
                         href="/about"
-                        class="{$page.url.pathname === '/about'
+                        class="{page.url.pathname === '/about'
                             ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                             : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                         onclick={closeMobileMenu}
@@ -130,7 +134,7 @@ let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvent
                         target="_blank"
                         onclick={closeMobileMenu}
                     >
-                        <Github strokeWidth="1.5" size="20" />
+                        <CodeXml strokeWidth="1.5" size="20" />
                         Listr on Github
                     </a>
                 </li>
@@ -192,7 +196,7 @@ let filteredLists = $derived(filterAndSortByTitle(currentUserLists, deletedEvent
                             <li>
                                 <a
                                     href="/{currentUser.npub}/{list.kind}/{list.encode()}"
-                                    class="{$page.url.pathname ===
+                                    class="{page.url.pathname ===
                                     `/${currentUser.npub}/${list.kind}/${list.encode()}`
                                         ? 'bg-gray-200 text-black dark:bg-gray-800 dark:text-white'
                                         : 'text-gray-700 hover:bg-gray-200 hover:text-black dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800'} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"

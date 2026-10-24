@@ -1,7 +1,7 @@
 <script lang="ts">
-import UserDetails from "$lib/components/users/UserDetails.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import type { ListItemParams } from "$lib/types";
+import UserDetails from "#lib/components/users/UserDetails.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import type { ListItemParams } from "#lib/types.ts";
 import AddToListButton from "../actions/AddToListButton.svelte";
 import FollowButton from "../actions/FollowButton.svelte";
 import RemoveItem from "../actions/RemoveItem.svelte";

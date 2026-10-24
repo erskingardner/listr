@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearDraft, hasDraft, type ListDraft, loadDraft, saveDraft } from "./drafts";
 
 // Mock $app/environment
-vi.mock("$app/environment", () => ({
+vi.mock("$app/env", () => ({
     browser: true,
 }));
 

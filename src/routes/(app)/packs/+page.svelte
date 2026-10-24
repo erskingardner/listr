@@ -1,10 +1,10 @@
 <script lang="ts">
 import { type NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
 import { fade } from "svelte/transition";
-import FollowPackCard from "$lib/components/lists/FollowPackCard.svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
-import { filterAndSortByTitle } from "$lib/utils/lists";
+import FollowPackCard from "#lib/components/lists/FollowPackCard.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { unixTimeNowInSeconds } from "#lib/utils/index.ts";
+import { filterAndSortByTitle } from "#lib/utils/lists.ts";
 
 let currentUser = $derived(ndk.$currentUser);
 

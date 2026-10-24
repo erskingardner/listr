@@ -1,15 +1,15 @@
 <script lang="ts">
 import type { NDKEvent, NDKUser } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
-import UserDetails from "$lib/components/users/UserDetails.svelte";
-import EventContent from "$lib/ndk/ui/event-content.svelte";
-import ndk from "$lib/stores/ndk.svelte";
+import UserDetails from "#lib/components/users/UserDetails.svelte";
+import EventContent from "#lib/ndk/ui/event-content.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 // Cast ndk to NDKSvelte for component compatibility
 const ndkSvelte = ndk as unknown as NDKSvelte;
 
-import type { ListItemParams } from "$lib/types";
-import { timeAgo } from "$lib/utils";
+import type { ListItemParams } from "#lib/types.ts";
+import { timeAgo } from "#lib/utils/index.ts";
 import RemoveItem from "../actions/RemoveItem.svelte";
 import Unstage from "../actions/Unstage.svelte";
 import AdditionItemPill from "./AdditionItemPill.svelte";

@@ -1,15 +1,16 @@
 import { NDKKind } from "@nostr-dev-kit/ndk";
-import { nip05 } from "nostr-tools";
+import { nip05, nip19 } from "nostr-tools";
 import { describe, expect, it, vi } from "vitest";
 import {
     aTagToNip19,
+    eventMatchesListReference,
     NOSTR_BECH32_REGEXP,
     NOSTR_PUBKEY_REGEXP,
     nip19ToTag,
     stringInputToTag,
 } from "./nostr";
 
-vi.mock("$app/environment", () => ({
+vi.mock("$app/env", () => ({
     browser: false,
     dev: true,
     building: false,
@@ -28,6 +29,46 @@ vi.mock("nostr-tools", async (importOriginal) => {
 });
 
 describe("nostr utility functions", () => {
+    describe("eventMatchesListReference", () => {
+        const event = {
+            id: "a".repeat(64),
+            kind: 30000,
+            pubkey: "b".repeat(64),
+            dTag: "test-list",
+        };
+
+        it("matches nevent references by ID without address metadata", () => {
+            const reference = nip19.neventEncode({ id: event.id });
+            expect(
+                eventMatchesListReference({ ...event, kind: 10003, dTag: undefined }, reference)
+            ).toBe(true);
+            expect(eventMatchesListReference({ ...event, id: "c".repeat(64) }, reference)).toBe(
+                false
+            );
+        });
+
+        it("matches naddr references across revisions of the same list", () => {
+            const reference = nip19.naddrEncode({ ...event, identifier: event.dTag });
+            expect(eventMatchesListReference(event, reference)).toBe(true);
+            expect(eventMatchesListReference({ ...event, id: "c".repeat(64) }, reference)).toBe(
+                true
+            );
+        });
+
+        it.each([{ kind: 30001 }, { pubkey: "c".repeat(64) }, { dTag: "another-list" }])(
+            "rejects a different list address: %o",
+            (change) => {
+                const reference = nip19.naddrEncode({ ...event, identifier: event.dTag });
+                expect(eventMatchesListReference({ ...event, ...change }, reference)).toBe(false);
+            }
+        );
+
+        it("rejects invalid and unsupported identifiers", () => {
+            expect(eventMatchesListReference(event, "invalid")).toBe(false);
+            expect(eventMatchesListReference(event, nip19.npubEncode(event.pubkey))).toBe(false);
+        });
+    });
+
     describe("NOSTR_BECH32_REGEXP", () => {
         it("should match valid npub identifiers", () => {
             const npub = "npub1test123abc456def789ghi012jkl345mno678pqr901stu234vwx567yz";

@@ -95,11 +95,11 @@ export type MediaClickCallback = (urls: string[], clickedIndex: number) => void;
  *
  * @example With handlers:
  * ```ts
- * import { defaultContentRenderer } from '$lib/ui';
- * import Mention from '$lib/components/mention.svelte';
+ * import { defaultContentRenderer } from '#lib/ui';
+ * import Mention from '#lib/components/mention.svelte';
  * // Import embedded components to auto-register handlers
- * import '$lib/registry/components/article-embedded';
- * import '$lib/registry/components/note-embedded';
+ * import '#lib/registry/components/article-embedded';
+ * import '#lib/registry/components/note-embedded';
  *
  * defaultContentRenderer.mentionComponent = Mention;
  * ```
@@ -379,12 +379,12 @@ export class ContentRenderer {
  *
  * @example
  * ```ts
- * import '$lib/components/mention';
- * import '$lib/components/hashtag';
+ * import '#lib/components/mention';
+ * import '#lib/components/hashtag';
  * // Import embedded components to auto-register handlers
- * import '$lib/registry/components/article-embedded';
- * import '$lib/registry/components/note-embedded';
- * import '$lib/registry/components/highlight-embedded';
+ * import '#lib/registry/components/article-embedded';
+ * import '#lib/registry/components/note-embedded';
+ * import '#lib/registry/components/highlight-embedded';
  * ```
  */
 export const defaultContentRenderer = new ContentRenderer();

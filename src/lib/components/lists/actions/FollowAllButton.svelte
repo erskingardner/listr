@@ -1,9 +1,9 @@
 <script lang="ts">
+import { UsersRound } from "@lucide/svelte";
 import type { NDKTag } from "@nostr-dev-kit/ndk";
 import { Modal } from "flowbite-svelte";
-import { UsersRound } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
-import ndk from "$lib/stores/ndk.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 let { publicItems, extraClasses = "" }: { publicItems: NDKTag[]; extraClasses?: string } = $props();
 

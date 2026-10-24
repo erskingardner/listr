@@ -2,8 +2,8 @@
 import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
 import { fly } from "svelte/transition";
-import { User } from "$lib/ndk/ui/user";
-import ndk from "$lib/stores/ndk.svelte";
+import { User } from "#lib/ndk/ui/user/index.ts";
+import ndk from "#lib/stores/ndk.svelte.ts";
 import AddToListButton from "../lists/actions/AddToListButton.svelte";
 import FollowButton from "../lists/actions/FollowButton.svelte";
 import UserDetails from "./UserDetails.svelte";

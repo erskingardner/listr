@@ -1,9 +1,9 @@
 <script lang="ts">
+import { BadgeCheck, BadgeHelp, BadgeX } from "@lucide/svelte";
 import type { NDKUser, NDKUserProfile } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
-import { BadgeCheck, BadgeHelp, BadgeX } from "lucide-svelte";
-import { User } from "$lib/ndk/ui/user";
-import ndk from "$lib/stores/ndk.svelte";
+import { User } from "#lib/ndk/ui/user/index.ts";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 // Cast ndk to NDKSvelte for component compatibility
 const ndkSvelte = ndk;

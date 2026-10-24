@@ -1,23 +1,23 @@
 <script lang="ts">
+import { AlertTriangle, Check, Info } from "@lucide/svelte";
 import { NDKList, NDKNip07Signer, type NDKTag, type NDKUser } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
-import { AlertTriangle, Check, Info } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 import { defaults, superForm } from "sveltekit-superforms/client";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod/v3";
-import { browser } from "$app/environment";
-import { goto } from "$app/navigation";
-import Item from "$lib/components/lists/Item.svelte";
-import ndk from "$lib/stores/ndk.svelte";
+import { z } from "zod";
+import Item from "#lib/components/lists/Item.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 import {
     kindIsRelayList,
     placeholderForListKind,
     stringInputToTag,
     unixTimeNowInSeconds,
     validateTagForListKind,
-} from "$lib/utils";
+} from "#lib/utils/index.ts";
+import { browser } from "$app/env";
+import { goto } from "$app/navigation";
 
 let addItemSubmitting = $state(false);
 let addItemError = $state(false);
@@ -42,10 +42,10 @@ const initialNewList = {
     privateItems: [],
 };
 
-const { form, errors, enhance } = superForm(defaults(initialNewList, zod(newListSchema)), {
+const { form, errors, enhance } = superForm(defaults(initialNewList, zod4(newListSchema)), {
     taintedMessage: "Are you sure you want to leave the page? Your changes won't be saved.",
     SPA: true,
-    validators: zod(newListSchema),
+    validators: zod4(newListSchema),
     async onUpdate({ form }) {
         if (form.valid) {
             const nip19Id = await publishList();

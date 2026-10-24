@@ -1,10 +1,10 @@
 <script lang="ts">
+import { Info } from "@lucide/svelte";
 import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
-import { Info } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { unixTimeNowInSeconds } from "#lib/utils/index.ts";
 
 let currentUser = $derived(ndk.$currentUser);
 let devMode = $state(false);

@@ -1,11 +1,11 @@
 <script lang="ts">
+import { CopyPlus } from "@lucide/svelte";
 import { NDKList, type NostrEvent } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
-import { CopyPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { v4 as uuidv4 } from "uuid";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { unixTimeNowInSeconds } from "#lib/utils/index.ts";
 
 let currentUser = $derived(ndk.$currentUser);
 

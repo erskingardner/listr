@@ -1,5 +1,5 @@
-import type { Handle } from "@sveltejs/kit";
 import { redirect } from "@sveltejs/kit";
+import type { Handle } from "@sveltejs/kit/hooks";
 
 const protectedRoutes: string[] = ["/new", "/settings", "/merge"];
 

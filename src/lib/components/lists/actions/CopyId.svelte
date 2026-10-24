@@ -1,6 +1,6 @@
 <script lang="ts">
-import { Copy, CopyCheck } from "lucide-svelte";
-import { copyToClipboard } from "$lib/utils";
+import { Copy, CopyCheck } from "@lucide/svelte";
+import { copyToClipboard } from "#lib/utils/index.ts";
 
 let {
     nip19,

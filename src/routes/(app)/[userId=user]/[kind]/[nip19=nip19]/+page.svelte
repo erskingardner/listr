@@ -1,4 +1,5 @@
 <script lang="ts">
+import { HardDriveUpload, Home, Info } from "@lucide/svelte";
 import {
     type NDKEvent,
     NDKKind,
@@ -9,43 +10,39 @@ import {
     type NostrEvent,
 } from "@nostr-dev-kit/ndk";
 import { Breadcrumb, BreadcrumbItem, Tooltip } from "flowbite-svelte";
-import { HardDriveUpload, Home, Info } from "lucide-svelte";
-import { nip19 } from "nostr-tools";
 import { expoInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
 import toast from "svelte-hot-french-toast";
 import { v4 as uuidv4 } from "uuid";
-import { afterNavigate, beforeNavigate, invalidateAll } from "$app/navigation";
-import { page } from "$app/stores";
-import ListActions from "$lib/components/lists/actions/ListActions.svelte";
-import AddItemForm from "$lib/components/lists/forms/AddItemForm.svelte";
-import ChangesCount from "$lib/components/lists/forms/ChangesCount.svelte";
-import InfiniteList from "$lib/components/lists/InfiniteList.svelte";
-import Item from "$lib/components/lists/Item.svelte";
-import UserListNav from "$lib/components/lists/UserListNav.svelte";
-import ndk from "$lib/stores/ndk.svelte.js";
-import type { AddressPointer, ListItemParams } from "$lib/types";
+import ListActions from "#lib/components/lists/actions/ListActions.svelte";
+import AddItemForm from "#lib/components/lists/forms/AddItemForm.svelte";
+import ChangesCount from "#lib/components/lists/forms/ChangesCount.svelte";
+import InfiniteList from "#lib/components/lists/InfiniteList.svelte";
+import Item from "#lib/components/lists/Item.svelte";
+import UserListNav from "#lib/components/lists/UserListNav.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import type { ListItemParams } from "#lib/types.ts";
+import { clearDraft, loadDraft, saveDraft } from "#lib/utils/drafts.ts";
 import {
     deduplicateItems,
     ensurePubkeys,
+    eventMatchesListReference,
     getListDisplayTitle,
     getTitleFromTags,
     unixTimeNowInSeconds,
-} from "$lib/utils";
-import { clearDraft, loadDraft, saveDraft } from "$lib/utils/drafts";
+} from "#lib/utils/index.ts";
+import { afterNavigate, beforeNavigate, refreshAll } from "$app/navigation";
+import { page } from "$app/state";
 
 let currentUser = $derived(ndk.$currentUser);
 
 let profile: NDKUserProfile | null = $state(null);
 let event: NDKEvent | null = $state(null);
 
-let userId = $derived($page.params.userId);
+let userId = $derived(page.params.userId);
 let user = $derived(ndk.getUser({ npub: userId }));
-let listNip19 = $derived($page.params.nip19);
-let decodedListNip19: AddressPointer | null = $derived(
-    listNip19 ? (nip19.decode(listNip19).data as AddressPointer) : null
-);
-let kind = $derived(Number.parseInt($page.params.kind, 10));
+let listNip19 = $derived(page.params.nip19 ?? "");
+let kind = $derived(Number.parseInt(page.params.kind ?? "", 10));
 let rawList = $derived.by(() => (event ? (event?.rawEvent() as NostrEvent) : null));
 let list = $derived.by(() => (event ? NDKList.from(event as NDKEvent) : null));
 let initialPrivateItems: NDKTag[] = $state([]);
@@ -108,13 +105,7 @@ $effect(() => {
         });
     }
 
-    if (
-        listNip19 &&
-        (!event ||
-            event.dTag !== decodedListNip19?.identifier ||
-            event.kind !== decodedListNip19?.kind ||
-            event.pubkey !== decodedListNip19?.pubkey)
-    ) {
+    if (listNip19 && (!event || !eventMatchesListReference(event, listNip19))) {
         fetchEvent();
     }
 });
@@ -428,7 +419,7 @@ async function publishList(): Promise<void> {
             publishingChanges = false;
             editMode = false;
             clearTempStores();
-            invalidateAll();
+            refreshAll();
         }
     } catch (error) {
         console.error(error);
