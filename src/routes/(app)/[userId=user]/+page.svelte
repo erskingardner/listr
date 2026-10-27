@@ -6,7 +6,7 @@ import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
 import FollowPackCard from "#lib/components/lists/FollowPackCard.svelte";
 import ListCard from "#lib/components/lists/ListCard.svelte";
 import ndk from "#lib/stores/ndk.svelte.ts";
-import { filterAndSortByTitle, SUPPORTED_LIST_KINDS } from "#lib/utils/index.ts";
+import { filterAndSortByTitle, formatNip05, SUPPORTED_LIST_KINDS } from "#lib/utils/index.ts";
 import { page } from "$app/state";
 
 let userId = $derived(page.params.userId);
@@ -56,7 +56,7 @@ $effect(() => {
             displayableName =
                 profile?.displayName ||
                 profile?.name ||
-                profile?.nip05 ||
+                formatNip05(profile?.nip05) ||
                 `${user?.npub.slice(0, 9)}...` ||
                 "";
         });

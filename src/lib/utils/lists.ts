@@ -1,5 +1,7 @@
-import type { NDKEvent, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
-import { NDKKind } from "@nostr-dev-kit/ndk";
+import type NDK from "@nostr-dev-kit/ndk";
+import type { NDKEvent, NDKTag, NostrEvent } from "@nostr-dev-kit/ndk";
+import { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
+import { unixTimeNowInSeconds } from "./dates";
 import { NOSTR_PUBKEY_REGEXP } from "./nostr";
 
 /**
@@ -86,6 +88,74 @@ export function getListDisplayTitle(list: NDKList, decryptedTags?: NDKTag[]): st
     }
 
     return title || "Untitled List";
+}
+
+/**
+ * Gets the title to edit for a list: its `title` tag, or its legacy `name` tag.
+ * Unlike getListDisplayTitle, never falls back to the `d` tag or a kind default,
+ * so saving an edit doesn't write a made-up title onto the list.
+ *
+ * @param list - The list being edited
+ */
+export function getEditableListTitle(list: NDKList): string | undefined {
+    return list.tagValue("title") || list.tagValue("name") || undefined;
+}
+
+/** The edited items and metadata of a list, as held by the list page's edit form. */
+export interface EditedListFields {
+    items: NDKTag[];
+    privateItems: NDKTag[];
+    title?: string;
+    /** Whether the title lives in the encrypted content (a fully private list) */
+    titleIsPrivate?: boolean;
+    description?: string;
+    image?: string;
+    category?: string;
+}
+
+/**
+ * Builds the replacement event for an edited list, with its private items as unencrypted
+ * JSON content (the caller encrypts it). On parameterized lists it keeps the source event's
+ * `d` tag, so the edit replaces the same list (same naddr) instead of creating a new one.
+ *
+ * @param ndk - The NDK instance to attach the new list to
+ * @param source - The raw event being edited
+ * @param fields - The edited items and metadata
+ */
+export function buildEditedList(ndk: NDK, source: NostrEvent, fields: EditedListFields): NDKList {
+    // A private title is updated in the encrypted items and never published as a public tag
+    let privateItems = fields.privateItems;
+    if (fields.titleIsPrivate) {
+        privateItems = privateItems.filter((tag) => tag[0] !== "title");
+        if (fields.title) privateItems = [["title", fields.title], ...privateItems];
+    }
+
+    const list = new NDKList(ndk, {
+        kind: source.kind,
+        pubkey: source.pubkey,
+        created_at: unixTimeNowInSeconds(),
+        content: privateItems.length > 0 ? JSON.stringify(privateItems) : "",
+        tags: fields.items.map((tag) => [...tag]),
+    });
+
+    list.title = fields.titleIsPrivate ? undefined : fields.title;
+    list.description = fields.description;
+
+    if (fields.image) {
+        list.tags.push(["image", fields.image]);
+    }
+
+    if (fields.category) {
+        list.tags.push(["L", "lol.listr.ontology"]);
+        list.tags.push(["l", fields.category]);
+    }
+
+    if (list.kind && list.kind >= 30000 && list.kind < 40000) {
+        // A missing d tag is equivalent to an empty one (NIP-01)
+        list.tags.push(["d", source.tags.find((tag) => tag[0] === "d")?.[1] ?? ""]);
+    }
+
+    return list;
 }
 
 export const SUPPORTED_LIST_KINDS = [

@@ -5,15 +5,10 @@
 <script lang="ts">
 import type { Snippet } from "svelte";
 import { getContext } from "svelte";
+import { formatNip05 } from "#lib/utils/nostr.ts";
 import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
 
 const NIP05_REGEX = /^(?:([\w.+-]+)@)?([\w.-]+)$/;
-
-// Format NIP-05 identifier for display
-function formatNip05(nip05: string | undefined): string {
-    if (!nip05) return "";
-    return nip05;
-}
 
 interface Props {
     showNip05?: boolean;

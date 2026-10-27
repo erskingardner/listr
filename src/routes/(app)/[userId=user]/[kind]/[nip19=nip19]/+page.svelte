@@ -13,7 +13,6 @@ import { Breadcrumb, BreadcrumbItem, Tooltip } from "flowbite-svelte";
 import { expoInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
 import toast from "svelte-hot-french-toast";
-import { v4 as uuidv4 } from "uuid";
 import ListActions from "#lib/components/lists/actions/ListActions.svelte";
 import AddItemForm from "#lib/components/lists/forms/AddItemForm.svelte";
 import ChangesCount from "#lib/components/lists/forms/ChangesCount.svelte";
@@ -24,12 +23,14 @@ import ndk from "#lib/stores/ndk.svelte.ts";
 import type { ListItemParams } from "#lib/types.ts";
 import { clearDraft, loadDraft, saveDraft } from "#lib/utils/drafts.ts";
 import {
+    buildEditedList,
     deduplicateItems,
     ensurePubkeys,
     eventMatchesListReference,
+    formatNip05,
+    getEditableListTitle,
     getListDisplayTitle,
     getTitleFromTags,
-    unixTimeNowInSeconds,
 } from "#lib/utils/index.ts";
 import { afterNavigate, beforeNavigate, refreshAll } from "$app/navigation";
 import { page } from "$app/state";
@@ -54,6 +55,8 @@ let unsavedPrivateItems: NDKTag[] = $state([]);
 let unsavedPublicRemovals: NDKTag[] = $state([]);
 let unsavedPrivateRemovals: NDKTag[] = $state([]);
 let listTitle: string | undefined = $state(undefined);
+// True when listTitle came from the encrypted tags of a fully private list
+let titleIsPrivate = $state(false);
 let listDescription: string | undefined = $state(undefined);
 let listImage: string | undefined = $state(undefined);
 let listCategory: string | undefined = $state(undefined);
@@ -76,6 +79,10 @@ let unpublishedChanges = $derived(
         listImage !== initialListImage ||
         listCategory !== initialListCategory
 );
+
+// Title to show in the UI (header, breadcrumb, page title). Falls back to a
+// kind-specific display title when the event has no title tag.
+let listDisplayTitle = $derived(list ? listTitle || getListDisplayTitle(list) : listTitle);
 
 let itemCount = $derived.by(() => {
     return (
@@ -174,8 +181,11 @@ $effect(() => {
             const categoryChanged = listCategory !== initialListCategory;
 
             if (!titleChanged) {
-                listTitle = getListDisplayTitle(list);
+                // Only use the event's actual title (or legacy name) tag for the input
+                // field; display fallbacks are handled by listDisplayTitle
+                listTitle = getEditableListTitle(list);
                 initialListTitle = listTitle;
+                titleIsPrivate = false;
             }
             if (!descChanged) {
                 listDescription = list.description;
@@ -202,6 +212,7 @@ $effect(() => {
                     if (!titleChanged) {
                         listTitle = encryptedTitle;
                         initialListTitle = encryptedTitle;
+                        titleIsPrivate = true;
                     }
                 }
             }
@@ -249,6 +260,7 @@ function clearTempStores() {
     unsavedPublicRemovals = [];
     unsavedPrivateRemovals = [];
     listTitle = undefined;
+    titleIsPrivate = false;
     listDescription = undefined;
     listImage = undefined;
     listCategory = undefined;
@@ -359,68 +371,32 @@ async function publishList(): Promise<void> {
             console.warn("Could not check for latest version", e);
         }
 
-        const newPrivateItems = [...privateItems, ...unsavedPrivateItems];
-        let jsonPrivateItems = "";
-        if (newPrivateItems.length > 0) {
-            jsonPrivateItems = JSON.stringify(newPrivateItems);
-        }
         if (!rawList) {
             toast.error("Something went wrong. Please try again.");
             console.error("No raw list found when publishing");
             return;
         }
 
-        // Create a plain object with the necessary properties
-        const listData = {
-            kind: rawList.kind,
-            pubkey: rawList.pubkey,
-            created_at: unixTimeNowInSeconds(),
-            content: jsonPrivateItems,
-            tags: [...publicItems, ...unsavedPublicItems].map((tag) => [...tag]), // Create new array instances
-        };
+        const list = buildEditedList(ndk, rawList, {
+            items: [...publicItems, ...unsavedPublicItems],
+            privateItems: [...privateItems, ...unsavedPrivateItems],
+            title: listTitle,
+            titleIsPrivate,
+            description: listDescription,
+            image: listImage,
+            category: listCategory,
+        });
 
-        const list = new NDKList(ndk, listData);
-
-        list.title = listTitle;
-        list.description = listDescription;
-
-        if (listImage) {
-            list.tags.push(["image", listImage]);
-        }
-
-        if (listCategory) {
-            list.tags.push(["L", "lol.listr.ontology"]);
-            list.tags.push(["l", listCategory]);
-        }
-
-        let newListConfirmation = true;
-        if (list.kind && list.kind >= 30000 && list.kind <= 40000) {
-            const listTags = rawList.tags;
-            const dTagValue = listTags.filter((tag) => tag[0] === "d")[0][1];
-
-            if (dTagValue === list.title) {
-                newListConfirmation = confirm(
-                    "Updating this list will upgrade the format of the list to allow editing the list name going forward. Do you want to proceed?\n\nWe suggest deleting the original list after the new list is created."
-                );
-                const uuid = uuidv4();
-                list.tags.push(["d", `listr-${uuid}`]);
-            } else {
-                list.tags.push(["d", dTagValue]);
-            }
-        }
-
-        if (newPrivateItems.length > 0) {
+        if (list.content.length > 0) {
             await list.encrypt(currentUser as NDKUser);
         }
 
-        if (newListConfirmation) {
-            await list.publish();
-            toast.success("Your list was successfully published");
-            publishingChanges = false;
-            editMode = false;
-            clearTempStores();
-            refreshAll();
-        }
+        await list.publish();
+        toast.success("Your list was successfully published");
+        publishingChanges = false;
+        editMode = false;
+        clearTempStores();
+        refreshAll();
     } catch (error) {
         console.error(error);
         toast.error("Something went wrong. Please try again.");
@@ -448,7 +424,7 @@ let displayableName = $derived.by(() => {
         return (
             profile?.displayName ||
             profile?.name ||
-            profile?.nip05 ||
+            formatNip05(profile?.nip05) ||
             `${user?.npub.slice(0, 9)}...`
         );
     }
@@ -461,8 +437,8 @@ function toggleDrawerVisible() {
 </script>
 
 <svelte:head>
-    <title>{`${listTitle} - Listr`}</title>
-    <meta name="description" content={`${listTitle} a list on Listr`} />
+    <title>{`${listDisplayTitle} - Listr`}</title>
+    <meta name="description" content={`${listDisplayTitle} a list on Listr`} />
 </svelte:head>
 
 {#snippet homeIcon()}
@@ -486,7 +462,7 @@ function toggleDrawerVisible() {
         <BreadcrumbItem href="/{user.npub}" class="flex flex-row gap-1.5 items-center"
             >{displayableName}</BreadcrumbItem
         >
-        <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listTitle}</BreadcrumbItem>
+        <BreadcrumbItem class="flex flex-row gap-1.5 items-center">{listDisplayTitle}</BreadcrumbItem>
     </Breadcrumb>
 
     <!-- List of the user's lists -->
@@ -513,7 +489,7 @@ function toggleDrawerVisible() {
                 {#if listImage}
                     <img
                         src={listImage}
-                        alt={listTitle}
+                        alt={listDisplayTitle}
                         class="w-full h-32 lg:h-48 object-cover rounded-md"
                     />
                 {/if}
@@ -522,7 +498,7 @@ function toggleDrawerVisible() {
                         <div
                             class="text-base lg:text-lg font-bold flex flex-row justify-start items-center gap-2"
                         >
-                            {listTitle}
+                            {listDisplayTitle}
                                 {#if false /* TODO: Implement settings via ndk.$sessionEvent or localStorage */}
                                 <Info strokeWidth="1.5" class="w-4 lg:w-5 h-4 lg:h-5" />
                                 <Tooltip
