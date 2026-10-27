@@ -1,4 +1,5 @@
 import {
+    type NDKEvent,
     NDKKind,
     type NDKTag,
     type NDKUser,
@@ -7,7 +8,7 @@ import {
 } from "@nostr-dev-kit/ndk";
 import { nip05, nip19 } from "nostr-tools";
 import type { ProfilePointer } from "nostr-tools/nip19";
-import { ndkStore } from "$lib/stores/ndk.svelte";
+import { ndkStore } from "#lib/stores/ndk.svelte.ts";
 
 export const NOSTR_BECH32_REGEXP =
     /^(npub|nprofile|note|nevent|naddr)1[023456789acdefghjklmnpqrstuvwxyz]+/;
@@ -28,6 +29,25 @@ export const NIP05_DOMAIN_REGEXP = /^[\w-]+(\.[\w-]+)+$/;
 export function formatNip05(nip05: string | undefined): string {
     if (!nip05) return "";
     return nip05.startsWith("_@") ? nip05.slice(2) : nip05;
+}
+
+/** Match a loaded list against its NIP-19 event ID or replaceable-event address. */
+export function eventMatchesListReference(
+    event: Pick<NDKEvent, "id" | "kind" | "pubkey" | "dTag">,
+    reference: string
+): boolean {
+    try {
+        const decoded = nip19.decode(reference);
+        if (decoded.type === "nevent") return event.id === decoded.data.id;
+        if (decoded.type !== "naddr") return false;
+        return (
+            event.kind === decoded.data.kind &&
+            event.pubkey === decoded.data.pubkey &&
+            event.dTag === decoded.data.identifier
+        );
+    } catch {
+        return false;
+    }
 }
 
 export function nip19ToTag(nip19Id: string): string[] | undefined {

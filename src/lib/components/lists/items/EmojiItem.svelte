@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { ListItemParams } from "$lib/types";
+import type { ListItemParams } from "#lib/types.ts";
 import RemoveItem from "../actions/RemoveItem.svelte";
 import Unstage from "../actions/Unstage.svelte";
 import ItemActions from "./ItemActions.svelte";

@@ -1,9 +1,9 @@
 <script lang="ts">
+import { Heart } from "@lucide/svelte";
 import { NDKEvent, NDKKind, NDKNip07Signer } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
-import { Heart } from "lucide-svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { unixTimeNowInSeconds } from "#lib/utils/index.ts";
 
 let { listId }: { listId: string } = $props();
 

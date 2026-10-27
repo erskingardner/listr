@@ -1,11 +1,11 @@
 <script lang="ts">
+import { Menu, Search } from "@lucide/svelte";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
-import { Menu, Search } from "lucide-svelte";
 import { expoInOut } from "svelte/easing";
 import { scale } from "svelte/transition";
-import { User } from "$lib/ndk/ui/user";
-import ndk from "$lib/stores/ndk.svelte";
-import { signout } from "$lib/utils/auth";
+import { User } from "#lib/ndk/ui/user/index.ts";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { signout } from "#lib/utils/auth.ts";
 import NewListButton from "../NewListButton.svelte";
 import SigninSelector from "./SigninSelector.svelte";
 

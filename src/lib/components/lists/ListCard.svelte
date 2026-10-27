@@ -1,9 +1,9 @@
 <script lang="ts">
+import { BoxSelect, Lock, MenuSquare, UserSquare } from "@lucide/svelte";
 import type { NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
-import { BoxSelect, Lock, MenuSquare, UserSquare } from "lucide-svelte";
-import ndk from "$lib/stores/ndk.svelte";
-import { getListDisplayTitle, hasEncryptedContent } from "$lib/utils/lists";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { getListDisplayTitle, hasEncryptedContent } from "#lib/utils/lists.ts";
 
 let { list, npub }: { list: NDKList; npub: string } = $props();
 

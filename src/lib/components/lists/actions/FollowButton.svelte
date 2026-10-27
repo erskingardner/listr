@@ -1,9 +1,9 @@
 <script lang="ts">
+import { UserRoundMinus, UserRoundPlus } from "@lucide/svelte";
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
-import { UserRoundMinus, UserRoundPlus } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
-import ndk from "$lib/stores/ndk.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 let { user, buttonClasses }: { user: NDKUser; buttonClasses?: string } = $props();
 

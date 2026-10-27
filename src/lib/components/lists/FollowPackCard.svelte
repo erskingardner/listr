@@ -2,9 +2,9 @@
 import type { NDKList, NDKTag } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
 import { fade } from "svelte/transition";
-import { User } from "$lib/ndk/ui/user";
-import ndk from "$lib/stores/ndk.svelte";
-import { getListDisplayTitle } from "$lib/utils/lists";
+import { User } from "#lib/ndk/ui/user/index.ts";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { getListDisplayTitle } from "#lib/utils/lists.ts";
 import FollowAllButton from "./actions/FollowAllButton.svelte";
 
 let { list }: { list: NDKList } = $props();

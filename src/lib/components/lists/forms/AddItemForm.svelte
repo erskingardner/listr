@@ -1,13 +1,13 @@
 <script lang="ts">
+import { Check } from "@lucide/svelte";
 import type { NDKTag } from "@nostr-dev-kit/ndk";
-import { Check } from "lucide-svelte";
-import { browser } from "$app/environment";
 import {
     kindIsRelayList,
     placeholderForListKind,
     stringInputToTag,
     validateTagForListKind,
-} from "$lib/utils";
+} from "#lib/utils/index.ts";
+import { browser } from "$app/env";
 
 let {
     kind,

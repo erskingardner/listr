@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Zap } from "lucide-svelte";
+import { Zap } from "@lucide/svelte";
 
 let {
     donateButtonClicked,

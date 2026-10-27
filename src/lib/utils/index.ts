@@ -1,6 +1,6 @@
-export * from "$lib/utils/dates";
-export * from "$lib/utils/lists";
-export * from "$lib/utils/nostr";
+export * from "#lib/utils/dates.ts";
+export * from "#lib/utils/lists.ts";
+export * from "#lib/utils/nostr.ts";
 
 export async function copyToClipboard(textToCopy: string) {
     try {

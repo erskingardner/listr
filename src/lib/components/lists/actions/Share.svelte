@@ -1,9 +1,9 @@
 <script lang="ts">
+import { CheckCircle, Share } from "@lucide/svelte";
 import type { NostrEvent } from "@nostr-dev-kit/ndk";
-import { CheckCircle, Share } from "lucide-svelte";
-import { page } from "$app/stores";
-import ndk from "$lib/stores/ndk.svelte";
-import { copyToClipboard } from "$lib/utils";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { copyToClipboard } from "#lib/utils/index.ts";
+import { page } from "$app/state";
 
 let {
     pubkey,
@@ -20,7 +20,7 @@ const user = $derived(ndk.getUser({ pubkey: pubkey }));
 
 async function copyShareUrl() {
     tooltipVisible = true;
-    await copyToClipboard(`https://${$page.url.host}/${user.npub}/${rawList.kind}/${nip19}`);
+    await copyToClipboard(`https://${page.url.host}/${user.npub}/${rawList.kind}/${nip19}`);
     setTimeout(() => {
         tooltipVisible = false;
     }, 1500);

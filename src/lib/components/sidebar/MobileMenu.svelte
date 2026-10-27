@@ -1,6 +1,6 @@
 <script lang="ts">
+import { SunMoon, X } from "@lucide/svelte";
 import { DarkMode } from "flowbite-svelte";
-import { SunMoon, X } from "lucide-svelte";
 import { expoInOut } from "svelte/easing";
 import { fade, fly } from "svelte/transition";
 import Logo from "./Logo.svelte";

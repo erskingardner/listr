@@ -1,32 +1,43 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ main ]
 
 jobs:
-  ci:
-    runs-on: ubuntu-latest
+    ci:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v7
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+            - name: Setup Node.js
+              uses: actions/setup-node@v7
+              with:
+                  node-version-file: .node-version
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2.2.0
+              with:
+                  bun-version-file: package.json
 
-      - name: Run Svelte check
-        run: bun run check
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
 
-      - name: Run linter and check formatting
-        run: bun run lint
+            - name: Run Svelte check
+              run: bun run check
 
-      - name: Run tests
-        run: bun run test:run
+            - name: Run linter and check formatting
+              run: bun run lint
+
+            - name: Run tests
+              run: bun run test:run
+
+            - name: Audit dependencies
+              run: bun audit
+
+            - name: Build production app
+              run: bun run build

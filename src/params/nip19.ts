@@ -1,4 +1,4 @@
-/** @type {import('@sveltejs/kit').ParamMatcher} */
+/** Check whether an identifier matches this route parameter. */
 
 export function match(param: string) {
     // Match NIP-19 identifiers used for list references:

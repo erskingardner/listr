@@ -1,8 +1,8 @@
 <script lang="ts">
+import { ListPlus } from "@lucide/svelte";
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import { Tooltip } from "flowbite-svelte";
-import { ListPlus } from "lucide-svelte";
-import ndk from "$lib/stores/ndk.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 let {
     user,

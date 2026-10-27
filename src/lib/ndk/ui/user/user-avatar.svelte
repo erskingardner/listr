@@ -5,7 +5,7 @@
 <script lang="ts">
 import type { Snippet } from "svelte";
 import { getContext } from "svelte";
-import { isProfileNsfw } from "$lib/utils/nsfw.js";
+import { isProfileNsfw } from "#lib/utils/nsfw.ts";
 import { cn } from "../../utils/cn.js";
 import { USER_CONTEXT_KEY, type UserContext } from "./user.context.js";
 

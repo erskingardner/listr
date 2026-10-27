@@ -1,7 +1,7 @@
 <script lang="ts">
 import "../app.css";
-import { browser } from "$app/environment";
-import Logo from "$lib/components/sidebar/Logo.svelte";
+import Logo from "#lib/components/sidebar/Logo.svelte";
+import { browser } from "$app/env";
 
 if (browser) {
     document.body.classList.add("bg-gray-900");

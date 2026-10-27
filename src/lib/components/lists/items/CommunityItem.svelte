@@ -1,8 +1,8 @@
 <script lang="ts">
 import type { NDKUser } from "@nostr-dev-kit/ndk";
 import type { NDKSvelte } from "@nostr-dev-kit/svelte";
-import { User } from "$lib/ndk/ui/user";
-import ndk from "$lib/stores/ndk.svelte";
+import { User } from "#lib/ndk/ui/user/index.ts";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 let { name, creator }: { name: string; creator: NDKUser } = $props();
 

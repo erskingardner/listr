@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type NDKEvent, NDKList } from "@nostr-dev-kit/ndk";
-import { getListDisplayTitle } from "$lib/utils/lists";
+import { getListDisplayTitle } from "#lib/utils/lists.ts";
 import ListSummary from "../lists/ListSummary.svelte";
 
 let { event }: { event: NDKEvent } = $props();

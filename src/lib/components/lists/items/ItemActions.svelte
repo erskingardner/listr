@@ -1,8 +1,8 @@
 <script lang="ts">
+import { Copy, CopyCheck, ExternalLink, MoreVertical } from "@lucide/svelte";
 import { Popover } from "flowbite-svelte";
-import { Copy, CopyCheck, ExternalLink, MoreVertical } from "lucide-svelte";
 import { nip19 } from "nostr-tools";
-import { aTagToNip19, copyToClipboard } from "$lib/utils";
+import { aTagToNip19, copyToClipboard } from "#lib/utils/index.ts";
 
 let { type, id }: { type: string; id: string } = $props();
 

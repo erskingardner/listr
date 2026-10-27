@@ -1,4 +1,5 @@
 <script lang="ts">
+import { Zap } from "@lucide/svelte";
 import {
     type LnPaymentInfo,
     NDKEvent,
@@ -9,10 +10,9 @@ import {
     zapInvoiceFromEvent,
 } from "@nostr-dev-kit/ndk";
 import { Popover } from "flowbite-svelte";
-import { Zap } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
 import { requestProvider } from "webln";
-import ndk from "$lib/stores/ndk.svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 let { listId, nip19 }: { listId: string; nip19: string } = $props();
 

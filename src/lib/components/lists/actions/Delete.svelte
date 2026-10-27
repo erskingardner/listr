@@ -1,11 +1,11 @@
 <script lang="ts">
+import { Trash2 } from "@lucide/svelte";
 import { db } from "@nostr-dev-kit/cache-dexie";
 import { NDKEvent, NDKKind } from "@nostr-dev-kit/ndk";
-import { Trash2 } from "lucide-svelte";
 import toast from "svelte-hot-french-toast";
+import ndk from "#lib/stores/ndk.svelte.ts";
+import { unixTimeNowInSeconds } from "#lib/utils/index.ts";
 import { goto } from "$app/navigation";
-import ndk from "$lib/stores/ndk.svelte";
-import { unixTimeNowInSeconds } from "$lib/utils";
 
 let { listId, pubkey, listDeleted }: { listId: string; pubkey: string; listDeleted: () => void } =
     $props();

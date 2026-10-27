@@ -1,5 +1,5 @@
 import type { NDKTag } from "@nostr-dev-kit/ndk";
-import { browser } from "$app/environment";
+import { browser } from "$app/env";
 
 const DRAFT_STORAGE_KEY = "listr-draft";
 

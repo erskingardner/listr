@@ -1,6 +1,6 @@
 <script lang="ts">
-import { FileEdit, FileX } from "lucide-svelte";
-import ndk from "$lib/stores/ndk.svelte";
+import { FileEdit, FileX } from "@lucide/svelte";
+import ndk from "#lib/stores/ndk.svelte.ts";
 
 let {
     pubkey,
