@@ -13,7 +13,6 @@ import { Breadcrumb, BreadcrumbItem, Tooltip } from "flowbite-svelte";
 import { expoInOut } from "svelte/easing";
 import { slide } from "svelte/transition";
 import toast from "svelte-hot-french-toast";
-import { v4 as uuidv4 } from "uuid";
 import ListActions from "#lib/components/lists/actions/ListActions.svelte";
 import AddItemForm from "#lib/components/lists/forms/AddItemForm.svelte";
 import ChangesCount from "#lib/components/lists/forms/ChangesCount.svelte";
@@ -24,13 +23,14 @@ import ndk from "#lib/stores/ndk.svelte.ts";
 import type { ListItemParams } from "#lib/types.ts";
 import { clearDraft, loadDraft, saveDraft } from "#lib/utils/drafts.ts";
 import {
+    buildEditedList,
     deduplicateItems,
     ensurePubkeys,
     eventMatchesListReference,
     formatNip05,
+    getEditableListTitle,
     getListDisplayTitle,
     getTitleFromTags,
-    unixTimeNowInSeconds,
 } from "#lib/utils/index.ts";
 import { afterNavigate, beforeNavigate, refreshAll } from "$app/navigation";
 import { page } from "$app/state";
@@ -55,6 +55,8 @@ let unsavedPrivateItems: NDKTag[] = $state([]);
 let unsavedPublicRemovals: NDKTag[] = $state([]);
 let unsavedPrivateRemovals: NDKTag[] = $state([]);
 let listTitle: string | undefined = $state(undefined);
+// True when listTitle came from the encrypted tags of a fully private list
+let titleIsPrivate = $state(false);
 let listDescription: string | undefined = $state(undefined);
 let listImage: string | undefined = $state(undefined);
 let listCategory: string | undefined = $state(undefined);
@@ -179,10 +181,11 @@ $effect(() => {
             const categoryChanged = listCategory !== initialListCategory;
 
             if (!titleChanged) {
-                // Only use the event's actual title tag for the input field;
-                // display fallbacks are handled by listDisplayTitle
-                listTitle = list.tagValue("title");
+                // Only use the event's actual title (or legacy name) tag for the input
+                // field; display fallbacks are handled by listDisplayTitle
+                listTitle = getEditableListTitle(list);
                 initialListTitle = listTitle;
+                titleIsPrivate = false;
             }
             if (!descChanged) {
                 listDescription = list.description;
@@ -209,6 +212,7 @@ $effect(() => {
                     if (!titleChanged) {
                         listTitle = encryptedTitle;
                         initialListTitle = encryptedTitle;
+                        titleIsPrivate = true;
                     }
                 }
             }
@@ -256,6 +260,7 @@ function clearTempStores() {
     unsavedPublicRemovals = [];
     unsavedPrivateRemovals = [];
     listTitle = undefined;
+    titleIsPrivate = false;
     listDescription = undefined;
     listImage = undefined;
     listCategory = undefined;
@@ -366,60 +371,32 @@ async function publishList(): Promise<void> {
             console.warn("Could not check for latest version", e);
         }
 
-        const newPrivateItems = [...privateItems, ...unsavedPrivateItems];
-        let jsonPrivateItems = "";
-        if (newPrivateItems.length > 0) {
-            jsonPrivateItems = JSON.stringify(newPrivateItems);
-        }
         if (!rawList) {
             toast.error("Something went wrong. Please try again.");
             console.error("No raw list found when publishing");
             return;
         }
 
-        // Create a plain object with the necessary properties
-        const listData = {
-            kind: rawList.kind,
-            pubkey: rawList.pubkey,
-            created_at: unixTimeNowInSeconds(),
-            content: jsonPrivateItems,
-            tags: [...publicItems, ...unsavedPublicItems].map((tag) => [...tag]), // Create new array instances
-        };
+        const list = buildEditedList(ndk, rawList, {
+            items: [...publicItems, ...unsavedPublicItems],
+            privateItems: [...privateItems, ...unsavedPrivateItems],
+            title: listTitle,
+            titleIsPrivate,
+            description: listDescription,
+            image: listImage,
+            category: listCategory,
+        });
 
-        const list = new NDKList(ndk, listData);
-
-        list.title = listTitle;
-        list.description = listDescription;
-
-        if (listImage) {
-            list.tags.push(["image", listImage]);
-        }
-
-        if (listCategory) {
-            list.tags.push(["L", "lol.listr.ontology"]);
-            list.tags.push(["l", listCategory]);
-        }
-
-        let newListConfirmation = true;
-        if (list.kind && list.kind >= 30000 && list.kind <= 40000) {
-            const listTags = rawList.tags;
-            const dTagValue = listTags.filter((tag) => tag[0] === "d")[0][1];
-
-            list.tags.push(["d", dTagValue]);
-        }
-
-        if (newPrivateItems.length > 0) {
+        if (list.content.length > 0) {
             await list.encrypt(currentUser as NDKUser);
         }
 
-        if (newListConfirmation) {
-            await list.publish();
-            toast.success("Your list was successfully published");
-            publishingChanges = false;
-            editMode = false;
-            clearTempStores();
-            refreshAll();
-        }
+        await list.publish();
+        toast.success("Your list was successfully published");
+        publishingChanges = false;
+        editMode = false;
+        clearTempStores();
+        refreshAll();
     } catch (error) {
         console.error(error);
         toast.error("Something went wrong. Please try again.");

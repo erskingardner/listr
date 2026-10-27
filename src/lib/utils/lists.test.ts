@@ -1,8 +1,9 @@
-import type { NDKEvent, NDKList, NDKTag } from "@nostr-dev-kit/ndk";
-import { NDKKind } from "@nostr-dev-kit/ndk";
+import type { NDKEvent, NDKTag } from "@nostr-dev-kit/ndk";
+import NDK, { NDKKind, NDKList } from "@nostr-dev-kit/ndk";
 import { describe, expect, it } from "vitest";
 import {
     BLOCKED_PUBKEYS,
+    buildEditedList,
     DUPLICATABLEABLE_LIST_KINDS,
     deduplicateItems,
     ensurePubkeys,
@@ -10,6 +11,7 @@ import {
     filterAndSortByTitle,
     filteredItemsForListKind,
     filteredLists,
+    getEditableListTitle,
     getListDisplayTitle,
     getTitleFromTags,
     hasEncryptedContent,
@@ -974,6 +976,143 @@ describe("lists utility functions", () => {
             });
             const decryptedTags: NDKTag[] = [["title", "aHR0cHM6Ly9leGFtcGxlLmNvbQ=="]];
             expect(getListDisplayTitle(list, decryptedTags)).toBe("Public Title");
+        });
+    });
+
+    describe("editing lists", () => {
+        const ndk = new NDK();
+        const pubkey = "b".repeat(64);
+        const member = ["p", "c".repeat(64)];
+
+        const sourceList = (kind: number, tags: NDKTag[]) =>
+            new NDKList(ndk, { kind, pubkey, created_at: 1, content: "", tags });
+
+        // Mirrors the list page: load the editable fields, then republish unchanged
+        const republish = (source: NDKList) =>
+            buildEditedList(ndk, source.rawEvent(), {
+                items: source.items,
+                privateItems: [],
+                title: getEditableListTitle(source),
+                description: source.description,
+            });
+
+        describe("getEditableListTitle", () => {
+            it("should return the title tag", () => {
+                const list = sourceList(NDKKind.FollowSet, [["title", "Friends"]]);
+                expect(getEditableListTitle(list)).toBe("Friends");
+            });
+
+            it("should fall back to the legacy name tag", () => {
+                const list = sourceList(NDKKind.FollowSet, [["name", "Friends"]]);
+                expect(getEditableListTitle(list)).toBe("Friends");
+            });
+
+            it("should prefer the title tag over the name tag", () => {
+                const list = sourceList(NDKKind.FollowSet, [
+                    ["name", "Old"],
+                    ["title", "New"],
+                ]);
+                expect(getEditableListTitle(list)).toBe("New");
+            });
+
+            it("should not fall back to the d tag or a kind default", () => {
+                const followSet = sourceList(NDKKind.FollowSet, [["d", "budabit-maintainers"]]);
+                const muteList = sourceList(NDKKind.MuteList, []);
+                expect(getEditableListTitle(followSet)).toBeUndefined();
+                expect(getEditableListTitle(muteList)).toBeUndefined();
+            });
+        });
+
+        describe("buildEditedList", () => {
+            it("should keep the d tag when it equals the title", () => {
+                const source = sourceList(NDKKind.FollowSet, [
+                    ["d", "foo"],
+                    ["title", "foo"],
+                    member,
+                ]);
+                const edited = republish(source);
+                expect(edited.tags.filter((tag) => tag[0] === "d")).toEqual([["d", "foo"]]);
+                expect(edited.tagValue("title")).toBe("foo");
+            });
+
+            it("should keep the d tag and not add a title for untitled lists", () => {
+                const source = sourceList(NDKKind.FollowSet, [
+                    ["d", "budabit-maintainers"],
+                    member,
+                ]);
+                const edited = republish(source);
+                expect(edited.tags).toEqual([member, ["d", "budabit-maintainers"]]);
+            });
+
+            it("should keep a name-only list's name as its title", () => {
+                const source = sourceList(NDKKind.FollowSet, [
+                    ["d", "maintainers"],
+                    ["name", "Budabit maintainers"],
+                    member,
+                ]);
+                expect(republish(source).title).toBe("Budabit maintainers");
+            });
+
+            it("should use an empty d tag when the source has none", () => {
+                const source = sourceList(NDKKind.FollowSet, [member]);
+                expect(republish(source).tagValue("d")).toBe("");
+            });
+
+            it("should not add a d tag or title to non-parameterized lists", () => {
+                const source = sourceList(NDKKind.MuteList, [member]);
+                expect(republish(source).tags).toEqual([member]);
+            });
+
+            it("should add image and category tags when set", () => {
+                const source = sourceList(NDKKind.FollowSet, [["d", "x"]]);
+                const edited = buildEditedList(ndk, source.rawEvent(), {
+                    items: [],
+                    privateItems: [],
+                    image: "https://example.com/cover.png",
+                    category: "Music",
+                });
+                expect(edited.tags).toEqual([
+                    ["image", "https://example.com/cover.png"],
+                    ["L", "lol.listr.ontology"],
+                    ["l", "Music"],
+                    ["d", "x"],
+                ]);
+            });
+
+            it("should serialize private items as content", () => {
+                const source = sourceList(NDKKind.FollowSet, [["d", "x"]]);
+                const edited = buildEditedList(ndk, source.rawEvent(), {
+                    items: [],
+                    privateItems: [member],
+                    title: "Public",
+                });
+                expect(JSON.parse(edited.content)).toEqual([member]);
+                expect(edited.tagValue("title")).toBe("Public");
+            });
+
+            it("should keep a private title out of the public tags", () => {
+                const source = sourceList(NDKKind.FollowSet, [["d", "x"]]);
+                const edited = buildEditedList(ndk, source.rawEvent(), {
+                    items: [],
+                    privateItems: [["title", "Secret"], member],
+                    title: "Secret",
+                    titleIsPrivate: true,
+                });
+                expect(edited.tags).toEqual([["d", "x"]]);
+                expect(JSON.parse(edited.content)).toEqual([["title", "Secret"], member]);
+            });
+
+            it("should rename a private title inside the private items", () => {
+                const source = sourceList(NDKKind.FollowSet, [["d", "x"]]);
+                const edited = buildEditedList(ndk, source.rawEvent(), {
+                    items: [],
+                    privateItems: [member, ["title", "Old"]],
+                    title: "New",
+                    titleIsPrivate: true,
+                });
+                expect(edited.tagValue("title")).toBeUndefined();
+                expect(JSON.parse(edited.content)).toEqual([["title", "New"], member]);
+            });
         });
     });
 });
